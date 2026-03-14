@@ -54,19 +54,18 @@ body{
 
 <script>
 
-const scene=new THREE.Scene()
-const camera=new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 10000)
-camera.position.z=80
-const renderer=new THREE.WebGLRenderer({antialias:true})
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 10000)
+camera.position.z = 120
+const renderer = new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
-const controls=new THREE.OrbitControls(camera,renderer.domElement)
-controls.enableDamping=true
-controls.dampingFactor=0.05
+const controls = new THREE.OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
+controls.dampingFactor = 0.05
 
-
-// GALAXIA ESPIRAL (estrellas más pequeñas y 15% menos)
+// GALAXIA ESPIRAL
 const galaxyGeo = new THREE.BufferGeometry();
 const galaxyVertices = [];
 const totalStars = 20000;
@@ -77,24 +76,17 @@ for (let i = 0; i < finalStars; i++) {
   const radius = Math.random() * 200;
   const spin = radius * 0.4;
   const angle = Math.random() * Math.PI * 2;
-
-  galaxyVertices.push(
-    Math.cos(angle + spin) * radius,
-    (Math.random() - 0.5) * 20,
-    Math.sin(angle + spin) * radius
-  );
+  galaxyVertices.push(Math.cos(angle + spin) * radius, (Math.random()-0.5)*20, Math.sin(angle + spin) * radius);
 }
 
 galaxyGeo.setAttribute('position', new THREE.Float32BufferAttribute(galaxyVertices, 3));
-
-const galaxyMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3, sizeAttenuation: true });
+const galaxyMat = new THREE.PointsMaterial({ color:0xffffff, size:0.3, sizeAttenuation:true });
 const galaxy = new THREE.Points(galaxyGeo, galaxyMat);
 scene.add(galaxy);
 
-
 // CORAZON CENTRAL
-const heartGeo=new THREE.BufferGeometry()
-const heartVertices=[]
+const heartGeo = new THREE.BufferGeometry()
+const heartVertices = []
 for(let i=0;i<2500;i++){
   const t=Math.random()*Math.PI*2
   const x=16*Math.pow(Math.sin(t),3)
@@ -102,105 +94,93 @@ for(let i=0;i<2500;i++){
   heartVertices.push(x*0.8,y*0.8,(Math.random()-0.5)*2)
 }
 heartGeo.setAttribute('position',new THREE.Float32BufferAttribute(heartVertices,3))
-const heartMat=new THREE.PointsMaterial({color:0xff3377, size:1})
-const heart=new THREE.Points(heartGeo,heartMat)
+const heartMat = new THREE.PointsMaterial({color:0xff3377,size:1})
+const heart = new THREE.Points(heartGeo,heartMat)
 scene.add(heart)
 
+// PLANETAS DEL SISTEMA SOLAR
+const loader = new THREE.TextureLoader()
+const planetsData = [
+  {name:"Mercurio", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/mercury.jpg", radius:30, speed:0.004},
+  {name:"Venus", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/venus.jpg", radius:40, speed:0.0035},
+  {name:"Tierra", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/earth.jpg", radius:50, speed:0.003},
+  {name:"Marte", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/mars.jpg", radius:60, speed:0.0025},
+  {name:"Júpiter", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/jupiter.jpg", radius:75, speed:0.002},
+  {name:"Saturno", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/saturn.jpg", radius:90, speed:0.0018},
+  {name:"Urano", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/uranus.jpg", radius:105, speed:0.0015},
+  {name:"Neptuno", tex:"https://threejsfundamentals.org/threejs/resources/images/planets/neptune.jpg", radius:120, speed:0.0012}
+];
 
-// PLANETAS BONITOS Y MOVIMIENTO LENTO
 const planets = []
-function createPlanet(angle,radius,color,speed){
-  const geo=new THREE.SphereGeometry(5,64,64)
-  const mat=new THREE.MeshStandardMaterial({color:color, emissive:color, emissiveIntensity:0.4})
-  const planet=new THREE.Mesh(geo,mat)
-  planet.userData = { angle, radius, speed } // guardamos ángulo y velocidad
-  planet.position.x=Math.cos(angle)*radius
-  planet.position.z=Math.sin(angle)*radius
+
+planetsData.forEach((p, i)=>{
+  const geo = new THREE.SphereGeometry(5,64,64)
+  const tex = loader.load(p.tex)
+  const mat = new THREE.MeshStandardMaterial({map:tex, emissive:0x111111})
+  const planet = new THREE.Mesh(geo, mat)
+  planet.userData = { angle: Math.random()*Math.PI*2, radius:p.radius, speed:p.speed }
+  planet.position.x = Math.cos(planet.userData.angle) * planet.userData.radius
+  planet.position.z = Math.sin(planet.userData.angle) * planet.userData.radius
   scene.add(planet)
   planets.push(planet)
 
-  // anillo tipo Saturno
-  const ringGeo=new THREE.RingGeometry(7,10,64)
-  const ringMat=new THREE.MeshBasicMaterial({color:0xffffff, side:THREE.DoubleSide})
-  const ring=new THREE.Mesh(ringGeo,ringMat)
-  ring.rotation.x=Math.PI/2
-  planet.add(ring)
-}
-
-// Más planetas con diferentes colores y velocidades
-createPlanet(0,60,0x44aaff,0.002)
-createPlanet(Math.PI/4,65,0xff77aa,0.0015)
-createPlanet(Math.PI/2,70,0xffcc33,0.0012)
-createPlanet(Math.PI*3/4,75,0xaa66ff,0.001)
-createPlanet(Math.PI,80,0x33ffaa,0.0009)
-createPlanet(Math.PI*5/4,85,0xff8844,0.0008)
-createPlanet(Math.PI*3/2,90,0xff44ff,0.0007)
-createPlanet(Math.PI*7/4,95,0x66ccff,0.0006)
+  // Añadimos anillo a Saturno
+  if(p.name==="Saturno"){
+    const ringGeo = new THREE.RingGeometry(7,12,64)
+    const ringMat = new THREE.MeshBasicMaterial({color:0xffffff, side:THREE.DoubleSide})
+    const ring = new THREE.Mesh(ringGeo, ringMat)
+    ring.rotation.x = Math.PI/2
+    planet.add(ring)
+  }
+})
 
 
-// FOTOS (únicas, no repetidas)
-const loader=new THREE.TextureLoader()
+// FOTOS ÚNICAS
 const usedImages = []
 function photo(angle){
   let idx
-  do {
-    idx = Math.floor(Math.random()*5)+1
-  } while(usedImages.includes(idx))
+  do { idx = Math.floor(Math.random()*5)+1 } while(usedImages.includes(idx))
   usedImages.push(idx)
-
-  const tex=loader.load("foto"+idx+".jpg")
-  const geo=new THREE.PlaneGeometry(14,14)
-  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true})
-  const mesh=new THREE.Mesh(geo,mat)
-  mesh.position.x=Math.cos(angle)*35
-  mesh.position.z=Math.sin(angle)*35
+  const tex = loader.load("foto"+idx+".jpg")
+  const geo = new THREE.PlaneGeometry(14,14)
+  const mat = new THREE.MeshBasicMaterial({map:tex, transparent:true})
+  const mesh = new THREE.Mesh(geo, mat)
+  mesh.position.x = Math.cos(angle)*35
+  mesh.position.z = Math.sin(angle)*35
   scene.add(mesh)
 }
-
-for(let i=0;i<5;i++){
-  photo(i*Math.PI*2/5)
-}
+for(let i=0;i<5;i++){ photo(i*Math.PI*2/5) }
 
 
 // PELUCHES 3D (ositos)
 function teddy(angle){
   const geo=new THREE.SphereGeometry(3,32,32)
   const mat=new THREE.MeshStandardMaterial({color:0xffccaa})
-  const mesh=new THREE.Mesh(geo,mat)
-  mesh.position.x=Math.cos(angle)*80
-  mesh.position.z=Math.sin(angle)*80
+  const mesh=new THREE.Mesh(geo, mat)
+  mesh.position.x = Math.cos(angle)*80
+  mesh.position.z = Math.sin(angle)*80
   scene.add(mesh)
 }
 for(let i=0;i<8;i++){ teddy(i*Math.PI/4) }
 
 
 // FRASES
-const frases=[
-"Mi princesa hermosa","Mi niña preciosa","Mi amor eterno","Mi amorcito lindo",
-"Mi cachetoncita hermosa","Mi gordita preciosa","Mi tesoro más valioso",
-"Te amo más que a nada","Eres mi felicidad","Eres mi estrella favorita",
-"Eres mi universo entero","Contigo todo es mejor","Eres lo mejor que me ha pasado",
-"Mi vida es más bonita contigo","Eres la luz de mi vida","Eres mi razón de sonreír",
-"Eres mi sueño hecho realidad","Siempre quiero estar contigo","Eres mi lugar favorito","Mi corazón es tuyo"
-]
+const frases=["Mi princesa hermosa","Mi niña preciosa","Mi amor eterno","Mi amorcito lindo","Mi cachetoncita hermosa","Mi gordita preciosa","Mi tesoro más valioso","Te amo más que a nada","Eres mi felicidad","Eres mi estrella favorita","Eres mi universo entero","Contigo todo es mejor","Eres lo mejor que me ha pasado","Mi vida es más bonita contigo","Eres la luz de mi vida","Eres mi razón de sonreír","Eres mi sueño hecho realidad","Siempre quiero estar contigo","Eres mi lugar favorito","Mi corazón es tuyo"]
+
 for(let i=0;i<1000;i++){
-  const text=frases[Math.floor(Math.random()*frases.length)]
-  const canvas=document.createElement("canvas")
-  const ctx=canvas.getContext("2d")
-  canvas.width=512
-  canvas.height=256
-  ctx.fillStyle="white"
-  ctx.font="36px Arial"
-  ctx.textAlign="center"
-  ctx.fillText(text,256,130)
-  const tex=new THREE.CanvasTexture(canvas)
-  const mat=new THREE.SpriteMaterial({map:tex})
-  const sprite=new THREE.Sprite(mat)
-  const angle=Math.random()*Math.PI*2
-  const radius=150+Math.random()*200
-  sprite.position.x=Math.cos(angle)*radius
-  sprite.position.z=Math.sin(angle)*radius
-  sprite.position.y=(Math.random()-0.5)*80
+  const text = frases[Math.floor(Math.random()*frases.length)]
+  const canvas = document.createElement("canvas")
+  const ctx = canvas.getContext("2d")
+  canvas.width = 512; canvas.height = 256
+  ctx.fillStyle="white"; ctx.font="36px Arial"; ctx.textAlign="center"; ctx.fillText(text,256,130)
+  const tex = new THREE.CanvasTexture(canvas)
+  const mat = new THREE.SpriteMaterial({map:tex})
+  const sprite = new THREE.Sprite(mat)
+  const angle = Math.random()*Math.PI*2
+  const radius = 150+Math.random()*200
+  sprite.position.x = Math.cos(angle)*radius
+  sprite.position.z = Math.sin(angle)*radius
+  sprite.position.y = (Math.random()-0.5)*80
   sprite.scale.set(14,6,1)
   scene.add(sprite)
 }
@@ -242,29 +222,21 @@ document.addEventListener("mousemove",(e)=>{
   const geo=new THREE.SphereGeometry(0.4,8,8)
   const mat=new THREE.MeshBasicMaterial({color:0xff3377})
   const heart=new THREE.Mesh(geo,mat)
-  heart.position.set(
-    (Math.random()-0.5)*20,
-    (Math.random()-0.5)*20,
-    (Math.random()-0.5)*20
-  )
+  heart.position.set((Math.random()-0.5)*20,(Math.random()-0.5)*20,(Math.random()-0.5)*20)
   scene.add(heart)
 })
-
 
 // MENSAJE
 document.getElementById("btn").onclick=()=>{
   alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
 }
 
-
 // ANIMACION
 function animate(){
   requestAnimationFrame(animate)
+  galaxy.rotation.y += 0.0005
+  heart.rotation.y += 0.003
 
-  galaxy.rotation.y+=0.0005
-  heart.rotation.y+=0.003
-
-  // actualizar planetas lentos
   planets.forEach(p=>{
     p.userData.angle += p.userData.speed
     p.position.x = Math.cos(p.userData.angle) * p.userData.radius
@@ -274,7 +246,6 @@ function animate(){
   controls.update()
   renderer.render(scene,camera)
 }
-
 animate()
 
 </script>
