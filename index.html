@@ -3,57 +3,100 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Nuestro Universo</title>
+<title>Universo de Natasha</title>
 
 <style>
+
 body{
 margin:0;
 overflow:hidden;
 background:black;
-font-family:sans-serif;
+font-family:Arial;
+}
+
+#login{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+color:white;
+z-index:10;
+}
+
+input{
+padding:12px;
+font-size:18px;
+border-radius:10px;
+border:none;
+text-align:center;
+}
+
+button{
+margin-top:20px;
+padding:12px 25px;
+border:none;
+border-radius:20px;
+background:#ff2e8b;
+color:white;
+font-size:18px;
+cursor:pointer;
 }
 
 #titulo{
 position:absolute;
-top:25px;
+top:20px;
 width:100%;
 text-align:center;
-font-size:40px;
-color:#ff77aa;
-text-shadow:0 0 30px #ff77aa;
+font-size:38px;
+color:#ff7ab6;
+text-shadow:0 0 20px #ff7ab6;
 }
 
-#btn{
-position:absolute;
-bottom:30px;
-left:50%;
-transform:translateX(-50%);
-padding:14px 25px;
-background:#ff2a8b;
-border:none;
-border-radius:25px;
-color:white;
-font-size:18px;
-cursor:pointer;
-box-shadow:0 0 20px #ff2a8b;
-}
 </style>
-
 </head>
 
 <body>
 
-<div id="titulo">💖 Nuestro universo infinito 💖</div>
-<button id="btn">💌 Mensaje secreto</button>
+<div id="login">
 
-<audio autoplay loop>
-<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_2f7c9fd5d8.mp3">
-</audio>
+<h1>🔐 Universo secreto</h1>
+
+<p>Introduce la fecha especial</p>
+
+<input id="clave" placeholder="DD/MM/AAAA">
+
+<button onclick="verificar()">Entrar</button>
+
+</div>
+
+<div id="titulo">💖 Nuestro Universo 💖</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
 
 <script>
+
+function verificar(){
+
+if(document.getElementById("clave").value==="30/10/2025"){
+
+document.getElementById("login").style.display="none"
+
+}else{
+
+alert("Clave incorrecta")
+
+}
+
+}
+
+
 
 const scene=new THREE.Scene()
 
@@ -64,66 +107,49 @@ window.innerWidth/window.innerHeight,
 10000
 )
 
-camera.position.z=70
+camera.position.z=80
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
+
 document.body.appendChild(renderer.domElement)
+
+
 
 const controls=new THREE.OrbitControls(camera,renderer.domElement)
 controls.enableDamping=true
-controls.dampingFactor=0.05
 
 
-// ESTRELLAS PARPADEANTES
 
-const starGeo=new THREE.BufferGeometry()
-const starVertices=[]
+const light=new THREE.PointLight(0xffffff,1.5)
 
-for(let i=0;i<60000;i++){
+light.position.set(50,50,50)
 
-starVertices.push(
-(Math.random()-0.5)*8000,
-(Math.random()-0.5)*8000,
-(Math.random()-0.5)*8000
-)
+scene.add(light)
 
-}
-
-starGeo.setAttribute(
-'position',
-new THREE.Float32BufferAttribute(starVertices,3)
-)
-
-const starMat=new THREE.PointsMaterial({
-color:0xffffff,
-size:1.2
-})
-
-const stars=new THREE.Points(starGeo,starMat)
-
-scene.add(stars)
 
 
 // CORAZON CENTRAL
 
 const heartGeo=new THREE.BufferGeometry()
-const heartVertices=[]
 
-for(let i=0;i<2500;i++){
+const heart=[]
+
+for(let i=0;i<2000;i++){
 
 const t=Math.random()*Math.PI*2
 
 const x=16*Math.pow(Math.sin(t),3)
+
 const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)
 
-heartVertices.push(x*0.9,y*0.9,(Math.random()-0.5)*2)
+heart.push(x*0.8,y*0.8,(Math.random()-0.5)*2)
 
 }
 
 heartGeo.setAttribute(
 'position',
-new THREE.Float32BufferAttribute(heartVertices,3)
+new THREE.Float32BufferAttribute(heart,3)
 )
 
 const heartMat=new THREE.PointsMaterial({
@@ -131,82 +157,55 @@ color:0xff3377,
 size:1
 })
 
-const heart=new THREE.Points(heartGeo,heartMat)
+const heartMesh=new THREE.Points(heartGeo,heartMat)
 
-scene.add(heart)
+scene.add(heartMesh)
 
 
-// PLANETAS CON TEXTURA
 
-const loader=new THREE.TextureLoader()
+// PLANETAS BONITOS
 
-function createPlanet(angle,radius){
+function planeta(a,c){
 
 const geo=new THREE.SphereGeometry(4,64,64)
 
-const tex=loader.load(
-"https://threejsfundamentals.org/threejs/resources/images/earth.jpg"
-)
-
 const mat=new THREE.MeshStandardMaterial({
-map:tex,
-emissive:0x333333
+
+color:c,
+emissive:c,
+emissiveIntensity:0.4
+
 })
 
-const planet=new THREE.Mesh(geo,mat)
+const mesh=new THREE.Mesh(geo,mat)
 
-planet.position.x=Math.cos(angle)*radius
-planet.position.z=Math.sin(angle)*radius
+mesh.position.x=Math.cos(a)*60
+mesh.position.z=Math.sin(a)*60
 
-scene.add(planet)
-
-}
-
-for(let i=0;i<6;i++){
-
-createPlanet(i*Math.PI/3,45)
+scene.add(mesh)
 
 }
+
+planeta(0,0x44aaff)
+planeta(Math.PI/3,0xff77aa)
+planeta(Math.PI*2/3,0xffcc33)
+planeta(Math.PI,0xaa66ff)
+planeta(Math.PI*4/3,0x33ffaa)
+planeta(Math.PI*5/3,0xff8844)
+
 
 
 // FOTOS
 
-function photo(angle){
+const loader=new THREE.TextureLoader()
 
-const tex=loader.load("foto"+(Math.floor(Math.random()*5)+1)+".jpg")
+const photos=[]
 
-const geo=new THREE.PlaneGeometry(12,12)
+function foto(a,i){
 
-const mat=new THREE.MeshBasicMaterial({
-map:tex,
-transparent:true
-})
+const tex=loader.load("foto"+i+".jpg")
 
-const mesh=new THREE.Mesh(geo,mat)
-
-mesh.position.x=Math.cos(angle)*28
-mesh.position.z=Math.sin(angle)*28
-
-scene.add(mesh)
-
-}
-
-for(let i=0;i<5;i++){
-
-photo(i*Math.PI*2/5)
-
-}
-
-
-// SNOOPY
-
-function snoopy(angle){
-
-const tex=loader.load(
-"https://upload.wikimedia.org/wikipedia/en/5/53/Snoopy_Peanuts.png"
-)
-
-const geo=new THREE.PlaneGeometry(8,8)
+const geo=new THREE.PlaneGeometry(16,16)
 
 const mat=new THREE.MeshBasicMaterial({
 map:tex,
@@ -215,60 +214,53 @@ transparent:true
 
 const mesh=new THREE.Mesh(geo,mat)
 
-mesh.position.x=Math.cos(angle)*60
-mesh.position.z=Math.sin(angle)*60
+mesh.position.x=Math.cos(a)*35
+mesh.position.z=Math.sin(a)*35
 
 scene.add(mesh)
 
-}
-
-for(let i=0;i<6;i++){
-
-snoopy(i*Math.PI/3)
+photos.push(mesh)
 
 }
+
+for(let i=1;i<=5;i++){
+
+foto(i*Math.PI*2/5,i)
+
+}
+
 
 
 // FRASES
 
 const frases=[
 
-"Mi princesa hermosa",
-"Mi niña preciosa",
+"Mi princesa Natasha",
+"Te amo muchísimo",
+"Eres mi universo",
 "Mi amor eterno",
-"Mi amorcito lindo",
-"Mi cachetoncita hermosa",
-"Mi gordita preciosa",
-"Mi tesoro más valioso",
-"Te amo más que a nada",
 "Eres mi felicidad",
-"Eres mi estrella favorita",
-"Eres mi universo entero",
-"Contigo todo es mejor",
-"Eres lo mejor que me ha pasado",
-"Mi vida es más bonita contigo",
-"Eres la luz de mi vida",
-"Eres mi razón de sonreír",
-"Eres mi sueño hecho realidad",
-"Siempre quiero estar contigo",
-"Eres mi lugar favorito",
-"Mi corazón es tuyo"
+"Mi tesoro",
+"Siempre contigo",
+"Eres mi todo"
 
 ]
 
-for(let i=0;i<1000;i++){
-
-const text=frases[Math.floor(Math.random()*frases.length)]
+for(let i=0;i<250;i++){
 
 const canvas=document.createElement("canvas")
+
 const ctx=canvas.getContext("2d")
 
 canvas.width=512
 canvas.height=256
 
 ctx.fillStyle="white"
-ctx.font="36px Arial"
+ctx.font="34px Arial"
 ctx.textAlign="center"
+
+const text=frases[Math.floor(Math.random()*frases.length)]
+
 ctx.fillText(text,256,130)
 
 const tex=new THREE.CanvasTexture(canvas)
@@ -278,11 +270,11 @@ const mat=new THREE.SpriteMaterial({map:tex})
 const sprite=new THREE.Sprite(mat)
 
 const angle=Math.random()*Math.PI*2
-const radius=130+Math.random()*120
+const radius=90+Math.random()*30
 
 sprite.position.x=Math.cos(angle)*radius
 sprite.position.z=Math.sin(angle)*radius
-sprite.position.y=(Math.random()-0.5)*60
+sprite.position.y=(Math.random()-0.5)*50
 
 sprite.scale.set(14,6,1)
 
@@ -291,28 +283,52 @@ scene.add(sprite)
 }
 
 
-// ESTRELLAS FUGACES
 
-function shootingStar(){
+// ESTRELLAS CERCA DE FRASES
 
-const geo=new THREE.SphereGeometry(0.6,8,8)
+for(let i=0;i<400;i++){
+
+const geo=new THREE.SphereGeometry(0.03,6,6)
 
 const mat=new THREE.MeshBasicMaterial({color:0xffffff})
 
 const star=new THREE.Mesh(geo,mat)
 
-star.position.set(-500,Math.random()*200,-200)
+const angle=Math.random()*Math.PI*2
+const radius=95+Math.random()*35
+
+star.position.x=Math.cos(angle)*radius
+star.position.z=Math.sin(angle)*radius
+star.position.y=(Math.random()-0.5)*60
 
 scene.add(star)
 
-const speed=6
+}
+
+
+
+// ESTRELLA FUGAZ
+
+function fugaz(){
+
+const geo=new THREE.SphereGeometry(0.4,8,8)
+
+const mat=new THREE.MeshBasicMaterial({color:0xffffff})
+
+const star=new THREE.Mesh(geo,mat)
+
+star.position.set(-400,Math.random()*200,-200)
+
+scene.add(star)
+
+const speed=8
 
 function move(){
 
 star.position.x+=speed
 star.position.y-=speed*0.4
 
-if(star.position.x<500){
+if(star.position.x<400){
 
 requestAnimationFrame(move)
 
@@ -328,50 +344,52 @@ move()
 
 }
 
-setInterval(shootingStar,900)
+setInterval(fugaz,2000)
 
 
-// CORAZONES AL HACER CLICK
 
-document.addEventListener("click",()=>{
+// BRILLO EN FOTOS
 
-for(let i=0;i<20;i++){
+const raycaster=new THREE.Raycaster()
 
-const geo=new THREE.SphereGeometry(0.5,8,8)
-const mat=new THREE.MeshBasicMaterial({color:0xff3377})
+const mouse=new THREE.Vector2()
 
-const heart=new THREE.Mesh(geo,mat)
+window.addEventListener("mousemove",(event)=>{
 
-heart.position.set(
-(Math.random()-0.5)*20,
-(Math.random()-0.5)*20,
-(Math.random()-0.5)*20
-)
+mouse.x=(event.clientX/window.innerWidth)*2-1
+mouse.y=-(event.clientY/window.innerHeight)*2+1
 
-scene.add(heart)
+raycaster.setFromCamera(mouse,camera)
+
+const hit=raycaster.intersectObjects(photos)
+
+photos.forEach(p=>p.scale.set(1,1,1))
+
+if(hit.length>0){
+
+hit[0].object.scale.set(1.3,1.3,1.3)
 
 }
 
 })
 
 
-// MENSAJE
 
-document.getElementById("btn").onclick=()=>{
+// MENSAJE SECRETO
 
-alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
+window.addEventListener("dblclick",()=>{
 
-}
+alert("Natasha ❤️ este universo es para ti. Cada estrella representa lo mucho que te amo. Siempre quiero estar contigo.")
+
+})
 
 
-// ANIMACION
 
 function animate(){
 
 requestAnimationFrame(animate)
 
-stars.rotation.y+=0.00005
-heart.rotation.y+=0.003
+heartMesh.rotation.y+=0.002
 
 controls.update()
 
