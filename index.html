@@ -63,39 +63,51 @@ button{
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,10000);
-camera.position.z=90;
-const renderer=new THREE.WebGLRenderer({antialias:true});
+// Escena y cámara
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,10000);
+camera.position.z = 120;
+const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
-const controls=new THREE.OrbitControls(camera,renderer.domElement);
+const controls = new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
 
-// LUZ
-const light=new THREE.PointLight(0xffffff,2);
+// Luz
+const light = new THREE.PointLight(0xffffff,2);
 light.position.set(50,50,50);
 scene.add(light);
-const ambient=new THREE.AmbientLight(0xff66cc,0.2);
+const ambient = new THREE.AmbientLight(0xff66cc,0.2);
 scene.add(ambient);
 
-// CORAZON
-const heartShape=new THREE.Shape();
+// Fondo nebuloso
+const loader = new THREE.TextureLoader();
+const nebulaTex = loader.load("nebula.png");
+const nebulaGeo = new THREE.PlaneGeometry(800,800);
+const nebulaMat = new THREE.MeshBasicMaterial({map:nebulaTex,transparent:true,opacity:0.4});
+const nebula = new THREE.Mesh(nebulaGeo, nebulaMat);
+nebula.position.z = -300;
+scene.add(nebula);
+
+// Corazón 3D
+const heartShape = new THREE.Shape();
 heartShape.moveTo(0,0);
 heartShape.bezierCurveTo(0,0,-6,-6,-12,0);
 heartShape.bezierCurveTo(-18,6,-10,18,0,24);
 heartShape.bezierCurveTo(10,18,18,6,12,0);
 heartShape.bezierCurveTo(6,-6,0,0,0,0);
 
-const heartGeo=new THREE.ExtrudeGeometry(heartShape,{depth:4,bevelEnabled:true});
-const heartMat=new THREE.MeshStandardMaterial({color:0xff3366,emissive:0xff3366});
-const heart=new THREE.Mesh(heartGeo,heartMat);
-heart.rotation.x=Math.PI;
+const heartGeo = new THREE.ExtrudeGeometry(heartShape,{depth:4,bevelEnabled:true});
+const heartMat = new THREE.MeshStandardMaterial({color:0xff3366,emissive:0xff3366});
+const heart = new THREE.Mesh(heartGeo,heartMat);
+heart.rotation.x = Math.PI;
 heart.scale.set(2,2,2);
 scene.add(heart);
 
-// CLICK CORAZON
-const raycaster=new THREE.Raycaster();
-const mouse=new THREE.Vector2();
+// Click corazón
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 window.addEventListener("click",(event)=>{
   mouse.x=(event.clientX/window.innerWidth)*2-1;
   mouse.y=-(event.clientY/window.innerHeight)*2+1;
@@ -105,7 +117,6 @@ window.addEventListener("click",(event)=>{
     document.getElementById("login").classList.add("show");
   }
 });
-
 function verificar(){
   if(document.getElementById("clave").value==="30/10/2025"){
     document.getElementById("login").classList.remove("show");
@@ -114,34 +125,31 @@ function verificar(){
   }
 }
 
-// GALAXIA
-const starGeo=new THREE.BufferGeometry();
-const vertices=[];
+// Galaxia de estrellas
+const starGeo = new THREE.BufferGeometry();
+const vertices = [];
 for(let i=0;i<4000;i++){
-  const r=Math.random()*200;
-  const angle=r*0.1;
-  vertices.push(Math.cos(angle)*r,(Math.random()-0.5)*40,Math.sin(angle)*r);
+  const r = Math.random()*250;
+  const angle = r*0.1;
+  vertices.push(Math.cos(angle)*r,(Math.random()-0.5)*50,Math.sin(angle)*r);
 }
 starGeo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
-const starMat=new THREE.PointsMaterial({color:0xffffff,size:0.5});
-const galaxy=new THREE.Points(starGeo,starMat);
+const starMat = new THREE.PointsMaterial({color:0xffffff,size:0.5});
+const galaxy = new THREE.Points(starGeo,starMat);
 scene.add(galaxy);
 
-// PLANETAS BONITOS CON ANILLOS
+// Planetas con anillos
 function planeta(a,c){
   const geo=new THREE.SphereGeometry(6,64,64);
   const mat=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:0.4});
   const mesh=new THREE.Mesh(geo,mat);
   mesh.position.x=Math.cos(a)*60;
   mesh.position.z=Math.sin(a)*60;
-
-  // Anillo
-  const ringGeo = new THREE.RingGeometry(7, 9, 64);
-  const ringMat = new THREE.MeshBasicMaterial({color:0xff99cc, side:THREE.DoubleSide, transparent:true, opacity:0.5});
-  const ring = new THREE.Mesh(ringGeo, ringMat);
-  ring.rotation.x = Math.PI/2;
+  const ringGeo = new THREE.RingGeometry(7,9,64);
+  const ringMat = new THREE.MeshBasicMaterial({color:0xff99cc,side:THREE.DoubleSide,transparent:true,opacity:0.5});
+  const ring = new THREE.Mesh(ringGeo,ringMat);
+  ring.rotation.x=Math.PI/2;
   mesh.add(ring);
-
   scene.add(mesh);
 }
 planeta(0,0x4da6ff);
@@ -149,25 +157,24 @@ planeta(Math.PI/2,0xff66cc);
 planeta(Math.PI,0xffcc66);
 planeta(Math.PI*1.5,0x66ffcc);
 
-// FOTOS ORBITANDO
-const loader=new THREE.TextureLoader();
+// Fotos orbitando
 function foto(a,i){
-  const tex=loader.load("foto"+i+".jpg");
-  const geo=new THREE.PlaneGeometry(16,16);
-  const mat=new THREE.MeshBasicMaterial({map:tex});
-  const mesh=new THREE.Mesh(geo,mat);
+  const tex = loader.load("foto"+i+".jpg");
+  const geo = new THREE.PlaneGeometry(16,16);
+  const mat = new THREE.MeshBasicMaterial({map:tex});
+  const mesh = new THREE.Mesh(geo,mat);
   mesh.userData.angle = a;
   mesh.position.x=Math.cos(a)*40;
   mesh.position.z=Math.sin(a)*40;
   scene.add(mesh);
 }
-for(let i=1;i<=5;i++){ foto(i*Math.PI*2/5,i); }
+for(let i=1;i<=5;i++) foto(i*Math.PI*2/5,i);
 
-// PELUCHES 3D ORBITANDO
-const gltfLoader=new THREE.GLTFLoader();
+// Peluches 3D orbitando
+const gltfLoader = new THREE.GLTFLoader();
 function teddy(angle){
   gltfLoader.load("teddy.glb",function(gltf){
-    const model=gltf.scene;
+    const model = gltf.scene;
     model.scale.set(8,8,8);
     model.userData.angle = angle;
     model.position.x=Math.cos(angle)*50;
@@ -175,21 +182,18 @@ function teddy(angle){
     scene.add(model);
   });
 }
-teddy(0);
-teddy(Math.PI/2);
-teddy(Math.PI);
-teddy(Math.PI*1.5);
+teddy(0); teddy(Math.PI/2); teddy(Math.PI); teddy(Math.PI*1.5);
 
-// ESTRELLAS FUGACES
+// Estrellas fugaces
 function fugaz(){
-  const geo=new THREE.SphereGeometry(0.4);
-  const mat=new THREE.MeshBasicMaterial({color:0xffffff});
-  const star=new THREE.Mesh(geo,mat);
+  const geo = new THREE.SphereGeometry(0.4);
+  const mat = new THREE.MeshBasicMaterial({color:0xffffff});
+  const star = new THREE.Mesh(geo,mat);
   star.position.set(-400,Math.random()*200,-200);
   scene.add(star);
   function move(){
-    star.position.x+=8;
-    star.position.y-=3;
+    star.position.x +=8;
+    star.position.y -=3;
     if(star.position.x<400) requestAnimationFrame(move);
     else scene.remove(star);
   }
@@ -197,11 +201,11 @@ function fugaz(){
 }
 setInterval(fugaz,2000);
 
-// CORAZON PULSANTE Y PARTICULAS
+// Corazón pulsante y partículas
 function spark(){
   const geo = new THREE.SphereGeometry(0.2);
   const mat = new THREE.MeshBasicMaterial({color:0xff66cc});
-  const p = new THREE.Mesh(geo, mat);
+  const p = new THREE.Mesh(geo,mat);
   p.position.copy(heart.position);
   p.position.x += (Math.random()-0.5)*2;
   p.position.y += (Math.random()-0.5)*2;
@@ -212,7 +216,7 @@ function spark(){
     p.position.x += speed.x;
     p.position.y += speed.y;
     p.position.z += speed.z;
-    p.material.opacity = (p.material.opacity||1) -0.02;
+    p.material.opacity = (p.material.opacity||1)-0.02;
     if(p.material.opacity>0) requestAnimationFrame(move);
     else scene.remove(p);
   }
@@ -220,33 +224,23 @@ function spark(){
 }
 setInterval(spark,200);
 
-// ANIMACION
+// Animación principal
 function animate(){
   requestAnimationFrame(animate);
-  
-  galaxy.rotation.y+=0.0007;
-  heart.rotation.y+=0.01;
-  heart.scale.set(
-    2 + 0.1*Math.sin(Date.now()*0.005),
-    2 + 0.1*Math.sin(Date.now()*0.005),
-    2 + 0.1*Math.sin(Date.now()*0.005)
-  );
-  
-  // Fotos orbitando
+  galaxy.rotation.y += 0.0007;
+  heart.rotation.y += 0.01;
+  heart.scale.set(2+0.1*Math.sin(Date.now()*0.005),2+0.1*Math.sin(Date.now()*0.005),2+0.1*Math.sin(Date.now()*0.005));
   scene.traverse(obj=>{
     if(obj.userData.angle!==undefined){
       const radius = obj.geometry ? 40 : 50;
-      obj.userData.angle += 0.001;
-      obj.position.x = Math.cos(obj.userData.angle)*radius;
-      obj.position.z = Math.sin(obj.userData.angle)*radius;
+      obj.userData.angle +=0.001;
+      obj.position.x=Math.cos(obj.userData.angle)*radius;
+      obj.position.z=Math.sin(obj.userData.angle)*radius;
     }
   });
-  
-  // Camara suave girando
-  camera.position.x = Math.sin(Date.now()*0.0002)*100;
-  camera.position.z = Math.cos(Date.now()*0.0002)*100;
+  camera.position.x = Math.sin(Date.now()*0.0002)*120;
+  camera.position.z = Math.cos(Date.now()*0.0002)*120;
   camera.lookAt(0,0,0);
-  
   renderer.render(scene,camera);
 }
 animate();
