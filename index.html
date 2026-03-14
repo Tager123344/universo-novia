@@ -60,10 +60,11 @@ button{
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/FontLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/geometries/TextGeometry.js"></script>
 
 <script>
-// Escena y cámara
+// ESCENA Y CAMARA ESTABLE
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,10000);
 camera.position.z = 120;
@@ -73,24 +74,17 @@ document.body.appendChild(renderer.domElement);
 const controls = new THREE.OrbitControls(camera,renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+controls.enableZoom = true;
+controls.enablePan = true;
 
-// Luz
+// LUZ
 const light = new THREE.PointLight(0xffffff,2);
 light.position.set(50,50,50);
 scene.add(light);
 const ambient = new THREE.AmbientLight(0xff66cc,0.2);
 scene.add(ambient);
 
-// Fondo nebuloso
-const loader = new THREE.TextureLoader();
-const nebulaTex = loader.load("nebula.png");
-const nebulaGeo = new THREE.PlaneGeometry(800,800);
-const nebulaMat = new THREE.MeshBasicMaterial({map:nebulaTex,transparent:true,opacity:0.4});
-const nebula = new THREE.Mesh(nebulaGeo, nebulaMat);
-nebula.position.z = -300;
-scene.add(nebula);
-
-// Corazón 3D
+// CORAZON PULSANTE CON PARTICULAS
 const heartShape = new THREE.Shape();
 heartShape.moveTo(0,0);
 heartShape.bezierCurveTo(0,0,-6,-6,-12,0);
@@ -105,7 +99,30 @@ heart.rotation.x = Math.PI;
 heart.scale.set(2,2,2);
 scene.add(heart);
 
-// Click corazón
+// PARTICULAS DEL CORAZON
+function heartParticles(){
+  const geo = new THREE.SphereGeometry(0.2);
+  const mat = new THREE.MeshBasicMaterial({color:0xff99cc});
+  const p = new THREE.Mesh(geo, mat);
+  p.position.copy(heart.position);
+  p.position.x += (Math.random()-0.5)*3;
+  p.position.y += (Math.random()-0.5)*3;
+  p.position.z += (Math.random()-0.5)*3;
+  scene.add(p);
+  const speed = {x:(Math.random()-0.5)*0.2, y:(Math.random()-0.5)*0.2, z:(Math.random()-0.5)*0.2};
+  function move(){
+    p.position.x += speed.x;
+    p.position.y += speed.y;
+    p.position.z += speed.z;
+    p.material.opacity = (p.material.opacity||1)-0.01;
+    if(p.material.opacity>0) requestAnimationFrame(move);
+    else scene.remove(p);
+  }
+  move();
+}
+setInterval(heartParticles,150);
+
+// CLICK CORAZON
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 window.addEventListener("click",(event)=>{
@@ -125,122 +142,80 @@ function verificar(){
   }
 }
 
-// Galaxia de estrellas
+// ESTRELLAS ESPACIADAS ALEATORIAMENTE
 const starGeo = new THREE.BufferGeometry();
 const vertices = [];
 for(let i=0;i<4000;i++){
-  const r = Math.random()*250;
-  const angle = r*0.1;
-  vertices.push(Math.cos(angle)*r,(Math.random()-0.5)*50,Math.sin(angle)*r);
+  vertices.push(
+    (Math.random()-0.5)*800,
+    (Math.random()-0.5)*600,
+    (Math.random()-0.5)*800
+  );
 }
-starGeo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices,3));
 const starMat = new THREE.PointsMaterial({color:0xffffff,size:0.5});
 const galaxy = new THREE.Points(starGeo,starMat);
 scene.add(galaxy);
 
-// Planetas con anillos
-function planeta(a,c){
-  const geo=new THREE.SphereGeometry(6,64,64);
-  const mat=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:0.4});
-  const mesh=new THREE.Mesh(geo,mat);
-  mesh.position.x=Math.cos(a)*60;
-  mesh.position.z=Math.sin(a)*60;
-  const ringGeo = new THREE.RingGeometry(7,9,64);
-  const ringMat = new THREE.MeshBasicMaterial({color:0xff99cc,side:THREE.DoubleSide,transparent:true,opacity:0.5});
-  const ring = new THREE.Mesh(ringGeo,ringMat);
-  ring.rotation.x=Math.PI/2;
-  mesh.add(ring);
-  scene.add(mesh);
-}
-planeta(0,0x4da6ff);
-planeta(Math.PI/2,0xff66cc);
-planeta(Math.PI,0xffcc66);
-planeta(Math.PI*1.5,0x66ffcc);
+// PLANETAS CON TEXTURA Y PARTICULAS
+function planeta(a, textureURL, radius=6, orbitRadius=60){
+  const loader = new THREE.TextureLoader();
+  loader.load(textureURL,function(tex){
+    const geo = new THREE.SphereGeometry(radius,64,64);
+    const mat = new THREE.MeshStandardMaterial({map:tex,emissive:0x222222,emissiveIntensity:0.2});
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.x = Math.cos(a)*orbitRadius;
+    mesh.position.z = Math.sin(a)*orbitRadius;
 
-// Fotos orbitando
-function foto(a,i){
-  const tex = loader.load("foto"+i+".jpg");
-  const geo = new THREE.PlaneGeometry(16,16);
-  const mat = new THREE.MeshBasicMaterial({map:tex});
-  const mesh = new THREE.Mesh(geo,mat);
-  mesh.userData.angle = a;
-  mesh.position.x=Math.cos(a)*40;
-  mesh.position.z=Math.sin(a)*40;
-  scene.add(mesh);
-}
-for(let i=1;i<=5;i++) foto(i*Math.PI*2/5,i);
+    // anillo
+    const ringGeo = new THREE.RingGeometry(radius+1,radius+2,64);
+    const ringMat = new THREE.MeshBasicMaterial({color:0xff99cc,side:THREE.DoubleSide,transparent:true,opacity:0.5});
+    const ring = new THREE.Mesh(ringGeo,ringMat);
+    ring.rotation.x = Math.PI/2;
+    mesh.add(ring);
 
-// Peluches 3D orbitando
-const gltfLoader = new THREE.GLTFLoader();
-function teddy(angle){
-  gltfLoader.load("teddy.glb",function(gltf){
-    const model = gltf.scene;
-    model.scale.set(8,8,8);
-    model.userData.angle = angle;
-    model.position.x=Math.cos(angle)*50;
-    model.position.z=Math.sin(angle)*50;
-    scene.add(model);
+    // particulas alrededor del planeta
+    const particleGeo = new THREE.BufferGeometry();
+    const particleVertices = [];
+    for(let i=0;i<50;i++){
+      const angle = Math.random()*Math.PI*2;
+      const dist = radius+Math.random()*3;
+      particleVertices.push(Math.cos(angle)*dist,Math.random()*2,Math.sin(angle)*dist);
+    }
+    particleGeo.setAttribute('position',new THREE.Float32BufferAttribute(particleVertices,3));
+    const particleMat = new THREE.PointsMaterial({color:0xff99cc,size:0.2});
+    const particles = new THREE.Points(particleGeo,particleMat);
+    mesh.add(particles);
+
+    scene.add(mesh);
   });
 }
-teddy(0); teddy(Math.PI/2); teddy(Math.PI); teddy(Math.PI*1.5);
+planeta(0,"planet1.jpg");
+planeta(Math.PI/2,"planet2.jpg");
+planeta(Math.PI,"planet3.jpg");
+planeta(Math.PI*1.5,"planet4.jpg");
 
-// Estrellas fugaces
-function fugaz(){
-  const geo = new THREE.SphereGeometry(0.4);
-  const mat = new THREE.MeshBasicMaterial({color:0xffffff});
-  const star = new THREE.Mesh(geo,mat);
-  star.position.set(-400,Math.random()*200,-200);
-  scene.add(star);
-  function move(){
-    star.position.x +=8;
-    star.position.y -=3;
-    if(star.position.x<400) requestAnimationFrame(move);
-    else scene.remove(star);
-  }
-  move();
-}
-setInterval(fugaz,2000);
+// FRASES BONITAS CON EMOJIS
+const frases = [
+  "Mi princesa 👸💖","Mi niña hermosa 🌸","Te amo mucho ❤️","Mi amorcito 💕",
+  "Mi cachetoncita 😚","Mi gordita 🥰","Mi tesoro 💎","Eres mi felicidad 😊💖","Eres mi todo 🌟❤️"
+];
+const fontLoader = new THREE.FontLoader();
+fontLoader.load("https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",function(font){
+  frases.forEach((f)=>{
+    const geo = new THREE.TextGeometry(f,{font:font,size:3,height:0.5});
+    const mat = new THREE.MeshBasicMaterial({color:0xff99cc});
+    const mesh = new THREE.Mesh(geo,mat);
+    mesh.position.set((Math.random()-0.5)*200,(Math.random()-0.5)*100,(Math.random()-0.5)*200);
+    scene.add(mesh);
+  });
+});
 
-// Corazón pulsante y partículas
-function spark(){
-  const geo = new THREE.SphereGeometry(0.2);
-  const mat = new THREE.MeshBasicMaterial({color:0xff66cc});
-  const p = new THREE.Mesh(geo,mat);
-  p.position.copy(heart.position);
-  p.position.x += (Math.random()-0.5)*2;
-  p.position.y += (Math.random()-0.5)*2;
-  p.position.z += (Math.random()-0.5)*2;
-  scene.add(p);
-  const speed = {x:(Math.random()-0.5)*0.5, y:Math.random()*0.5, z:(Math.random()-0.5)*0.5};
-  function move(){
-    p.position.x += speed.x;
-    p.position.y += speed.y;
-    p.position.z += speed.z;
-    p.material.opacity = (p.material.opacity||1)-0.02;
-    if(p.material.opacity>0) requestAnimationFrame(move);
-    else scene.remove(p);
-  }
-  move();
-}
-setInterval(spark,200);
-
-// Animación principal
+// ANIMACION PRINCIPAL
 function animate(){
   requestAnimationFrame(animate);
-  galaxy.rotation.y += 0.0007;
   heart.rotation.y += 0.01;
   heart.scale.set(2+0.1*Math.sin(Date.now()*0.005),2+0.1*Math.sin(Date.now()*0.005),2+0.1*Math.sin(Date.now()*0.005));
-  scene.traverse(obj=>{
-    if(obj.userData.angle!==undefined){
-      const radius = obj.geometry ? 40 : 50;
-      obj.userData.angle +=0.001;
-      obj.position.x=Math.cos(obj.userData.angle)*radius;
-      obj.position.z=Math.sin(obj.userData.angle)*radius;
-    }
-  });
-  camera.position.x = Math.sin(Date.now()*0.0002)*120;
-  camera.position.z = Math.cos(Date.now()*0.0002)*120;
-  camera.lookAt(0,0,0);
   renderer.render(scene,camera);
 }
 animate();
