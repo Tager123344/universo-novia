@@ -91,7 +91,6 @@ heartShape.bezierCurveTo(0,0,-6,-6,-12,0);
 heartShape.bezierCurveTo(-18,6,-10,18,0,24);
 heartShape.bezierCurveTo(10,18,18,6,12,0);
 heartShape.bezierCurveTo(6,-6,0,0,0,0);
-
 const heartGeo = new THREE.ExtrudeGeometry(heartShape,{depth:4,bevelEnabled:true});
 const heartMat = new THREE.MeshStandardMaterial({color:0xff3366,emissive:0xff3366});
 const heart = new THREE.Mesh(heartGeo,heartMat);
@@ -142,7 +141,7 @@ function verificar(){
   }
 }
 
-// ESTRELLAS ESPACIADAS ALEATORIAMENTE
+// ESTRELLAS ALEATORIAS
 const starGeo = new THREE.BufferGeometry();
 const vertices = [];
 for(let i=0;i<4000;i++){
@@ -157,7 +156,7 @@ const starMat = new THREE.PointsMaterial({color:0xffffff,size:0.5});
 const galaxy = new THREE.Points(starGeo,starMat);
 scene.add(galaxy);
 
-// PLANETAS CON TEXTURA Y PARTICULAS
+// PLANETAS CON ANILLOS Y PARTICULAS
 function planeta(a, textureURL, radius=6, orbitRadius=60){
   const loader = new THREE.TextureLoader();
   loader.load(textureURL,function(tex){
@@ -195,20 +194,34 @@ planeta(Math.PI/2,"planet2.jpg");
 planeta(Math.PI,"planet3.jpg");
 planeta(Math.PI*1.5,"planet4.jpg");
 
-// FRASES BONITAS CON EMOJIS
+// FOTOS ORBITANDO
+function foto(a,i){
+  const tex = new THREE.TextureLoader().load("foto"+i+".jpg");
+  const geo = new THREE.PlaneGeometry(16,16);
+  const mat = new THREE.MeshBasicMaterial({map:tex});
+  const mesh = new THREE.Mesh(geo,mat);
+  mesh.userData.angle = a;
+  mesh.position.x = Math.cos(a)*40;
+  mesh.position.z = Math.sin(a)*40;
+  scene.add(mesh);
+}
+for(let i=1;i<=5;i++) foto(i*Math.PI*2/5,i);
+
+// FRASES BONITAS + EMOJIS
 const frases = [
   "Mi princesa 👸💖","Mi niña hermosa 🌸","Te amo mucho ❤️","Mi amorcito 💕",
   "Mi cachetoncita 😚","Mi gordita 🥰","Mi tesoro 💎","Eres mi felicidad 😊💖","Eres mi todo 🌟❤️"
 ];
 const fontLoader = new THREE.FontLoader();
 fontLoader.load("https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",function(font){
-  frases.forEach((f)=>{
-    const geo = new THREE.TextGeometry(f,{font:font,size:3,height:0.5});
+  for(let j=0;j<1000;j++){
+    const f = frases[Math.floor(Math.random()*frases.length)];
+    const geo = new THREE.TextGeometry(f,{font:font,size:2.5,height:0.3});
     const mat = new THREE.MeshBasicMaterial({color:0xff99cc});
     const mesh = new THREE.Mesh(geo,mat);
-    mesh.position.set((Math.random()-0.5)*200,(Math.random()-0.5)*100,(Math.random()-0.5)*200);
+    mesh.position.set((Math.random()-0.5)*800,(Math.random()-0.5)*400,(Math.random()-0.5)*800);
     scene.add(mesh);
-  });
+  }
 });
 
 // ANIMACION PRINCIPAL
@@ -216,6 +229,17 @@ function animate(){
   requestAnimationFrame(animate);
   heart.rotation.y += 0.01;
   heart.scale.set(2+0.1*Math.sin(Date.now()*0.005),2+0.1*Math.sin(Date.now()*0.005),2+0.1*Math.sin(Date.now()*0.005));
+
+  // Fotos orbitando
+  scene.traverse(obj=>{
+    if(obj.userData.angle!==undefined){
+      const radius = 40;
+      obj.userData.angle += 0.002;
+      obj.position.x = Math.cos(obj.userData.angle)*radius;
+      obj.position.z = Math.sin(obj.userData.angle)*radius;
+    }
+  });
+
   renderer.render(scene,camera);
 }
 animate();
