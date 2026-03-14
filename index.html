@@ -10,19 +10,33 @@
 body{
 margin:0;
 overflow:hidden;
-background:radial-gradient(circle,#050010,#000000);
+background:black;
 font-family:sans-serif;
-color:white;
 }
 
 #titulo{
 position:absolute;
-top:40px;
+top:30px;
 width:100%;
 text-align:center;
-font-size:40px;
+font-size:42px;
 color:#ff77aa;
-text-shadow:0 0 20px #ff77aa;
+text-shadow:0 0 30px #ff77aa;
+}
+
+#btn{
+position:absolute;
+bottom:30px;
+left:50%;
+transform:translateX(-50%);
+padding:14px 25px;
+background:#ff2a8b;
+border:none;
+border-radius:20px;
+color:white;
+font-size:18px;
+cursor:pointer;
+box-shadow:0 0 20px #ff2a8b;
 }
 
 </style>
@@ -33,9 +47,13 @@ text-shadow:0 0 20px #ff77aa;
 
 <div id="titulo">💖 Eres mi universo 💖</div>
 
+<button id="btn">💌 Mensaje secreto</button>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
+
+// escena
 
 const scene=new THREE.Scene()
 
@@ -43,26 +61,27 @@ const camera=new THREE.PerspectiveCamera(
 75,
 window.innerWidth/window.innerHeight,
 0.1,
-2000
+5000
 )
+
+camera.position.z=60
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
-camera.position.z=25
 
-// estrellas
+// MUCHAS estrellas
 
 const starGeo=new THREE.BufferGeometry()
 const starVertices=[]
 
-for(let i=0;i<10000;i++){
+for(let i=0;i<20000;i++){
 
 starVertices.push(
-(Math.random()-0.5)*2000,
-(Math.random()-0.5)*2000,
-(Math.random()-0.5)*2000
+(Math.random()-0.5)*4000,
+(Math.random()-0.5)*4000,
+(Math.random()-0.5)*4000
 )
 
 }
@@ -74,44 +93,35 @@ new THREE.Float32BufferAttribute(starVertices,3)
 
 const starMat=new THREE.PointsMaterial({
 color:0xffffff,
-size:1.2
+size:1.5
 })
 
 const stars=new THREE.Points(starGeo,starMat)
+
 scene.add(stars)
+
 
 // luz
 
-const light=new THREE.PointLight(0xffffff,2)
-light.position.set(20,20,20)
+const light=new THREE.PointLight(0xffffff,3)
+
+light.position.set(50,50,50)
+
 scene.add(light)
 
-// planeta central brillante
 
-const centerGeo=new THREE.SphereGeometry(4,64,64)
-const centerMat=new THREE.MeshStandardMaterial({
-color:0xff2a8b,
-emissive:0xff2a8b,
-emissiveIntensity:1
-})
-
-const center=new THREE.Mesh(centerGeo,centerMat)
-scene.add(center)
-
-// cargar fotos
-
-const loader=new THREE.TextureLoader()
+// planetas brillantes
 
 const planets=[]
 
-function createPhotoPlanet(radius,image){
+function createPlanet(radius,color,size){
 
-const texture=loader.load(image)
+const geo=new THREE.SphereGeometry(size,64,64)
 
-const geo=new THREE.SphereGeometry(1.5,32,32)
-
-const mat=new THREE.MeshBasicMaterial({
-map:texture
+const mat=new THREE.MeshStandardMaterial({
+color:color,
+emissive:color,
+emissiveIntensity:1
 })
 
 const mesh=new THREE.Mesh(geo,mat)
@@ -122,38 +132,77 @@ planets.push({
 mesh,
 radius,
 angle:Math.random()*Math.PI*2,
-speed:0.004
+speed:0.001+Math.random()*0.002
 })
 
 }
 
-createPhotoPlanet(10,"foto1.jpg")
-createPhotoPlanet(16,"foto2.jpg")
+createPlanet(20,0xff77aa,3)
+createPlanet(35,0x77aaff,2)
+createPlanet(50,0xffaa00,2.5)
+createPlanet(70,0xff33aa,4)
+createPlanet(90,0x44ffaa,3)
+createPlanet(110,0xaa44ff,2)
 
-// palabras románticas
 
-const words=[
+// fotos flotando
+
+const loader=new THREE.TextureLoader()
+
+function createPhoto(x,y,z,image){
+
+const texture=loader.load(image)
+
+const geo=new THREE.PlaneGeometry(10,10)
+
+const mat=new THREE.MeshBasicMaterial({
+map:texture,
+transparent:true
+})
+
+const mesh=new THREE.Mesh(geo,mat)
+
+mesh.position.set(x,y,z)
+
+scene.add(mesh)
+
+}
+
+createPhoto(-30,20,-20,"foto1.jpg")
+createPhoto(40,-10,-30,"foto2.jpg")
+createPhoto(-50,-20,-50,"foto3.jpg")
+createPhoto(20,40,-60,"foto4.jpg")
+createPhoto(-20,-40,-40,"foto5.jpg")
+
+
+// frases románticas
+
+const frases=[
 "Mi princesa",
 "Mi niña hermosa",
-"Te amo mucho",
 "Mi amorcito",
-"Mi cachetoncita",
+"Te amo mucho",
 "Mi gordita",
-"Mi tesoro"
+"Mi cachetoncita",
+"Mi tesoro",
+"Eres mi felicidad",
+"Eres mi estrella",
+"Eres mi todo",
+"Contigo todo es más bonito"
 ]
 
 const texts=[]
 
-function createWord(text,radius){
+function createText(text,radius){
 
 const canvas=document.createElement("canvas")
 const ctx=canvas.getContext("2d")
 
-canvas.width=512
+canvas.width=1024
 canvas.height=256
 
 ctx.fillStyle="white"
-ctx.font="40px Arial"
+ctx.font="60px Arial"
 ctx.fillText(text,50,120)
 
 const texture=new THREE.CanvasTexture(canvas)
@@ -162,7 +211,7 @@ const material=new THREE.SpriteMaterial({map:texture})
 
 const sprite=new THREE.Sprite(material)
 
-sprite.scale.set(6,3,1)
+sprite.scale.set(20,6,1)
 
 scene.add(sprite)
 
@@ -170,22 +219,41 @@ texts.push({
 sprite,
 radius,
 angle:Math.random()*Math.PI*2,
-speed:0.002
+speed:0.001
 })
 
 }
 
-words.forEach((w,i)=>{
-createWord(w,20+i*2)
+frases.forEach((f,i)=>{
+createText(f,140+i*10)
 })
 
-// zoom con rueda del mouse
+
+// zoom
 
 document.addEventListener("wheel",e=>{
+camera.position.z+=e.deltaY*0.05
+})
 
-camera.position.z+=e.deltaY*0.01
+
+// mover cámara
+
+document.addEventListener("mousemove",e=>{
+
+camera.position.x=(e.clientX/window.innerWidth-0.5)*40
+camera.position.y=-(e.clientY/window.innerHeight-0.5)*40
 
 })
+
+
+// botón secreto
+
+document.getElementById("btn").onclick=()=>{
+
+alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
+
+}
+
 
 // animación
 
@@ -193,9 +261,7 @@ function animate(){
 
 requestAnimationFrame(animate)
 
-center.rotation.y+=0.01
-
-stars.rotation.y+=0.0003
+stars.rotation.y+=0.0002
 
 planets.forEach(p=>{
 
