@@ -14,14 +14,14 @@ background:black;
 font-family:sans-serif;
 }
 
-#mensaje{
+#titulo{
 position:absolute;
 top:30px;
 width:100%;
 text-align:center;
-font-size:40px;
-color:#ff66aa;
-text-shadow:0 0 20px #ff66aa;
+font-size:42px;
+color:#ff77aa;
+text-shadow:0 0 40px #ff77aa;
 }
 
 #btn{
@@ -29,14 +29,14 @@ position:absolute;
 bottom:30px;
 left:50%;
 transform:translateX(-50%);
-padding:12px 25px;
-font-size:18px;
+padding:14px 25px;
 background:#ff2a8b;
 border:none;
-border-radius:20px;
+border-radius:25px;
 color:white;
+font-size:18px;
 cursor:pointer;
-box-shadow:0 0 15px #ff2a8b;
+box-shadow:0 0 20px #ff2a8b;
 }
 
 </style>
@@ -45,7 +45,7 @@ box-shadow:0 0 15px #ff2a8b;
 
 <body>
 
-<div id="mensaje">💖 Eres mi universo 💖</div>
+<div id="titulo">💖 Nuestro universo infinito 💖</div>
 
 <button id="btn">💌 Mensaje secreto</button>
 
@@ -58,37 +58,47 @@ box-shadow:0 0 15px #ff2a8b;
 
 <script>
 
+// escena
+
 const scene=new THREE.Scene()
 
 const camera=new THREE.PerspectiveCamera(
 75,
 window.innerWidth/window.innerHeight,
 0.1,
-2000
+5000
 )
 
-camera.position.z=30
+camera.position.z=25
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
+
 renderer.setSize(window.innerWidth,window.innerHeight)
+
 document.body.appendChild(renderer.domElement)
+
+
+// controles 360
 
 const controls=new THREE.OrbitControls(camera,renderer.domElement)
 
 controls.enableDamping=true
 controls.dampingFactor=0.05
+controls.rotateSpeed=0.6
+controls.zoomSpeed=0.8
+
 
 // estrellas
 
 const starGeo=new THREE.BufferGeometry()
 const starVertices=[]
 
-for(let i=0;i<15000;i++){
+for(let i=0;i<25000;i++){
 
 starVertices.push(
-(Math.random()-0.5)*2000,
-(Math.random()-0.5)*2000,
-(Math.random()-0.5)*2000
+(Math.random()-0.5)*3000,
+(Math.random()-0.5)*3000,
+(Math.random()-0.5)*3000
 )
 
 }
@@ -100,48 +110,108 @@ new THREE.Float32BufferAttribute(starVertices,3)
 
 const starMat=new THREE.PointsMaterial({
 color:0xffffff,
-size:1.2
+size:1.3
 })
 
 const stars=new THREE.Points(starGeo,starMat)
 
 scene.add(stars)
 
+
+// nebulosa
+
+const nebulaGeo=new THREE.SphereGeometry(300,64,64)
+
+const nebulaMat=new THREE.MeshBasicMaterial({
+color:0x7722ff,
+transparent:true,
+opacity:0.08,
+side:THREE.BackSide
+})
+
+const nebula=new THREE.Mesh(nebulaGeo,nebulaMat)
+
+scene.add(nebula)
+
+
+// luz
+
+const light=new THREE.PointLight(0xffffff,2)
+
+light.position.set(50,50,50)
+
+scene.add(light)
+
+
+// planetas con anillos
+
+function createPlanet(x,y,z,color){
+
+const geo=new THREE.SphereGeometry(2.5,64,64)
+
+const mat=new THREE.MeshStandardMaterial({
+color:color,
+emissive:color,
+emissiveIntensity:0.8
+})
+
+const planet=new THREE.Mesh(geo,mat)
+
+planet.position.set(x,y,z)
+
+scene.add(planet)
+
+const ringGeo=new THREE.RingGeometry(3.5,5,64)
+
+const ringMat=new THREE.MeshBasicMaterial({
+color:0xffffff,
+side:THREE.DoubleSide
+})
+
+const ring=new THREE.Mesh(ringGeo,ringMat)
+
+ring.rotation.x=Math.PI/2
+
+planet.add(ring)
+
+}
+
+createPlanet(8,0,-10,0xff77aa)
+createPlanet(-10,5,-15,0x77aaff)
+createPlanet(12,-8,-20,0xffaa00)
+createPlanet(-14,-6,-18,0xaa44ff)
+
+
 // corazones
 
 const hearts=[]
 
-function createHeart(){
+for(let i=0;i<200;i++){
 
 const geo=new THREE.SphereGeometry(0.4,8,8)
 
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66aa
-})
+const mat=new THREE.MeshBasicMaterial({color:0xff66aa})
 
-const mesh=new THREE.Mesh(geo,mat)
+const heart=new THREE.Mesh(geo,mat)
 
-mesh.position.set(
+heart.position.set(
 (Math.random()-0.5)*80,
 (Math.random()-0.5)*80,
 (Math.random()-0.5)*80
 )
 
-scene.add(mesh)
+scene.add(heart)
 
-hearts.push(mesh)
+hearts.push(heart)
 
 }
 
-for(let i=0;i<200;i++){
-createHeart()
-}
 
-// fotos flotando
+// fotos
 
 const loader=new THREE.TextureLoader()
 
-function foto(x,y,z,img){
+function photo(x,y,z,img){
 
 const tex=loader.load(img)
 
@@ -160,11 +230,12 @@ scene.add(mesh)
 
 }
 
-foto(-10,5,-10,"foto1.jpg")
-foto(12,-5,-15,"foto2.jpg")
-foto(-15,-8,-20,"foto3.jpg")
-foto(8,15,-18,"foto4.jpg")
-foto(-5,-15,-12,"foto5.jpg")
+photo(-6,8,-12,"foto1.jpg")
+photo(10,-4,-15,"foto2.jpg")
+photo(-12,-8,-20,"foto3.jpg")
+photo(6,12,-18,"foto4.jpg")
+photo(-4,-12,-14,"foto5.jpg")
+
 
 // frases
 
@@ -177,12 +248,11 @@ const frases=[
 "Mi gordita",
 "Mi tesoro",
 "Eres mi felicidad",
-"Eres mi todo"
+"Eres mi universo",
+"Contigo todo es mejor"
 ]
 
-const textos=[]
-
-function texto(t){
+frases.forEach((f,i)=>{
 
 const canvas=document.createElement("canvas")
 const ctx=canvas.getContext("2d")
@@ -192,7 +262,7 @@ canvas.height=256
 
 ctx.fillStyle="white"
 ctx.font="50px Arial"
-ctx.fillText(t,40,120)
+ctx.fillText(f,40,120)
 
 const tex=new THREE.CanvasTexture(canvas)
 
@@ -210,19 +280,57 @@ sprite.scale.set(12,5,1)
 
 scene.add(sprite)
 
-textos.push(sprite)
+})
+
+
+// estrellas fugaces
+
+function shootingStar(){
+
+const geo=new THREE.SphereGeometry(0.5,8,8)
+
+const mat=new THREE.MeshBasicMaterial({color:0xffffff})
+
+const star=new THREE.Mesh(geo,mat)
+
+star.position.set(-100,Math.random()*50,-50)
+
+scene.add(star)
+
+const speed=1+Math.random()
+
+function move(){
+
+star.position.x+=speed
+star.position.y-=speed*0.2
+
+if(star.position.x<100){
+
+requestAnimationFrame(move)
+
+}else{
+
+scene.remove(star)
 
 }
 
-frases.forEach(f=>texto(f))
+}
 
-// botón
+move()
+
+}
+
+setInterval(shootingStar,3000)
+
+
+// mensaje
 
 document.getElementById("btn").onclick=()=>{
 
 alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
 
 }
+
 
 // animación
 
