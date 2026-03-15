@@ -18,37 +18,22 @@ position:absolute;
 top:20px;
 width:100%;
 text-align:center;
-font-size:38px;
+font-size:36px;
 color:#ff7ab6;
 text-shadow:0 0 20px #ff7ab6;
 }
 
-#btn{
+#musicBtn{
 position:absolute;
-bottom:30px;
+bottom:40px;
 left:50%;
 transform:translateX(-50%);
 padding:14px 28px;
 border:none;
 border-radius:25px;
-background:#ff2e8b;
-color:white;
-font-size:18px;
-cursor:pointer;
-box-shadow:0 0 20px #ff2e8b;
-}
-
-#musicBtn{
-position:absolute;
-bottom:90px;
-left:50%;
-transform:translateX(-50%);
-padding:12px 24px;
-border:none;
-border-radius:20px;
 background:#aa44ff;
 color:white;
-font-size:16px;
+font-size:18px;
 cursor:pointer;
 box-shadow:0 0 20px #aa44ff;
 }
@@ -69,19 +54,33 @@ text-align:center;
 max-width:500px;
 }
 
+#cerrar{
+margin-top:20px;
+padding:10px 20px;
+border:none;
+border-radius:20px;
+background:#ff2e8b;
+color:white;
+cursor:pointer;
+}
+
 </style>
 </head>
 
 <body>
 
-<div id="titulo">💖 Nuestro universo 💖</div>
+<div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
 
 <button id="musicBtn">🎵 Activar música</button>
-<button id="btn">💌 Mensaje secreto</button>
 
 <div id="mensaje">
-Mi amor, desde que llegaste a mi vida todo es más bonito.<br><br>
-Eres mi universo y siempre quiero estar contigo ❤️
+
+<div id="mensajeContenido"></div>
+
+<br>
+
+<button id="cerrar">Cerrar</button>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -98,7 +97,7 @@ window.innerWidth/window.innerHeight,
 10000
 )
 
-camera.position.z=85
+camera.position.z=90
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
@@ -111,7 +110,7 @@ controls.enableDamping=true
 
 // LUZ
 
-const light=new THREE.PointLight(0xffffff,1.4)
+const light=new THREE.PointLight(0xffffff,1.5)
 light.position.set(50,50,50)
 scene.add(light)
 
@@ -148,6 +147,50 @@ size:0.7
 
 const galaxy=new THREE.Points(galaxyGeo,galaxyMat)
 scene.add(galaxy)
+
+
+
+// NEBULOSA ROSA
+
+const nebulaGeo=new THREE.BufferGeometry()
+const nebulaVertices=[]
+const nebulaColors=[]
+
+for(let i=0;i<8000;i++){
+
+const x=(Math.random()-0.5)*600
+const y=(Math.random()-0.5)*300
+const z=(Math.random()-0.5)*600
+
+nebulaVertices.push(x,y,z)
+
+const color=new THREE.Color()
+color.setHSL(0.9+Math.random()*0.05,0.7,0.6)
+
+nebulaColors.push(color.r,color.g,color.b)
+
+}
+
+nebulaGeo.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(nebulaVertices,3)
+)
+
+nebulaGeo.setAttribute(
+'color',
+new THREE.Float32BufferAttribute(nebulaColors,3)
+)
+
+const nebulaMat=new THREE.PointsMaterial({
+size:2,
+vertexColors:true,
+transparent:true,
+opacity:0.25
+})
+
+const nebula=new THREE.Points(nebulaGeo,nebulaMat)
+
+scene.add(nebula)
 
 
 
@@ -218,7 +261,7 @@ stars.push(star)
 
 
 
-// FOTOS CON MARCOS LUMINOSOS
+// FOTOS
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -241,7 +284,7 @@ group.add(photoMesh)
 
 
 
-// BORDE LUMINOSO
+// MARCO LUMINOSO
 
 const edges=new THREE.EdgesGeometry(geo)
 
@@ -334,10 +377,47 @@ document.getElementById("musicBtn").innerText="🎵 Música activada"
 
 
 
-// MENSAJE
+// RAYCASTER PARA CORAZON
 
-document.getElementById("btn").onclick=()=>{
+const raycaster=new THREE.Raycaster()
+const mouse=new THREE.Vector2()
+
+window.addEventListener("click",(event)=>{
+
+mouse.x=(event.clientX/window.innerWidth)*2-1
+mouse.y=-(event.clientY/window.innerHeight)*2+1
+
+raycaster.setFromCamera(mouse,camera)
+
+const intersect=raycaster.intersectObject(heartMesh)
+
+if(intersect.length>0){
+
+const clave=prompt("Ingresa la clave secreta")
+
+if(clave==="30102025"){
+
+document.getElementById("mensajeContenido").innerHTML=
+"Mi amor, desde que llegaste a mi vida todo es más bonito.<br><br>Eres mi universo y siempre quiero estar contigo ❤️"
+
 document.getElementById("mensaje").style.display="block"
+
+}else{
+
+alert("Clave incorrecta")
+
+}
+
+}
+
+})
+
+
+
+// CERRAR MENSAJE
+
+document.getElementById("cerrar").onclick=()=>{
+document.getElementById("mensaje").style.display="none"
 }
 
 
