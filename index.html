@@ -18,7 +18,7 @@ position:absolute;
 top:20px;
 width:100%;
 text-align:center;
-font-size:36px;
+font-size:34px;
 color:#ff7ab6;
 text-shadow:0 0 25px #ff7ab6;
 }
@@ -43,7 +43,7 @@ position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-background:rgba(0,0,0,0.92);
+background:rgba(0,0,0,0.9);
 padding:30px;
 border-radius:20px;
 color:white;
@@ -106,7 +106,7 @@ controls.enableDamping=true
 
 // LUZ
 
-const light=new THREE.PointLight(0xffffff,1.6)
+const light=new THREE.PointLight(0xffffff,1.7)
 light.position.set(50,50,50)
 scene.add(light)
 
@@ -146,22 +146,22 @@ scene.add(galaxy)
 
 
 
-// NEBULOSA ROSA
+// NEBULOSA
 
 const nebulaGeo=new THREE.BufferGeometry()
 const nebulaVertices=[]
 const nebulaColors=[]
 
-for(let i=0;i<9000;i++){
+for(let i=0;i<8000;i++){
 
-const x=(Math.random()-0.5)*600
-const y=(Math.random()-0.5)*300
-const z=(Math.random()-0.5)*600
+const x=(Math.random()-0.5)*500
+const y=(Math.random()-0.5)*250
+const z=(Math.random()-0.5)*500
 
 nebulaVertices.push(x,y,z)
 
 const color=new THREE.Color()
-color.setHSL(0.9,0.8,0.7)
+color.setHSL(0.9,0.7,0.6)
 
 nebulaColors.push(color.r,color.g,color.b)
 
@@ -181,31 +181,11 @@ const nebulaMat=new THREE.PointsMaterial({
 size:2,
 vertexColors:true,
 transparent:true,
-opacity:0.45
+opacity:0.35
 })
 
 const nebula=new THREE.Points(nebulaGeo,nebulaMat)
 scene.add(nebula)
-
-
-
-// AURORA ROSA
-
-const auroraGeo=new THREE.PlaneGeometry(1200,500)
-
-const auroraMat=new THREE.MeshBasicMaterial({
-color:0xff66cc,
-transparent:true,
-opacity:0.15,
-side:THREE.DoubleSide
-})
-
-const aurora=new THREE.Mesh(auroraGeo,auroraMat)
-
-aurora.position.z=-400
-aurora.rotation.x=-0.2
-
-scene.add(aurora)
 
 
 
@@ -232,164 +212,14 @@ new THREE.Float32BufferAttribute(heart,3)
 
 const heartMat=new THREE.PointsMaterial({
 color:0xff3377,
-size:1.5,
-transparent:true
+size:1.6
 })
 
 const heartMesh=new THREE.Points(heartGeo,heartMat)
 
 heartMesh.position.y=35
-heartMesh.rotation.z=Math.PI
 
 scene.add(heartMesh)
-
-
-
-// CORAZONES PEQUEÑOS
-
-const miniHearts=[]
-
-function createHeartShape(){
-
-const heartShape=new THREE.Shape()
-
-heartShape.moveTo(0,0)
-heartShape.bezierCurveTo(0,0,-0.5,-0.5,-1,0)
-heartShape.bezierCurveTo(-1.5,0.5,-1,1.2,0,1.6)
-heartShape.bezierCurveTo(1,1.2,1.5,0.5,1,0)
-heartShape.bezierCurveTo(0.5,-0.5,0,0,0,0)
-
-return heartShape
-
-}
-
-for(let i=0;i<120;i++){
-
-const geo=new THREE.ShapeGeometry(createHeartShape())
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff4fa3,
-side:THREE.DoubleSide
-})
-
-const heart=new THREE.Mesh(geo,mat)
-
-heart.scale.set(1.5,1.5,1)
-heart.rotation.z=Math.PI
-
-heart.position.set(
-(Math.random()-0.5)*400,
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*400
-)
-
-scene.add(heart)
-
-miniHearts.push(heart)
-
-}
-
-
-
-// EXPLOSION BONITA
-
-function heartExplosion(position){
-
-for(let i=0;i<40;i++){
-
-const geo=new THREE.SphereGeometry(0.2,6,6)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff77cc,
-transparent:true
-})
-
-const star=new THREE.Mesh(geo,mat)
-
-star.position.copy(position)
-
-scene.add(star)
-
-const vx=(Math.random()-0.5)*2
-const vy=(Math.random())*2
-const vz=(Math.random()-0.5)*2
-
-function animate(){
-
-star.material.opacity-=0.02
-
-star.position.x+=vx
-star.position.y+=vy
-star.position.z+=vz
-
-if(star.material.opacity>0){
-
-requestAnimationFrame(animate)
-
-}else{
-
-scene.remove(star)
-
-}
-
-}
-
-animate()
-
-}
-
-}
-
-
-
-// CORAZONES FLOTANDO
-
-function floatingHearts(){
-
-for(let i=0;i<800;i++){
-
-const geo=new THREE.SphereGeometry(0.3,6,6)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66aa,
-transparent:true
-})
-
-const heart=new THREE.Mesh(geo,mat)
-
-heart.position.set(
-(Math.random()-0.5)*600,
--200,
-(Math.random()-0.5)*600
-)
-
-scene.add(heart)
-
-const speed=0.3+Math.random()*0.5
-
-function rise(){
-
-heart.position.y+=speed
-
-heart.material.opacity-=0.001
-
-if(heart.position.y<300){
-
-requestAnimationFrame(rise)
-
-}else{
-
-scene.remove(heart)
-
-}
-
-}
-
-rise()
-
-}
-
-}
 
 
 
@@ -415,17 +245,6 @@ const photoMesh=new THREE.Mesh(geo,mat)
 
 group.add(photoMesh)
 
-const edges=new THREE.EdgesGeometry(geo)
-
-const line=new THREE.LineSegments(
-edges,
-new THREE.LineBasicMaterial({color:0xff77aa})
-)
-
-line.scale.set(1.1,1.1,1)
-
-group.add(line)
-
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
 
@@ -441,10 +260,37 @@ photo(i*Math.PI*2/8,i)
 
 
 
-// CLICK
+// DETECCION MOUSE PARA FOTOS
 
 const raycaster=new THREE.Raycaster()
 const mouse=new THREE.Vector2()
+
+window.addEventListener("mousemove",(event)=>{
+
+mouse.x=(event.clientX/window.innerWidth)*2-1
+mouse.y=-(event.clientY/window.innerHeight)*2+1
+
+raycaster.setFromCamera(mouse,camera)
+
+const intersects=raycaster.intersectObjects(photos,true)
+
+photos.forEach(p=>{
+p.scale.set(1,1,1)
+})
+
+if(intersects.length>0){
+
+const obj=intersects[0].object.parent
+
+obj.scale.set(1.5,1.5,1.5)
+
+}
+
+})
+
+
+
+// CLICK CORAZON
 
 window.addEventListener("click",(event)=>{
 
@@ -453,17 +299,24 @@ mouse.y=-(event.clientY/window.innerHeight)*2+1
 
 raycaster.setFromCamera(mouse,camera)
 
-const heartHits=raycaster.intersectObjects(miniHearts)
+const hit=raycaster.intersectObject(heartMesh)
 
-if(heartHits.length>0){
+if(hit.length>0){
 
-const obj=heartHits[0].object
+const clave=prompt("Ingresa la clave secreta")
 
-heartExplosion(obj.position)
+if(clave==="30102025"){
 
-scene.remove(obj)
+document.getElementById("mensajeContenido").innerHTML=
+"Mi amor ❤️ desde que llegaste a mi vida todo es más bonito. Eres mi universo."
 
-miniHearts.splice(miniHearts.indexOf(obj),1)
+document.getElementById("mensaje").style.display="block"
+
+}else{
+
+alert("Clave incorrecta")
+
+}
 
 }
 
@@ -471,41 +324,71 @@ miniHearts.splice(miniHearts.indexOf(obj),1)
 
 
 
-// MUSICA
+document.getElementById("cerrar").onclick=()=>{
+document.getElementById("mensaje").style.display="none"
+}
+
+
+
+// MUSICA + CORAZONES
+
+function floatingHearts(){
+
+for(let i=0;i<500;i++){
+
+const geo=new THREE.SphereGeometry(0.3,6,6)
+
+const mat=new THREE.MeshBasicMaterial({
+color:0xff66aa,
+transparent:true
+})
+
+const heart=new THREE.Mesh(geo,mat)
+
+heart.position.set(
+(Math.random()-0.5)*600,
+-200,
+(Math.random()-0.5)*600
+)
+
+scene.add(heart)
+
+const speed=0.3+Math.random()*0.5
+
+function rise(){
+
+heart.position.y+=speed
+heart.material.opacity-=0.001
+
+if(heart.position.y<300){
+requestAnimationFrame(rise)
+}else{
+scene.remove(heart)
+}
+
+}
+
+rise()
+
+}
+
+}
+
+
 
 let music
 
 document.getElementById("musicBtn").onclick=()=>{
 
 if(!music){
-
 music=new Audio("music.mp3")
 music.loop=true
 music.volume=0.7
-
 }
 
 music.play()
 
 floatingHearts()
-
-}
-
-
-
-// ORBITA FOTOS
-
-function rotatePhotos(){
-
-photos.forEach((p,i)=>{
-
-const t=Date.now()*0.0002+i
-const radius=35+(i*5)
-
-p.position.x=Math.cos(t)*radius
-p.position.z=Math.sin(t)*radius
-
-})
 
 }
 
@@ -523,10 +406,15 @@ heartMesh.rotation.y+=0.002
 const pulse=1+Math.sin(Date.now()*0.003)*0.08
 heartMesh.scale.set(pulse,pulse,pulse)
 
-aurora.material.opacity=0.15+Math.sin(Date.now()*0.001)*0.08
-aurora.rotation.z+=0.0002
+photos.forEach((p,i)=>{
 
-rotatePhotos()
+const t=Date.now()*0.0002+i
+const radius=35+(i*5)
+
+p.position.x=Math.cos(t)*radius
+p.position.z=Math.sin(t)*radius
+
+})
 
 controls.update()
 
