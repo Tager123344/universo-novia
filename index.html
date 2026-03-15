@@ -84,10 +84,6 @@ Mi amor, desde que llegaste a mi vida todo es más bonito.<br><br>
 Eres mi universo y siempre quiero estar contigo ❤️
 </div>
 
-<audio id="musica" loop>
-<source src="music.mp3" type="audio/mpeg">
-</audio>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
 
@@ -155,7 +151,7 @@ scene.add(galaxy)
 
 
 
-// CORAZON CENTRAL
+// CORAZON
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -178,7 +174,7 @@ new THREE.Float32BufferAttribute(heart,3)
 
 const heartMat=new THREE.PointsMaterial({
 color:0xff3377,
-size:1.3,
+size:1.4,
 transparent:true,
 depthTest:false
 })
@@ -229,10 +225,6 @@ const loader=new THREE.TextureLoader()
 
 function photo(angle,i){
 
-const tex=loader.load("foto"+i+".jpg")
-
-const group=new THREE.Group()
-
 const group=new THREE.Group()
 
 const tex=loader.load("foto"+i+".jpg")
@@ -249,7 +241,7 @@ group.add(photoMesh)
 
 
 
-// MARCO LUMINOSO (BORDES)
+// BORDE LUMINOSO
 
 const edges=new THREE.EdgesGeometry(geo)
 
@@ -265,57 +257,20 @@ line.scale.set(1.1,1.1,1)
 group.add(line)
 
 
-// MOUSE HOVER
 
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
+group.position.x=Math.cos(angle)*40
+group.position.z=Math.sin(angle)*40
 
-window.addEventListener("mousemove",(event)=>{
+scene.add(group)
 
-mouse.x=(event.clientX/window.innerWidth)*2-1
-mouse.y=-(event.clientY/window.innerHeight)*2+1
-
-raycaster.setFromCamera(mouse,camera)
-
-const intersects=raycaster.intersectObjects(scene.children,true)
-
-photos.forEach(p=>{
-p.scale.set(1,1,1)
-})
-
-if(intersects.length>0){
-
-let obj=intersects[0].object.parent
-
-if(photos.includes(obj)){
-obj.scale.set(1.2,1.2,1.2)
-}
+photos.push(group)
 
 }
 
-})
-
-
-
-// MUSICA
-
-let music
-
-document.getElementById("musicBtn").onclick = () => {
-
-if(!music){
-music = new Audio("music.mp3")
-music.loop = true
-music.volume = 0.7
+for(let i=1;i<=8;i++){
+photo(i*Math.PI*2/8,i)
 }
 
-music.play()
-
-starRain()
-
-document.getElementById("musicBtn").innerText="🎵 Música activada"
-
-}
 
 
 // LLUVIA DE ESTRELLAS
@@ -357,6 +312,28 @@ fall()
 
 
 
+// MUSICA
+
+let music
+
+document.getElementById("musicBtn").onclick=()=>{
+
+if(!music){
+music=new Audio("music.mp3")
+music.loop=true
+music.volume=0.7
+}
+
+music.play()
+
+starRain()
+
+document.getElementById("musicBtn").innerText="🎵 Música activada"
+
+}
+
+
+
 // MENSAJE
 
 document.getElementById("btn").onclick=()=>{
@@ -371,12 +348,12 @@ function rotatePhotos(){
 
 photos.forEach((p,i)=>{
 
-const t = Date.now()*0.0002 + i
+const t=Date.now()*0.0002+i
 
-const radius = 35 + (i*5)
+const radius=35+(i*5)
 
-p.position.x = Math.cos(t)*radius
-p.position.z = Math.sin(t)*radius
+p.position.x=Math.cos(t)*radius
+p.position.z=Math.sin(t)*radius
 
 })
 
