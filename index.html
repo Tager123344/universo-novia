@@ -59,7 +59,7 @@ const galaxyMat = new THREE.PointsMaterial({color: 0xffffff, size: 0.4, sizeAtte
 const galaxy = new THREE.Points(galaxyGeo, galaxyMat);
 scene.add(galaxy);
 
-// Corazón de partículas
+// Corazón de partículas (centro romántico)
 const heartGeo = new THREE.BufferGeometry();
 const heart = [];
 for (let i = 0; i < 2500; i++) {
@@ -73,71 +73,56 @@ const heartMat = new THREE.PointsMaterial({color: 0xff3377, size: 1});
 const heartMesh = new THREE.Points(heartGeo, heartMat);
 scene.add(heartMesh);
 
-// ★ Planetas románticos bonitos ★
+// ★ Planetas pequeños, distribuidos, todos con anillos ★
 const planets = [];
 
-// Planeta corazón principal "Natasha" (rosa brillante con anillos)
-const heartPlanetGeo = new THREE.SphereGeometry(12, 32, 32); // forma esférica pero lo deformamos un poco
-const heartPlanetMat = new THREE.MeshStandardMaterial({
-    color: 0xff69b4,
-    emissive: 0xff1493,
-    emissiveIntensity: 0.4,
-    metalness: 0.1,
-    roughness: 0.6
-});
-const heartPlanet = new THREE.Mesh(heartPlanetGeo, heartPlanetMat);
-heartPlanet.position.set(40, 20, -30); // posición un poco apartada
-scene.add(heartPlanet);
-planets.push(heartPlanet);
-
-// Anillos para el planeta corazón
-const ringGeo = new THREE.RingGeometry(15, 22, 64);
-const ringMat = new THREE.MeshBasicMaterial({
-    color: 0xffb6c1,
-    side: THREE.DoubleSide,
-    transparent: true,
-    opacity: 0.7
-});
-const ring = new THREE.Mesh(ringGeo, ringMat);
-ring.rotation.x = Math.PI / 2.5; // inclinado bonito
-heartPlanet.add(ring); // añadido al planeta para que rote con él
-
-// Planeta pastel con anillos dorados
-const pastelPlanetGeo = new THREE.SphereGeometry(10, 32, 32);
-const pastelPlanetMat = new THREE.MeshStandardMaterial({
-    color: 0xd8bfd8, // lila suave
-    emissive: 0xffc0cb,
-    emissiveIntensity: 0.3
-});
-const pastelPlanet = new THREE.Mesh(pastelPlanetGeo, pastelPlanetMat);
-pastelPlanet.position.set(-50, 10, -20);
-scene.add(pastelPlanet);
-planets.push(pastelPlanet);
-
-// Anillos dorados/rosa
-const pastelRing = new THREE.RingGeometry(12, 18, 64);
-const pastelRingMat = new THREE.MeshBasicMaterial({color: 0xffdab9, side: THREE.DoubleSide, transparent: true, opacity: 0.8});
-const pring = new THREE.Mesh(pastelRing, pastelRingMat);
-pring.rotation.x = Math.PI / 3;
-pastelPlanet.add(pring);
-
-// Pequeños planetas flotantes (orbitan alrededor del corazón principal)
-for (let i = 0; i < 4; i++) {
-    const smallGeo = new THREE.SphereGeometry(4 + Math.random()*3, 24, 24);
-    const smallMat = new THREE.MeshStandardMaterial({
-        color: [0xffb6c1, 0xadd8e6, 0xe0b0ff, 0xffe4e1][i % 4], // tonos pastel románticos
-        emissive: 0xffffff,
-        emissiveIntensity: 0.2 + Math.random()*0.2
+// Función para crear planeta con anillo
+function createPlanet(size, color, emissive, posX, posY, posZ, ringColor, ringInner, ringOuter, ringTilt) {
+    const geo = new THREE.SphereGeometry(size, 32, 32);
+    const mat = new THREE.MeshStandardMaterial({
+        color: color,
+        emissive: emissive,
+        emissiveIntensity: 0.3,
+        metalness: 0.1,
+        roughness: 0.7
     });
-    const smallPlanet = new THREE.Mesh(smallGeo, smallMat);
-    const angle = i * Math.PI * 2 / 4;
-    smallPlanet.position.set(Math.cos(angle)*30, Math.sin(angle)*15 + (Math.random()-0.5)*10, Math.sin(angle)*30 - 20);
-    smallPlanet.userData = {angle: angle, radiusX: 30 + Math.random()*10, radiusZ: 30 + Math.random()*10, speed: 0.0008 + Math.random()*0.0005};
-    scene.add(smallPlanet);
-    planets.push(smallPlanet);
+    const planet = new THREE.Mesh(geo, mat);
+    planet.position.set(posX, posY, posZ);
+    scene.add(planet);
+    planets.push(planet);
+
+    // Anillo
+    const ringGeo = new THREE.RingGeometry(ringInner, ringOuter, 64);
+    const ringMat = new THREE.MeshBasicMaterial({
+        color: ringColor,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.75
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = ringTilt;
+    planet.add(ring);
+
+    return planet;
 }
 
-// Fotos
+// Planeta 1: Rosa suave (cerca del corazón, órbita lenta)
+const p1 = createPlanet(5, 0xffb6c1, 0xff69b4, 60, 15, 20, 0xffdab9, 7, 11, Math.PI / 3.5);
+p1.userData = {orbitSpeed: 0.0004, radius: 60, centerX: 0, centerZ: 0};
+
+// Planeta 2: Lila pastel (más lejano, lado izquierdo)
+createPlanet(6, 0xd8bfd8, 0xc71585, -90, 25, -40, 0xe6e6fa, 9, 14, Math.PI / 2.8);
+
+// Planeta 3: Azul bebé romántico (arriba-derecha)
+createPlanet(4.5, 0xadd8e6, 0x87cefa, 45, 50, -70, 0xffffff, 6, 10, Math.PI / 4);
+
+// Planeta 4: Melocotón suave (lejano atrás)
+createPlanet(7, 0xffdab9, 0xffa07a, -30, -20, -120, 0xffe4c4, 10, 16, Math.PI / 2.2);
+
+// Planeta 5: Rosa fuerte (muy lejano, para profundidad)
+createPlanet(5.5, 0xff69b4, 0xff1493, 0, 10, -180, 0xffb6c1, 8, 13, Math.PI / 3);
+
+// Fotos orbitando
 const loader = new THREE.TextureLoader();
 const photoFiles = ["foto1.jpg","foto2.jpg","foto3.jpg","foto4.jpg","foto5.jpg"];
 const photos = [];
@@ -211,17 +196,17 @@ function shootingStar(){
 }
 setInterval(shootingStar,1500);
 
-// Mensaje secreto personalizado
+// Mensaje secreto
 document.getElementById("btn").onclick = ()=>{
     alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo, Natasha ❤️");
 };
 
-// Luz suave para resaltar planetas
+// Luces
 const light = new THREE.PointLight(0xffffff, 2, 500);
 light.position.set(50,50,50);
 scene.add(light);
 
-const ambient = new THREE.AmbientLight(0x404040, 0.5);
+const ambient = new THREE.AmbientLight(0x404040, 0.6);
 scene.add(ambient);
 
 // Animación
@@ -240,18 +225,17 @@ function animate(){
         s.material.opacity = 0.5 + Math.sin(Date.now()*0.003 + s.userData.blink)*0.5;
     });
 
-    // Rotación y pulso de planetas
-    planets.forEach((p, i) => {
-        if (p.userData.angle !== undefined) { // pequeños orbitando
-            p.userData.angle += p.userData.speed;
-            p.position.x = Math.cos(p.userData.angle) * p.userData.radiusX;
-            p.position.z = Math.sin(p.userData.angle) * p.userData.radiusZ;
-            p.position.y = Math.sin(p.userData.angle * 2) * 10; // ondulación suave
+    // Órbita suave solo para algunos planetas
+    planets.forEach(p => {
+        if (p.userData.orbitSpeed) {
+            p.userData.angle = (p.userData.angle || 0) + p.userData.orbitSpeed;
+            p.position.x = Math.cos(p.userData.angle) * p.userData.radius;
+            p.position.z = Math.sin(p.userData.angle) * p.userData.radius;
         }
-        // Pulso de brillo (latido romántico)
-        const pulse = 1 + Math.sin(Date.now() * 0.001 + i) * 0.05;
-        if (p.scale) p.scale.set(pulse, pulse, pulse);
-        else p.scale.set(pulse, pulse, pulse);
+        // Rotación propia lenta + pulso sutil
+        p.rotation.y += 0.0008;
+        const pulse = 1 + Math.sin(Date.now() * 0.0008) * 0.02;
+        p.scale.set(pulse, pulse, pulse);
     });
 
     controls.update();
