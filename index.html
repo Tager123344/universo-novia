@@ -60,8 +60,8 @@ bottom:120px;
 width:100%;
 text-align:center;
 font-size:28px;
-color:#ff9ad5;
-text-shadow:0 0 20px #ff4fb0;
+color:white;
+text-shadow:0 0 20px white;
 opacity:0;
 transition:1s;
 }
@@ -203,7 +203,7 @@ scene.add(nebula)
 
 
 
-// CORAZON CENTRAL (ARREGLADO)
+// CORAZON CENTRAL
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -232,7 +232,6 @@ size:1.5
 const heartMesh=new THREE.Points(heartGeo,heartMat)
 
 heartMesh.position.y=35
-// QUITAMOS la rotación que lo ponía al revés
 
 scene.add(heartMesh)
 
@@ -265,9 +264,7 @@ div.innerHTML=frase
 div.style.opacity=1
 
 setTimeout(()=>{
-
 div.style.opacity=0
-
 },6000)
 
 }
@@ -276,7 +273,7 @@ setInterval(mostrarFrase,9000)
 
 
 
-// FRASES EN EL UNIVERSO (3D)
+// FRASES EN EL UNIVERSO
 
 function crearTexto(frase){
 
@@ -286,7 +283,10 @@ const ctx=canvas.getContext("2d")
 canvas.width=512
 canvas.height=128
 
-ctx.fillStyle="#ff9ad5"
+ctx.fillStyle="white"
+ctx.shadowColor="white"
+ctx.shadowBlur=20
+
 ctx.font="40px Arial"
 ctx.textAlign="center"
 ctx.fillText(frase,256,64)
@@ -319,7 +319,7 @@ crearTexto(frases[Math.floor(Math.random()*frases.length)])
 
 
 
-// FOTOS (BAJADAS CERCA DEL CORAZON)
+// FOTOS
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -353,7 +353,6 @@ line.scale.set(1.15,1.15,1)
 group.add(line)
 
 group.position.y=28
-
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
 
@@ -365,115 +364,6 @@ photos.push(group)
 
 for(let i=1;i<=8;i++){
 photo(i*Math.PI*2/8,i)
-}
-
-
-
-// MÁS ESTRELLAS CAYENDO
-
-function lluvia(){
-
-for(let i=0;i<4;i++){
-
-const geo=new THREE.BoxGeometry(0.5,0.5,0.5)
-
-const mat=new THREE.MeshBasicMaterial({color:0xffffff})
-
-const cube=new THREE.Mesh(geo,mat)
-
-cube.position.set(
-(Math.random()-0.5)*200,
-120,
-(Math.random()-0.5)*200
-)
-
-scene.add(cube)
-
-function caer(){
-
-cube.position.y-=2
-
-if(cube.position.y>-120){
-
-requestAnimationFrame(caer)
-
-}else{
-
-scene.remove(cube)
-
-}
-
-}
-
-caer()
-
-}
-
-}
-
-setInterval(lluvia,200)
-
-
-
-// MUSICA
-
-let music
-
-document.getElementById("musicBtn").onclick=()=>{
-
-if(!music){
-
-music=new Audio("music.mp3")
-music.loop=true
-music.volume=0.7
-
-crearCubos()
-
-}
-
-music.play()
-
-}
-
-
-
-// MENSAJE SECRETO
-
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
-
-window.addEventListener("click",(event)=>{
-
-mouse.x=(event.clientX/window.innerWidth)*2-1
-mouse.y=-(event.clientY/window.innerHeight)*2+1
-
-raycaster.setFromCamera(mouse,camera)
-
-const intersect=raycaster.intersectObject(heartMesh)
-
-if(intersect.length>0){
-
-const clave=prompt("Ingresa la clave secreta")
-
-if(clave==="30102025"){
-
-document.getElementById("mensajeContenido").innerHTML=
-"Mi amor ❤️ desde que llegaste a mi vida todo es más bonito.<br><br>Eres mi universo."
-
-document.getElementById("mensaje").style.display="block"
-
-}else{
-
-alert("Clave incorrecta")
-
-}
-
-}
-
-})
-
-document.getElementById("cerrar").onclick=()=>{
-document.getElementById("mensaje").style.display="none"
 }
 
 
