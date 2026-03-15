@@ -233,15 +233,9 @@ const tex=loader.load("foto"+i+".jpg")
 
 const group=new THREE.Group()
 
-const frameGeo=new THREE.PlaneGeometry(18,18)
+const group=new THREE.Group()
 
-const frameMat=new THREE.MeshBasicMaterial({
-color:0xff77aa,
-transparent:true,
-opacity:0.35
-})
-
-const frame=new THREE.Mesh(frameGeo,frameMat)
+const tex=loader.load("foto"+i+".jpg")
 
 const geo=new THREE.PlaneGeometry(16,16)
 
@@ -249,24 +243,26 @@ const mat=new THREE.MeshBasicMaterial({
 map:tex
 })
 
-const mesh=new THREE.Mesh(geo,mat)
+const photoMesh=new THREE.Mesh(geo,mat)
 
-group.add(frame)
-group.add(mesh)
+group.add(photoMesh)
 
-group.position.x=Math.cos(angle)*40
-group.position.z=Math.sin(angle)*40
 
-scene.add(group)
 
-photos.push(group)
+// MARCO LUMINOSO (BORDES)
 
-}
+const edges=new THREE.EdgesGeometry(geo)
 
-for(let i=1;i<=8;i++){
-photo(i*Math.PI*2/8,i)
-}
+const line=new THREE.LineSegments(
+edges,
+new THREE.LineBasicMaterial({
+color:0xff77aa
+})
+)
 
+line.scale.set(1.1,1.1,1)
+
+group.add(line)
 
 
 // MOUSE HOVER
@@ -303,17 +299,21 @@ obj.scale.set(1.2,1.2,1.2)
 
 // MUSICA
 
-const music=document.getElementById("musica")
-const musicBtn=document.getElementById("musicBtn")
+let music
 
-musicBtn.onclick=()=>{
+document.getElementById("musicBtn").onclick = () => {
 
-music.volume=0.7
+if(!music){
+music = new Audio("music.mp3")
+music.loop = true
+music.volume = 0.7
+}
+
 music.play()
 
-musicBtn.innerText="🎵 Música activada"
-
 starRain()
+
+document.getElementById("musicBtn").innerText="🎵 Música activada"
 
 }
 
