@@ -80,12 +80,12 @@ max-width:500px;
 <button id="btn">💌 Mensaje secreto</button>
 
 <div id="mensaje">
-Mi amor, desde que llegaste a mi vida todo es más bonito.  
+Mi amor, desde que llegaste a mi vida todo es más bonito.<br><br>
 Eres mi universo y siempre quiero estar contigo ❤️
 </div>
 
 <audio id="musica" loop>
-<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_2f7c9fd5d8.mp3">
+<source src="music.mp3" type="audio/mpeg">
 </audio>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -181,7 +181,12 @@ color:0xff3377,
 size:1
 })
 
+heartMat.depthTest=false
+heartMat.transparent=true
+
 const heartMesh=new THREE.Points(heartGeo,heartMat)
+
+heartMesh.renderOrder=10
 
 scene.add(heartMesh)
 
@@ -342,7 +347,6 @@ stars.push(star)
 function shootingStar(){
 
 const geo=new THREE.SphereGeometry(0.4,8,8)
-
 const mat=new THREE.MeshBasicMaterial({color:0xffffff})
 
 const star=new THREE.Mesh(geo,mat)
@@ -418,7 +422,27 @@ alert("Este recuerdo contigo es uno de mis favoritos ❤️ Foto "+id)
 const music=document.getElementById("musica")
 
 document.getElementById("musicBtn").onclick=()=>{
+
+music.volume=0.6
 music.play()
+
+for(let i=0;i<200;i++){
+
+const geo=new THREE.SphereGeometry(0.05,6,6)
+const mat=new THREE.MeshBasicMaterial({color:0xff77aa})
+
+const star=new THREE.Mesh(geo,mat)
+
+star.position.set(
+(Math.random()-0.5)*200,
+(Math.random()-0.5)*200,
+(Math.random()-0.5)*200
+)
+
+scene.add(star)
+
+}
+
 }
 
 
@@ -439,8 +463,10 @@ photos.forEach((p,i)=>{
 
 const t = Date.now()*0.0002 + i
 
-p.position.x = Math.cos(t)*40
-p.position.z = Math.sin(t)*40
+const radius = 35 + (i*4)
+
+p.position.x = Math.cos(t)*radius
+p.position.z = Math.sin(t)*radius
 
 })
 
