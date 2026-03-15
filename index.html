@@ -94,7 +94,6 @@ cursor:pointer;
 <div id="frase"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
 
 <script>
 
@@ -112,9 +111,6 @@ camera.position.z=90
 const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
 document.body.appendChild(renderer.domElement)
-
-const controls=new THREE.OrbitControls(camera,renderer.domElement)
-controls.enableDamping=true
 
 
 
@@ -160,50 +156,7 @@ scene.add(galaxy)
 
 
 
-// NEBULOSA
-
-const nebulaGeo=new THREE.BufferGeometry()
-const nebulaVertices=[]
-const nebulaColors=[]
-
-for(let i=0;i<9000;i++){
-
-const x=(Math.random()-0.5)*600
-const y=(Math.random()-0.5)*300
-const z=(Math.random()-0.5)*600
-
-nebulaVertices.push(x,y,z)
-
-const color=new THREE.Color()
-color.setHSL(0.9,0.8,0.7)
-
-nebulaColors.push(color.r,color.g,color.b)
-
-}
-
-nebulaGeo.setAttribute(
-'position',
-new THREE.Float32BufferAttribute(nebulaVertices,3)
-)
-
-nebulaGeo.setAttribute(
-'color',
-new THREE.Float32BufferAttribute(nebulaColors,3)
-)
-
-const nebulaMat=new THREE.PointsMaterial({
-size:2,
-vertexColors:true,
-transparent:true,
-opacity:0.45
-})
-
-const nebula=new THREE.Points(nebulaGeo,nebulaMat)
-scene.add(nebula)
-
-
-
-// CORAZON CENTRAL
+// CORAZON CENTRAL (arreglado)
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -232,7 +185,6 @@ size:1.5
 const heartMesh=new THREE.Points(heartGeo,heartMat)
 
 heartMesh.position.y=35
-heartMesh.rotation.z=Math.PI
 
 scene.add(heartMesh)
 
@@ -276,6 +228,28 @@ setInterval(mostrarFrase,10000)
 
 
 
+// FRASES EN EL UNIVERSO (1000)
+
+for(let i=0;i<1000;i++){
+
+const div=document.createElement("div")
+
+div.innerHTML=frases[Math.floor(Math.random()*frases.length)]
+
+div.style.position="absolute"
+div.style.color="#ff9ad5"
+div.style.fontSize="18px"
+div.style.opacity="0.5"
+
+div.style.left=Math.random()*window.innerWidth+"px"
+div.style.top=Math.random()*window.innerHeight+"px"
+
+document.body.appendChild(div)
+
+}
+
+
+
 // FOTOS
 
 const photos=[]
@@ -309,6 +283,10 @@ line.scale.set(1.15,1.15,1)
 
 group.add(line)
 
+// BAJAMOS FOTOS CERCA DEL CORAZON
+
+group.position.y=25
+
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
 
@@ -324,124 +302,15 @@ photo(i*Math.PI*2/8,i)
 
 
 
-// HOVER FOTOS + CORAZONES
-
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
-
-window.addEventListener("mousemove",(event)=>{
-
-mouse.x=(event.clientX/window.innerWidth)*2-1
-mouse.y=-(event.clientY/window.innerHeight)*2+1
-
-raycaster.setFromCamera(mouse,camera)
-
-const intersects=raycaster.intersectObjects(photos,true)
-
-photos.forEach(p=>p.scale.set(1,1,1))
-
-if(intersects.length>0){
-
-const obj=intersects[0].object.parent
-
-obj.scale.set(1.4,1.4,1.4)
-
-crearCorazones(obj.position)
-
-}
-
-})
-
-
-
-function crearCorazones(pos){
-
-for(let i=0;i<5;i++){
-
-const geo=new THREE.SphereGeometry(0.4,6,6)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66aa,
-transparent:true
-})
-
-const h=new THREE.Mesh(geo,mat)
-
-h.position.copy(pos)
-
-scene.add(h)
-
-const vx=(Math.random()-0.5)*2
-const vy=Math.random()*2
-const vz=(Math.random()-0.5)*2
-
-function anim(){
-
-h.material.opacity-=0.02
-
-h.position.x+=vx
-h.position.y+=vy
-h.position.z+=vz
-
-if(h.material.opacity>0){
-
-requestAnimationFrame(anim)
-
-}else{
-
-scene.remove(h)
-
-}
-
-}
-
-anim()
-
-}
-
-}
-
-
-
-// CUBITOS ROSAS
-
-const cubes=[]
-
-function crearCubos(){
-
-for(let i=0;i<50;i++){
-
-const geo=new THREE.BoxGeometry(2,2,2)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66cc
-})
-
-const cube=new THREE.Mesh(geo,mat)
-
-cube.position.set(
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*200
-)
-
-scene.add(cube)
-
-cubes.push(cube)
-
-}
-
-}
-
-
-
-// LLUVIA CUBITOS
+// MÁS ESTRELLAS CAYENDO
 
 function lluvia(){
 
+for(let i=0;i<5;i++){
+
 const geo=new THREE.BoxGeometry(0.6,0.6,0.6)
 
-const mat=new THREE.MeshBasicMaterial({color:0xff99dd})
+const mat=new THREE.MeshBasicMaterial({color:0xffffff})
 
 const cube=new THREE.Mesh(geo,mat)
 
@@ -455,7 +324,7 @@ scene.add(cube)
 
 function caer(){
 
-cube.position.y-=1
+cube.position.y-=2
 
 if(cube.position.y>-120){
 
@@ -473,7 +342,9 @@ caer()
 
 }
 
-setInterval(lluvia,500)
+}
+
+setInterval(lluvia,200)
 
 
 
@@ -489,52 +360,10 @@ music=new Audio("music.mp3")
 music.loop=true
 music.volume=0.7
 
-crearCubos()
-
 }
 
 music.play()
 
-}
-
-
-
-// MENSAJE SECRETO
-
-window.addEventListener("click",(event)=>{
-
-mouse.x=(event.clientX/window.innerWidth)*2-1
-mouse.y=-(event.clientY/window.innerHeight)*2+1
-
-raycaster.setFromCamera(mouse,camera)
-
-const intersect=raycaster.intersectObject(heartMesh)
-
-if(intersect.length>0){
-
-const clave=prompt("Ingresa la clave secreta")
-
-if(clave==="30102025"){
-
-document.getElementById("mensajeContenido").innerHTML=
-"Mi amor ❤️ desde que llegaste a mi vida todo es más bonito.<br><br>Eres mi universo."
-
-document.getElementById("mensaje").style.display="block"
-
-}else{
-
-alert("Clave incorrecta")
-
-}
-
-}
-
-})
-
-
-
-document.getElementById("cerrar").onclick=()=>{
-document.getElementById("mensaje").style.display="none"
 }
 
 
@@ -546,37 +375,19 @@ function animate(){
 requestAnimationFrame(animate)
 
 galaxy.rotation.y+=0.0005
-heartMesh.rotation.y+=0.002
 
 const pulse=1+Math.sin(Date.now()*0.003)*0.08
 heartMesh.scale.set(pulse,pulse,pulse)
 
-cubes.forEach((c,i)=>{
-
-c.rotation.x+=0.01
-c.rotation.y+=0.01
-
-const float=Math.sin(Date.now()*0.001+i)*0.3
-
-c.position.y+=float*0.02
-
-const glow=1+Math.sin(Date.now()*0.002+i)*0.4
-
-c.scale.set(glow,glow,glow)
-
-})
-
 photos.forEach((p,i)=>{
 
 const t=Date.now()*0.0002+i
-const radius=35+(i*5)
+const radius=40
 
 p.position.x=Math.cos(t)*radius
 p.position.z=Math.sin(t)*radius
 
 })
-
-controls.update()
 
 renderer.render(scene,camera)
 
