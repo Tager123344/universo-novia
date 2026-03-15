@@ -85,9 +85,6 @@ document.body.appendChild(renderer.domElement)
 const controls=new THREE.OrbitControls(camera,renderer.domElement)
 controls.enableDamping=true
 
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
-
 
 
 // LUZ
@@ -132,7 +129,7 @@ scene.add(galaxy)
 
 
 
-// CUADROS ROSA
+// CUADROS ROSA FLOTANDO
 
 for(let i=0;i<1200;i++){
 
@@ -160,7 +157,7 @@ scene.add(cube)
 
 
 
-// CORAZON
+// CORAZON CENTRAL
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -244,7 +241,7 @@ setInterval(mostrarFrase,9000)
 
 
 
-// TEXTO ESPACIO
+// FRASES EN EL ESPACIO
 
 function crearTexto(frase){
 
@@ -278,5 +275,207 @@ sprite.position.set(
 (Math.random()-0.5)*800
 )
 
-sprit
+sprite.scale.set(60,15,1)
+
+scene.add(sprite)
+
+}
+
+for(let i=0;i<600;i++){
+crearTexto(frases[Math.floor(Math.random()*frases.length)])
+}
+
+
+
+// FOTOS CON MARCO
+
+const photos=[]
+const loader=new THREE.TextureLoader()
+
+function photo(angle,i){
+
+const group=new THREE.Group()
+
+const tex=loader.load("foto"+i+".jpg")
+
+const geo=new THREE.PlaneGeometry(16,16)
+
+const mat=new THREE.MeshBasicMaterial({
+map:tex,
+side:THREE.DoubleSide
+})
+
+const photoMesh=new THREE.Mesh(geo,mat)
+
+group.add(photoMesh)
+
+
+
+// MARCO
+
+const frameGeo=new THREE.PlaneGeometry(18,18)
+
+const frameMat=new THREE.MeshBasicMaterial({
+color:0xff7ab6,
+transparent:true,
+opacity:0.9
+})
+
+const frame=new THREE.Mesh(frameGeo,frameMat)
+
+frame.position.z=-0.1
+
+group.add(frame)
+
+
+
+group.position.y=28
+group.position.x=Math.cos(angle)*40
+group.position.z=Math.sin(angle)*40
+
+scene.add(group)
+
+photos.push(group)
+
+}
+
+for(let i=1;i<=8;i++){
+photo(i*Math.PI*2/8,i)
+}
+
+
+
+// HOVER FOTOS
+
+const raycaster=new THREE.Raycaster()
+const mouse=new THREE.Vector2()
+
+window.addEventListener("mousemove",(event)=>{
+
+mouse.x=(event.clientX/window.innerWidth)*2-1
+mouse.y=-(event.clientY/window.innerHeight)*2+1
+
+raycaster.setFromCamera(mouse,camera)
+
+const intersects=raycaster.intersectObjects(photos,true)
+
+photos.forEach(p=>{
+p.scale.set(1,1,1)
+})
+
+if(intersects.length>0){
+
+const obj=intersects[0].object.parent
+
+obj.scale.set(1.35,1.35,1.35)
+
+crearCorazones(obj.position)
+
+}
+
+})
+
+
+
+// CORAZONES
+
+function crearCorazones(pos){
+
+for(let i=0;i<5;i++){
+
+const geo=new THREE.SphereGeometry(0.4,6,6)
+
+const mat=new THREE.MeshBasicMaterial({
+color:0xff66aa,
+transparent:true
+})
+
+const h=new THREE.Mesh(geo,mat)
+
+h.position.copy(pos)
+
+scene.add(h)
+
+const vx=(Math.random()-0.5)*2
+const vy=Math.random()*2
+const vz=(Math.random()-0.5)*2
+
+function anim(){
+
+h.material.opacity-=0.02
+
+h.position.x+=vx
+h.position.y+=vy
+h.position.z+=vz
+
+if(h.material.opacity>0){
+requestAnimationFrame(anim)
+}else{
+scene.remove(h)
+}
+
+}
+
+anim()
+
+}
+
+}
+
+
+
+// MUSICA
+
+let music
+
+document.getElementById("musicBtn").onclick=()=>{
+
+if(!music){
+
+music=new Audio("music.mp3")
+music.loop=true
+music.volume=0.7
+
+}
+
+music.play()
+
+}
+
+
+
+// ANIMACION
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+galaxy.rotation.y+=0.0005
+heartMesh.rotation.y+=0.002
+
+const pulse=1+Math.sin(Date.now()*0.003)*0.08
+heartMesh.scale.set(pulse,pulse,pulse)
+
+photos.forEach((p,i)=>{
+
+const t=Date.now()*0.0002+i
+const radius=35+(i*5)
+
+p.position.x=Math.cos(t)*radius
+p.position.z=Math.sin(t)*radius
+
+})
+
+controls.update()
+
+renderer.render(scene,camera)
+
+}
+
+animate()
+
+</script>
+
+</body>
+</html>
 ```
