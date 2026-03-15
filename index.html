@@ -203,7 +203,7 @@ scene.add(nebula)
 
 
 
-// CORAZON CENTRAL
+// CORAZON CENTRAL (ARREGLADO)
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -232,7 +232,7 @@ size:1.5
 const heartMesh=new THREE.Points(heartGeo,heartMat)
 
 heartMesh.position.y=35
-heartMesh.rotation.z=Math.PI
+// QUITAMOS la rotación que lo ponía al revés
 
 scene.add(heartMesh)
 
@@ -272,11 +272,54 @@ div.style.opacity=0
 
 }
 
-setInterval(mostrarFrase,10000)
+setInterval(mostrarFrase,9000)
 
 
 
-// FOTOS
+// FRASES EN EL UNIVERSO (3D)
+
+function crearTexto(frase){
+
+const canvas=document.createElement("canvas")
+const ctx=canvas.getContext("2d")
+
+canvas.width=512
+canvas.height=128
+
+ctx.fillStyle="#ff9ad5"
+ctx.font="40px Arial"
+ctx.textAlign="center"
+ctx.fillText(frase,256,64)
+
+const texture=new THREE.CanvasTexture(canvas)
+
+const material=new THREE.SpriteMaterial({
+map:texture,
+transparent:true,
+opacity:0.35
+})
+
+const sprite=new THREE.Sprite(material)
+
+sprite.position.set(
+(Math.random()-0.5)*800,
+(Math.random()-0.5)*400,
+(Math.random()-0.5)*800
+)
+
+sprite.scale.set(60,15,1)
+
+scene.add(sprite)
+
+}
+
+for(let i=0;i<200;i++){
+crearTexto(frases[Math.floor(Math.random()*frases.length)])
+}
+
+
+
+// FOTOS (BAJADAS CERCA DEL CORAZON)
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -309,6 +352,8 @@ line.scale.set(1.15,1.15,1)
 
 group.add(line)
 
+group.position.y=28
+
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
 
@@ -324,124 +369,15 @@ photo(i*Math.PI*2/8,i)
 
 
 
-// HOVER FOTOS + CORAZONES
-
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
-
-window.addEventListener("mousemove",(event)=>{
-
-mouse.x=(event.clientX/window.innerWidth)*2-1
-mouse.y=-(event.clientY/window.innerHeight)*2+1
-
-raycaster.setFromCamera(mouse,camera)
-
-const intersects=raycaster.intersectObjects(photos,true)
-
-photos.forEach(p=>p.scale.set(1,1,1))
-
-if(intersects.length>0){
-
-const obj=intersects[0].object.parent
-
-obj.scale.set(1.4,1.4,1.4)
-
-crearCorazones(obj.position)
-
-}
-
-})
-
-
-
-function crearCorazones(pos){
-
-for(let i=0;i<5;i++){
-
-const geo=new THREE.SphereGeometry(0.4,6,6)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66aa,
-transparent:true
-})
-
-const h=new THREE.Mesh(geo,mat)
-
-h.position.copy(pos)
-
-scene.add(h)
-
-const vx=(Math.random()-0.5)*2
-const vy=Math.random()*2
-const vz=(Math.random()-0.5)*2
-
-function anim(){
-
-h.material.opacity-=0.02
-
-h.position.x+=vx
-h.position.y+=vy
-h.position.z+=vz
-
-if(h.material.opacity>0){
-
-requestAnimationFrame(anim)
-
-}else{
-
-scene.remove(h)
-
-}
-
-}
-
-anim()
-
-}
-
-}
-
-
-
-// CUBITOS ROSAS
-
-const cubes=[]
-
-function crearCubos(){
-
-for(let i=0;i<50;i++){
-
-const geo=new THREE.BoxGeometry(2,2,2)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66cc
-})
-
-const cube=new THREE.Mesh(geo,mat)
-
-cube.position.set(
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*200
-)
-
-scene.add(cube)
-
-cubes.push(cube)
-
-}
-
-}
-
-
-
-// LLUVIA CUBITOS
+// MÁS ESTRELLAS CAYENDO
 
 function lluvia(){
 
-const geo=new THREE.BoxGeometry(0.6,0.6,0.6)
+for(let i=0;i<4;i++){
 
-const mat=new THREE.MeshBasicMaterial({color:0xff99dd})
+const geo=new THREE.BoxGeometry(0.5,0.5,0.5)
+
+const mat=new THREE.MeshBasicMaterial({color:0xffffff})
 
 const cube=new THREE.Mesh(geo,mat)
 
@@ -455,7 +391,7 @@ scene.add(cube)
 
 function caer(){
 
-cube.position.y-=1
+cube.position.y-=2
 
 if(cube.position.y>-120){
 
@@ -473,7 +409,9 @@ caer()
 
 }
 
-setInterval(lluvia,500)
+}
+
+setInterval(lluvia,200)
 
 
 
@@ -500,6 +438,9 @@ music.play()
 
 
 // MENSAJE SECRETO
+
+const raycaster=new THREE.Raycaster()
+const mouse=new THREE.Vector2()
 
 window.addEventListener("click",(event)=>{
 
@@ -531,8 +472,6 @@ alert("Clave incorrecta")
 
 })
 
-
-
 document.getElementById("cerrar").onclick=()=>{
 document.getElementById("mensaje").style.display="none"
 }
@@ -550,21 +489,6 @@ heartMesh.rotation.y+=0.002
 
 const pulse=1+Math.sin(Date.now()*0.003)*0.08
 heartMesh.scale.set(pulse,pulse,pulse)
-
-cubes.forEach((c,i)=>{
-
-c.rotation.x+=0.01
-c.rotation.y+=0.01
-
-const float=Math.sin(Date.now()*0.001+i)*0.3
-
-c.position.y+=float*0.02
-
-const glow=1+Math.sin(Date.now()*0.002+i)*0.4
-
-c.scale.set(glow,glow,glow)
-
-})
 
 photos.forEach((p,i)=>{
 
