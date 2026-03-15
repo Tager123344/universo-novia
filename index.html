@@ -146,7 +146,7 @@ scene.add(galaxy)
 
 
 
-// NEBULOSA ROSA BRILLANTE
+// NEBULOSA ROSA
 
 const nebulaGeo=new THREE.BufferGeometry()
 const nebulaVertices=[]
@@ -190,7 +190,7 @@ scene.add(nebula)
 
 
 
-// CORAZON
+// CORAZON CENTRAL
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -225,7 +225,7 @@ scene.add(heartMesh)
 
 
 
-// FRASES CON EMOJIS
+// FRASES
 
 const frases=[
 "👑 Mi princesa hermosa",
@@ -303,6 +303,48 @@ star.userData.blink=Math.random()*2
 
 scene.add(star)
 stars.push(star)
+
+}
+
+
+
+// CORAZONES PEQUEÑOS
+
+const miniHearts=[]
+
+function createHeartShape(){
+
+const heartShape=new THREE.Shape()
+
+heartShape.moveTo(0,0)
+heartShape.bezierCurveTo(0,0,-0.5,-0.5,-1,0)
+heartShape.bezierCurveTo(-1.5,0.5,-1,1.2,0,1.6)
+heartShape.bezierCurveTo(1,1.2,1.5,0.5,1,0)
+heartShape.bezierCurveTo(0.5,-0.5,0,0,0,0)
+
+return heartShape
+
+}
+
+for(let i=0;i<120;i++){
+
+const geo=new THREE.ShapeGeometry(createHeartShape())
+
+const mat=new THREE.MeshBasicMaterial({color:0xff4fa3})
+
+const heart=new THREE.Mesh(geo,mat)
+
+heart.scale.set(1.5,1.5,1)
+
+heart.position.set(
+(Math.random()-0.5)*400,
+(Math.random()-0.5)*200,
+(Math.random()-0.5)*400
+)
+
+scene.add(heart)
+
+miniHearts.push(heart)
 
 }
 
@@ -390,6 +432,46 @@ fall()
 
 
 
+// ESTELA CORAZON
+
+function heartTrail(position){
+
+for(let i=0;i<20;i++){
+
+const geo=new THREE.SphereGeometry(0.15,6,6)
+
+const mat=new THREE.MeshBasicMaterial({
+color:0xff77cc,
+transparent:true
+})
+
+const star=new THREE.Mesh(geo,mat)
+
+star.position.copy(position)
+
+scene.add(star)
+
+function fade(){
+
+star.material.opacity-=0.02
+star.position.y+=0.05
+
+if(star.material.opacity>0){
+requestAnimationFrame(fade)
+}else{
+scene.remove(star)
+}
+
+}
+
+fade()
+
+}
+
+}
+
+
+
 // MUSICA
 
 let music
@@ -411,7 +493,7 @@ document.getElementById("musicBtn").innerText="🎵 Música activada"
 
 
 
-// DETECTAR CLICK EN CORAZON
+// CLICK
 
 const raycaster=new THREE.Raycaster()
 const mouse=new THREE.Vector2()
@@ -441,6 +523,22 @@ document.getElementById("mensaje").style.display="block"
 alert("Clave incorrecta")
 
 }
+
+}
+
+
+
+const heartHits=raycaster.intersectObjects(miniHearts)
+
+if(heartHits.length>0){
+
+const obj=heartHits[0].object
+
+heartTrail(obj.position)
+
+scene.remove(obj)
+
+miniHearts.splice(miniHearts.indexOf(obj),1)
 
 }
 
@@ -485,6 +583,13 @@ heartMesh.rotation.y+=0.002
 
 const pulse=1+Math.sin(Date.now()*0.003)*0.08
 heartMesh.scale.set(pulse,pulse,pulse)
+
+if(music && !music.paused){
+
+const nebulaPulse=1+Math.sin(Date.now()*0.002)*0.15
+nebula.scale.set(nebulaPulse,nebulaPulse,nebulaPulse)
+
+}
 
 stars.forEach(s=>{
 s.material.opacity=0.5+Math.sin(Date.now()*0.003+s.userData.blink)*0.5
