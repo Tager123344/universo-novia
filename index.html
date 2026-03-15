@@ -4,229 +4,98 @@
 <meta charset="UTF-8">
 <title>Nuestro Universo - Para mi Natasha 💖</title>
 <style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background: radial-gradient(circle at center, #110022, #000000);
-    font-family: 'Arial', sans-serif;
-  }
+  body { margin:0; overflow:hidden; background:#000; }
   #title {
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3.8vw;
-    color: #ff69b4;
-    text-shadow: 0 0 15px #ff69b4, 0 0 30px #ff1493, 0 0 50px #ff007f;
-    text-align: center;
-    white-space: nowrap;
-    animation: neonGlow 4s ease-in-out infinite alternate;
-    z-index: 5;
-    pointer-events: none;
-  }
-  @keyframes neonGlow {
-    from { text-shadow: 0 0 10px #ff69b4, 0 0 20px #ff1493; }
-    to   { text-shadow: 0 0 30px #ff69b4, 0 0 60px #ff1493, 0 0 90px #ff007f; }
+    position: absolute; top: 20%; left: 0; right: 0;
+    text-align: center; font-size: 4vw; color: #ff69b4;
+    text-shadow: 0 0 20px #ff69b4, 0 0 40px #ff1493;
+    pointer-events: none; z-index: 5;
   }
   #btn {
-    position: absolute;
-    bottom: 12%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 20px 60px;
-    font-size: 2.2vw;
-    color: white;
-    background: linear-gradient(135deg, #ff2e8b, #ff69b4);
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-    box-shadow: 0 0 40px rgba(255, 105, 180, 0.7);
-    transition: all 0.4s ease;
-    z-index: 10;
-  }
-  #btn:hover {
-    transform: translateX(-50%) scale(1.1);
-    box-shadow: 0 0 70px #ff1493;
+    position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+    padding: 20px 60px; font-size: 2.5vw; color: white;
+    background: #ff2e8b; border: none; border-radius: 60px;
+    cursor: pointer; box-shadow: 0 0 30px #ff2e8b; z-index: 10;
   }
   #secret {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    color: #ffb6c1;
-    font-size: 2.5vw;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 5%;
-    z-index: 20;
-    line-height: 1.6;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+    color: #ffb6c1; font-size: 3vw; display: none;
+    align-items: center; justify-content: center; text-align: center;
+    padding: 5%; z-index: 20;
   }
-  #secret button {
-    margin-top: 40px;
-    padding: 15px 50px;
-    font-size: 1.8vw;
-    background: #ff69b4;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 0 30px #ff69b4;
-  }
+  #secret button { padding: 15px 40px; font-size: 2vw; background: #ff69b4; color: white; border: none; border-radius: 50px; cursor: pointer; margin-top: 30px; }
 </style>
 </head>
 <body>
-
 <div id="title">💖 Nuestro Universo - Para mi Natasha 💖</div>
 <button id="btn">❤️ Mensaje secreto</button>
 
 <div id="secret">
-  Mi Natasha preciosa...<br><br>
-  Este universo es nuestro.<br>
-  Cada estrella lleva tu nombre,<br>
-  cada latido es por ti.<br>
-  Te amo infinitamente ❤️<br><br>
+  Mi amor Natasha...<br><br>
+  Tú eres mi galaxia completa.<br>
+  Te amo con todo mi ser ❤️<br><br>
   <button onclick="document.getElementById('secret').style.display='none'">Cerrar 💕</button>
 </div>
 
-<script src="https://unpkg.com/three@0.167.1/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.167.1/examples/js/controls/OrbitControls.min.js"></script>
-<script src="https://unpkg.com/three@0.167.1/examples/js/postprocessing/EffectComposer.min.js"></script>
-<script src="https://unpkg.com/three@0.167.1/examples/js/postprocessing/RenderPass.min.js"></script>
-<script src="https://unpkg.com/three@0.167.1/examples/js/postprocessing/UnrealBloomPass.min.js"></script>
+<!-- Three.js desde CDN oficial y estable (no unpkg para evitar fallos) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script>
 
 <script>
-// Escena principal
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 20000);
-camera.position.set(0, 10, 90);
+// Verificamos si THREE cargó
+if (typeof THREE === 'undefined') {
+  document.body.innerHTML += '<h1 style="color:red; text-align:center; margin-top:40vh;">Error: No se cargó Three.js<br>Revisa internet, desactiva bloqueadores de anuncios, o prueba otro navegador</h1>';
+} else {
+  // Escena básica (corazón + estrellas)
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 4;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-document.body.appendChild(renderer.domElement);
-
-// Bloom para glow neón intenso (clave del estilo)
-const composer = new THREE.EffectComposer(renderer);
-composer.addPass(new THREE.RenderPass(scene, camera));
-const bloom = new THREE.UnrealBloomPass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  1.9,  // fuerza del glow
-  0.7,
-  0.6
-);
-composer.addPass(bloom);
-
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-
-// Fondo lejano sutil
-const starsBgGeo = new THREE.BufferGeometry();
-const starsBgPos = [];
-for (let i = 0; i < 4000; i++) {
-  const r = 4000 + Math.random() * 3000;
-  const theta = Math.random() * Math.PI * 2;
-  const phi = Math.acos(2 * Math.random() - 1);
-  starsBgPos.push(
-    r * Math.sin(phi) * Math.cos(theta),
-    r * Math.sin(phi) * Math.sin(theta),
-    r * Math.cos(phi)
-  );
-}
-starsBgGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsBgPos, 3));
-scene.add(new THREE.Points(starsBgGeo, new THREE.PointsMaterial({
-  color: 0xffffff, size: 2, transparent: true, opacity: 0.35
-})));
-
-// Galaxia central en tonos rosa
-const galaxyGeo = new THREE.BufferGeometry();
-const galaxyPos = [];
-for (let i = 0; i < 7000; i++) {
-  const r = Math.random() * 140;
-  const spin = r * 0.55;
-  const angle = Math.random() * Math.PI * 2;
-  galaxyPos.push(
-    Math.cos(angle + spin) * r,
-    (Math.random() - 0.5) * 10,
-    Math.sin(angle + spin) * r
-  );
-}
-galaxyGeo.setAttribute('position', new THREE.Float32BufferAttribute(galaxyPos, 3));
-scene.add(new THREE.Points(galaxyGeo, new THREE.PointsMaterial({
-  color: 0xffb6c1, size: 0.7, transparent: true, opacity: 0.9
-})));
-
-// Corazón central pulsante (forma exacta de ecuación corazón)
-const heartGeo = new THREE.BufferGeometry();
-const heartPos = [];
-for (let i = 0; i < 2000; i++) {
-  const t = Math.random() * Math.PI * 2;
-  const x = 16 * Math.pow(Math.sin(t), 3);
-  const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-  heartPos.push(x * 1.1, y * 1.1, (Math.random() - 0.5) * 5);
-}
-heartGeo.setAttribute('position', new THREE.Float32BufferAttribute(heartPos, 3));
-const heartMat = new THREE.PointsMaterial({ color: 0xff1493, size: 1.5, transparent: true });
-const heart = new THREE.Points(heartGeo, heartMat);
-scene.add(heart);
-
-// Estrellas twinkling suaves
-const twinkles = [];
-for (let i = 0; i < 1000; i++) {
-  const star = new THREE.Mesh(
-    new THREE.SphereGeometry(0.05, 5, 5),
-    new THREE.MeshBasicMaterial({ color: 0xffffff })
-  );
-  star.position.set(
-    (Math.random() - 0.5) * 900,
-    (Math.random() - 0.5) * 450,
-    (Math.random() - 0.5) * 900
-  );
-  star.userData.phase = Math.random() * Math.PI * 2;
-  scene.add(star);
-  twinkles.push(star);
-}
-
-// Luz rosa para resaltar
-scene.add(new THREE.PointLight(0xff69b4, 2.5, 800).position.set(80, 120, 100));
-
-// Animación
-let time = 0;
-function animate() {
-  requestAnimationFrame(animate);
-  time += 0.016;
-
-  // Latido del corazón
-  const pulse = 1 + Math.sin(time * 2.2) * 0.09;
-  heart.scale.set(pulse, pulse, pulse);
-  heart.rotation.y += 0.0025;
-
-  // Rotación galaxia lenta
-  galaxyGeo.rotateY(0.0004);
-
-  // Twinkling
-  twinkles.forEach(s => {
-    s.material.opacity = 0.6 + Math.sin(time * 5 + s.userData.phase) * 0.4;
-  });
-
-  controls.update();
-  composer.render();
-}
-animate();
-
-// Resize
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-});
+  document.body.appendChild(renderer.domElement);
 
-// Mensaje secreto
-document.getElementById('btn').addEventListener('click', () => {
+  // Corazón de partículas rosas
+  const heartGeo = new THREE.BufferGeometry();
+  const positions = [];
+  for (let i = 0; i < 800; i++) {
+    const t = Math.random() * Math.PI * 2;
+    const x = 16 * Math.pow(Math.sin(t), 3) * 0.12;
+    const y = (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) * 0.12;
+    positions.push(x, y, (Math.random() - 0.5) * 0.4);
+  }
+  heartGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const heartMat = new THREE.PointsMaterial({ color: 0xff1493, size: 0.06 });
+  const heart = new THREE.Points(heartGeo, heartMat);
+  scene.add(heart);
+
+  // Estrellas twinkling
+  const starsGeo = new THREE.BufferGeometry();
+  const starsPos = [];
+  for (let i = 0; i < 1500; i++) {
+    starsPos.push((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
+  }
+  starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPos, 3));
+  scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.015 })));
+
+  function animate() {
+    requestAnimationFrame(animate);
+    heart.rotation.y += 0.008;
+    heart.scale.setScalar(1 + Math.sin(Date.now() * 0.002) * 0.06);
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+// Botón
+document.getElementById('btn').onclick = () => {
   document.getElementById('secret').style.display = 'flex';
-});
+};
 </script>
 </body>
 </html>
