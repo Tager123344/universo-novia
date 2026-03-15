@@ -61,7 +61,7 @@ width:100%;
 text-align:center;
 font-size:28px;
 color:white;
-text-shadow:0 0 20px white;
+text-shadow:0 0 25px white;
 opacity:0;
 transition:1s;
 }
@@ -230,7 +230,6 @@ size:1.5
 })
 
 const heartMesh=new THREE.Points(heartGeo,heartMat)
-
 heartMesh.position.y=35
 
 scene.add(heartMesh)
@@ -285,7 +284,7 @@ canvas.height=128
 
 ctx.fillStyle="white"
 ctx.shadowColor="white"
-ctx.shadowBlur=20
+ctx.shadowBlur=25
 
 ctx.font="40px Arial"
 ctx.textAlign="center"
@@ -296,7 +295,7 @@ const texture=new THREE.CanvasTexture(canvas)
 const material=new THREE.SpriteMaterial({
 map:texture,
 transparent:true,
-opacity:0.35
+opacity:0.45
 })
 
 const sprite=new THREE.Sprite(material)
@@ -319,7 +318,7 @@ crearTexto(frases[Math.floor(Math.random()*frases.length)])
 
 
 
-// FOTOS
+// FOTOS + HOVER
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -341,17 +340,6 @@ const photoMesh=new THREE.Mesh(geo,mat)
 
 group.add(photoMesh)
 
-const edges=new THREE.EdgesGeometry(geo)
-
-const line=new THREE.LineSegments(
-edges,
-new THREE.LineBasicMaterial({color:0xff77aa})
-)
-
-line.scale.set(1.15,1.15,1)
-
-group.add(line)
-
 group.position.y=28
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
@@ -364,6 +352,101 @@ photos.push(group)
 
 for(let i=1;i<=8;i++){
 photo(i*Math.PI*2/8,i)
+}
+
+
+
+// HOVER FOTOS + PARTICULAS
+
+const raycaster=new THREE.Raycaster()
+const mouse=new THREE.Vector2()
+
+window.addEventListener("mousemove",(event)=>{
+
+mouse.x=(event.clientX/window.innerWidth)*2-1
+mouse.y=-(event.clientY/window.innerHeight)*2+1
+
+raycaster.setFromCamera(mouse,camera)
+
+const intersects=raycaster.intersectObjects(photos,true)
+
+photos.forEach(p=>p.scale.set(1,1,1))
+
+if(intersects.length>0){
+
+const obj=intersects[0].object.parent
+
+obj.scale.set(1.4,1.4,1.4)
+
+crearCorazones(obj.position)
+
+}
+
+})
+
+
+
+function crearCorazones(pos){
+
+for(let i=0;i<5;i++){
+
+const geo=new THREE.SphereGeometry(0.4,6,6)
+
+const mat=new THREE.MeshBasicMaterial({
+color:0xff66aa,
+transparent:true
+})
+
+const h=new THREE.Mesh(geo,mat)
+
+h.position.copy(pos)
+
+scene.add(h)
+
+const vx=(Math.random()-0.5)*2
+const vy=Math.random()*2
+const vz=(Math.random()-0.5)*2
+
+function anim(){
+
+h.material.opacity-=0.02
+
+h.position.x+=vx
+h.position.y+=vy
+h.position.z+=vz
+
+if(h.material.opacity>0){
+requestAnimationFrame(anim)
+}else{
+scene.remove(h)
+}
+
+}
+
+anim()
+
+}
+
+}
+
+
+
+// MUSICA
+
+let music
+
+document.getElementById("musicBtn").onclick=()=>{
+
+if(!music){
+
+music=new Audio("music.mp3")
+music.loop=true
+music.volume=0.7
+
+}
+
+music.play()
+
 }
 
 
