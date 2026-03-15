@@ -70,6 +70,7 @@ cursor:pointer;
 <body>
 
 <div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
+
 <button id="musicBtn">🎵 Activar música</button>
 
 <div id="mensaje">
@@ -145,7 +146,7 @@ scene.add(galaxy)
 
 
 
-// NEBULOSA ROSA MÁS BRILLANTE
+// NEBULOSA ROSA BRILLANTE
 
 const nebulaGeo=new THREE.BufferGeometry()
 const nebulaVertices=[]
@@ -177,13 +178,14 @@ new THREE.Float32BufferAttribute(nebulaColors,3)
 )
 
 const nebulaMat=new THREE.PointsMaterial({
-size:3,
+size:2,
 vertexColors:true,
 transparent:true,
-opacity:0.35
+opacity:0.45
 })
 
 const nebula=new THREE.Points(nebulaGeo,nebulaMat)
+
 scene.add(nebula)
 
 
@@ -223,18 +225,25 @@ scene.add(heartMesh)
 
 
 
-// FRASES FLOTANDO
+// FRASES CON EMOJIS
 
 const frases=[
-"Mi princesa hermosa",
-"Mi amor eterno",
-"Eres mi universo",
-"Te amo muchísimo",
-"Eres mi felicidad",
-"Mi tesoro",
-"Mi niña hermosa",
-"Siempre contigo",
-"Eres mi todo"
+"👑 Mi princesa hermosa",
+"👑 Mi princecita",
+"👑 Mi reina hermosa",
+"🥰 Mi gordita hermosa",
+"😋 Mi caprichosita",
+"🍼 Mi bebita",
+"🐣 Mi tiquitita",
+"🐞 Mi pulguita",
+"🌸 Mi niña hermosa",
+"💖 Mi amor eterno",
+"💞 Eres mi universo",
+"💘 Te amo muchísimo",
+"✨ Eres mi felicidad",
+"💎 Mi tesoro",
+"💕 Siempre contigo",
+"❤️ Eres mi todo"
 ]
 
 for(let i=0;i<400;i++){
@@ -402,7 +411,7 @@ document.getElementById("musicBtn").innerText="🎵 Música activada"
 
 
 
-// RAYCASTER CORAZON
+// DETECTAR CLICK EN CORAZON
 
 const raycaster=new THREE.Raycaster()
 const mouse=new THREE.Vector2()
