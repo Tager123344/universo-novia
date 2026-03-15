@@ -6,69 +6,35 @@
 
 <style>
 body{
-  margin:0;
-  overflow:hidden;
-  background:black;
-  font-family:sans-serif;
+margin:0;
+overflow:hidden;
+background:black;
+font-family:sans-serif;
 }
 
 #titulo{
-  position:absolute;
-  top:25px;
-  width:100%;
-  text-align:center;
-  font-size:40px;
-  color:#ff77aa;
-  text-shadow:0 0 40px #ff77aa;
+position:absolute;
+top:25px;
+width:100%;
+text-align:center;
+font-size:40px;
+color:#ff77aa;
+text-shadow:0 0 40px #ff77aa;
 }
 
 #btn{
-  position:absolute;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%);
-  padding:14px 25px;
-  background:#ff2a8b;
-  border:none;
-  border-radius:25px;
-  color:white;
-  font-size:18px;
-  cursor:pointer;
-  box-shadow:0 0 20px #ff2a8b;
-}
-
-#login{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  color:white;
-  z-index:10;
-  font-size:24px;
-}
-
-#login input{
-  padding:12px;
-  font-size:20px;
-  border-radius:10px;
-  border:none;
-  margin-top:15px;
-}
-#login button{
-  margin-top:15px;
-  padding:10px 25px;
-  border:none;
-  border-radius:20px;
-  background:#ff2a8b;
-  color:white;
-  font-size:18px;
-  cursor:pointer;
+position:absolute;
+bottom:30px;
+left:50%;
+transform:translateX(-50%);
+padding:14px 25px;
+background:#ff2a8b;
+border:none;
+border-radius:25px;
+color:white;
+font-size:18px;
+cursor:pointer;
+box-shadow:0 0 20px #ff2a8b;
 }
 </style>
 
@@ -77,12 +43,6 @@ body{
 <body>
 
 <div id="titulo">💖 Nuestro universo infinito 💖</div>
-<div id="login">
-  <div>Introduce la clave:</div>
-  <input id="clave" placeholder="30102025">
-  <button onclick="verificar()">Entrar</button>
-</div>
-
 <button id="btn">💌 Mensaje secreto</button>
 
 <audio autoplay loop>
@@ -95,8 +55,15 @@ body{
 <script>
 
 const scene=new THREE.Scene()
-const camera=new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight,0.1,10000)
-camera.position.z=120
+
+const camera=new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+10000
+)
+
+camera.position.z=80
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
@@ -106,140 +73,337 @@ const controls=new THREE.OrbitControls(camera,renderer.domElement)
 controls.enableDamping=true
 controls.dampingFactor=0.05
 
+
 // GALAXIA ESPIRAL
-const galaxyGeo = new THREE.BufferGeometry();
-const galaxyVertices = [];
-const totalStars = 20000;
-const removePercent = 0.15; 
-const finalStars = Math.floor(totalStars*(1-removePercent));
 
-for(let i=0;i<finalStars;i++){
-  const radius=Math.random()*200;
-  const spin=radius*0.4;
-  const angle=Math.random()*Math.PI*2;
-  galaxyVertices.push(Math.cos(angle+spin)*radius, (Math.random()-0.5)*20, Math.sin(angle+spin)*radius);
+const galaxyGeo=new THREE.BufferGeometry()
+const galaxyVertices=[]
+
+for(let i=0;i<20000;i++){
+
+const radius=Math.random()*200
+const spin=radius*0.4
+const angle=Math.random()*Math.PI*2
+
+galaxyVertices.push(
+Math.cos(angle+spin)*radius,
+(Math.random()-0.5)*20,
+Math.sin(angle+spin)*radius
+)
+
 }
 
-galaxyGeo.setAttribute('position', new THREE.Float32BufferAttribute(galaxyVertices,3));
-const galaxyMat = new THREE.PointsMaterial({color:0xffffff, size:0.3, sizeAttenuation:true});
-const galaxy = new THREE.Points(galaxyGeo, galaxyMat);
-scene.add(galaxy);
+galaxyGeo.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(galaxyVertices,3)
+)
 
-// CORAZON CENTRAL RELLENO
-const heartShape = new THREE.Shape();
-heartShape.moveTo(0,0);
-heartShape.bezierCurveTo(0,0,-6,-6,-12,0);
-heartShape.bezierCurveTo(-18,6,-10,18,0,24);
-heartShape.bezierCurveTo(10,18,18,6,12,0);
-heartShape.bezierCurveTo(6,-6,0,0,0,0);
+const galaxyMat=new THREE.PointsMaterial({
+color:0xffffff,
+size:1.4
+})
 
-const heartGeo = new THREE.ExtrudeGeometry(heartShape, {depth:4, bevelEnabled:true, bevelThickness:1, bevelSize:1, bevelSegments:2});
-const heartMat = new THREE.MeshStandardMaterial({color:0xff3377, emissive:0xff2255, emissiveIntensity:0.3});
-const heart = new THREE.Mesh(heartGeo, heartMat);
-heart.scale.set(2,2,2);
-heart.position.y=0;
-scene.add(heart);
+const galaxy=new THREE.Points(galaxyGeo,galaxyMat)
 
-// LUZ
-const light=new THREE.PointLight(0xffffff,2)
-light.position.set(50,50,50)
-scene.add(light)
+scene.add(galaxy)
 
-// PLANETAS SISTEMA SOLAR CON TEXTURA Y ANILLOS
+
+// CORAZON CENTRAL
+
+const heartGeo=new THREE.BufferGeometry()
+const heartVertices=[]
+
+for(let i=0;i<2500;i++){
+
+const t=Math.random()*Math.PI*2
+
+const x=16*Math.pow(Math.sin(t),3)
+const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t)
+
+heartVertices.push(x*0.8,y*0.8,(Math.random()-0.5)*2)
+
+}
+
+heartGeo.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(heartVertices,3)
+)
+
+const heartMat=new THREE.PointsMaterial({
+color:0xff3377,
+size:1
+})
+
+const heart=new THREE.Points(heartGeo,heartMat)
+
+scene.add(heart)
+
+
+// PLANETAS BONITOS
+
+function createPlanet(angle,radius,color){
+
+const geo=new THREE.SphereGeometry(5,64,64)
+
+const mat=new THREE.MeshStandardMaterial({
+color:color,
+emissive:color,
+emissiveIntensity:0.4
+})
+
+const planet=new THREE.Mesh(geo,mat)
+
+planet.position.x=Math.cos(angle)*radius
+planet.position.z=Math.sin(angle)*radius
+
+scene.add(planet)
+
+// anillo tipo Saturno
+
+const ringGeo=new THREE.RingGeometry(7,10,64)
+
+const ringMat=new THREE.MeshBasicMaterial({
+color:0xffffff,
+side:THREE.DoubleSide
+})
+
+const ring=new THREE.Mesh(ringGeo,ringMat)
+
+ring.rotation.x=Math.PI/2
+
+planet.add(ring)
+
+}
+
+createPlanet(0,60,0x44aaff)
+createPlanet(Math.PI/3,60,0xff77aa)
+createPlanet(Math.PI*2/3,60,0xffcc33)
+createPlanet(Math.PI,60,0xaa66ff)
+createPlanet(Math.PI*4/3,60,0x33ffaa)
+createPlanet(Math.PI*5/3,60,0xff8844)
+
+
+// FOTOS
+
 const loader=new THREE.TextureLoader()
-const planetData=[
-  {name:"Mercurio", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/mercury.jpg", radius:30, speed:0.004},
-  {name:"Venus", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/venus.jpg", radius:40, speed:0.0035},
-  {name:"Tierra", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/earth.jpg", radius:50, speed:0.003},
-  {name:"Marte", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/mars.jpg", radius:60, speed:0.0025},
-  {name:"Jupiter", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/jupiter.jpg", radius:75, speed:0.002},
-  {name:"Saturno", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/saturn.jpg", radius:90, speed:0.0018},
-  {name:"Urano", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/uranus.jpg", radius:105, speed:0.0015},
-  {name:"Neptuno", tex:"https://raw.githubusercontent.com/sonicadv/planet-textures/main/neptune.jpg", radius:120, speed:0.0012}
-];
-const planets=[]
-planetData.forEach(p=>{
-  const geo=new THREE.SphereGeometry(5,64,64)
-  const tex=loader.load(p.tex)
-  const mat=new THREE.MeshStandardMaterial({map:tex})
-  const planet=new THREE.Mesh(geo,mat)
-  planet.userData={angle:Math.random()*Math.PI*2, radius:p.radius, speed:p.speed}
-  planet.position.x=Math.cos(planet.userData.angle)*planet.userData.radius
-  planet.position.z=Math.sin(planet.userData.angle)*planet.userData.radius
-  scene.add(planet)
-  planets.push(planet)
 
-  // Anillos solo para Saturno y Urano
-  if(p.name==="Saturno" || p.name==="Urano"){
-    const ringGeo=new THREE.RingGeometry(7,12,64)
-    const ringTex=loader.load("https://raw.githubusercontent.com/sonicadv/planet-textures/main/saturn_ring.png")
-    const ringMat=new THREE.MeshBasicMaterial({map:ringTex, side:THREE.DoubleSide, transparent:true})
-    const ring=new THREE.Mesh(ringGeo, ringMat)
-    ring.rotation.x=Math.PI/2
-    planet.add(ring)
-  }
-})
-
-// FOTOS ÚNICAS
-const usedImages=[]
 function photo(angle){
-  let idx; 
-  do{ idx=Math.floor(Math.random()*5)+1 }while(usedImages.includes(idx))
-  usedImages.push(idx)
-  const tex=loader.load("foto"+idx+".jpg")
-  const geo=new THREE.PlaneGeometry(14,14)
-  const mat=new THREE.MeshBasicMaterial({map:tex, transparent:true})
-  const mesh=new THREE.Mesh(geo, mat)
-  mesh.position.x=Math.cos(angle)*35
-  mesh.position.z=Math.sin(angle)*35
-  scene.add(mesh)
-}
-for(let i=0;i<5;i++) photo(i*Math.PI*2/5)
 
-// DETECCIÓN DE CLICK EN EL CORAZON
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
+const tex=loader.load("foto"+(Math.floor(Math.random()*5)+1)+".jpg")
 
-window.addEventListener("click",(event)=>{
-  mouse.x=(event.clientX/window.innerWidth)*2-1
-  mouse.y=-(event.clientY/window.innerHeight)*2+1
-  raycaster.setFromCamera(mouse,camera)
-  const hit=raycaster.intersectObject(heart)
-  if(hit.length>0){
-    document.getElementById("login").style.display="flex"
-  }
+const geo=new THREE.PlaneGeometry(14,14)
+
+const mat=new THREE.MeshBasicMaterial({
+map:tex,
+transparent:true
 })
 
-function verificar(){
-  if(document.getElementById("clave").value==="30102025"){
-    document.getElementById("login").style.display="none"
-    alert("¡Clave correcta! 💖")
-  } else {
-    alert("Clave incorrecta")
-  }
+const mesh=new THREE.Mesh(geo,mat)
+
+mesh.position.x=Math.cos(angle)*35
+mesh.position.z=Math.sin(angle)*35
+
+scene.add(mesh)
+
 }
 
-// ANIMACION DE PLANETAS Y GALAXIA
-function animate(){
-  requestAnimationFrame(animate)
-  galaxy.rotation.y+=0.0005
-  heart.rotation.y+=0.003
-
-  planets.forEach(p=>{
-    p.userData.angle+=p.userData.speed
-    p.position.x=Math.cos(p.userData.angle)*p.userData.radius
-    p.position.z=Math.sin(p.userData.angle)*p.userData.radius
-  })
-
-  controls.update()
-  renderer.render(scene,camera)
+for(let i=0;i<5;i++){
+photo(i*Math.PI*2/5)
 }
-animate()
+
+
+// PELUCHES 3D (ositos)
+
+function teddy(angle){
+
+const geo=new THREE.SphereGeometry(3,32,32)
+
+const mat=new THREE.MeshStandardMaterial({
+color:0xffccaa
+})
+
+const mesh=new THREE.Mesh(geo,mat)
+
+mesh.position.x=Math.cos(angle)*80
+mesh.position.z=Math.sin(angle)*80
+
+scene.add(mesh)
+
+}
+
+for(let i=0;i<8;i++){
+teddy(i*Math.PI/4)
+}
+
+
+// FRASES
+
+const frases=[
+"Mi princesa hermosa",
+"Mi niña preciosa",
+"Mi amor eterno",
+"Mi amorcito lindo",
+"Mi cachetoncita hermosa",
+"Mi gordita preciosa",
+"Mi tesoro más valioso",
+"Te amo más que a nada",
+"Eres mi felicidad",
+"Eres mi estrella favorita",
+"Eres mi universo entero",
+"Contigo todo es mejor",
+"Eres lo mejor que me ha pasado",
+"Mi vida es más bonita contigo",
+"Eres la luz de mi vida",
+"Eres mi razón de sonreír",
+"Eres mi sueño hecho realidad",
+"Siempre quiero estar contigo",
+"Eres mi lugar favorito",
+"Mi corazón es tuyo"
+]
+
+for(let i=0;i<1000;i++){
+
+const text=frases[Math.floor(Math.random()*frases.length)]
+
+const canvas=document.createElement("canvas")
+const ctx=canvas.getContext("2d")
+
+canvas.width=512
+canvas.height=256
+
+ctx.fillStyle="white"
+ctx.font="36px Arial"
+ctx.textAlign="center"
+ctx.fillText(text,256,130)
+
+const tex=new THREE.CanvasTexture(canvas)
+
+const mat=new THREE.SpriteMaterial({map:tex})
+
+const sprite=new THREE.Sprite(mat)
+
+const angle=Math.random()*Math.PI*2
+const radius=150+Math.random()*200
+
+sprite.position.x=Math.cos(angle)*radius
+sprite.position.z=Math.sin(angle)*radius
+sprite.position.y=(Math.random()-0.5)*80
+
+sprite.scale.set(14,6,1)
+
+scene.add(sprite)
+
+}
+
+
+// ESTRELLAS BRILLANTES
+
+for(let i=0;i<5000;i++){
+
+const geo=new THREE.SphereGeometry(0.2,6,6)
+
+const mat=new THREE.MeshBasicMaterial({color:0xffffff})
+
+const star=new THREE.Mesh(geo,mat)
+
+const angle=Math.random()*Math.PI*2
+const radius=150+Math.random()*250
+
+star.position.x=Math.cos(angle)*radius
+star.position.z=Math.sin(angle)*radius
+star.position.y=(Math.random()-0.5)*120
+
+scene.add(star)
+
+}
+
+
+// ESTRELLAS FUGACES
+
+function shootingStar(){
+
+const geo=new THREE.SphereGeometry(0.6,8,8)
+
+const mat=new THREE.MeshBasicMaterial({color:0xffffff})
+
+const star=new THREE.Mesh(geo,mat)
+
+star.position.set(-600,Math.random()*200,-200)
+
+scene.add(star)
+
+const speed=8
+
+function move(){
+
+star.position.x+=speed
+star.position.y-=speed*0.5
+
+if(star.position.x<600){
+
+requestAnimationFrame(move)
+
+}else{
+
+scene.remove(star)
+
+}
+
+}
+
+move()
+
+}
+
+setInterval(shootingStar,800)
+
+
+// CORAZONES QUE SIGUEN EL CURSOR
+
+document.addEventListener("mousemove",(e)=>{
+
+const geo=new THREE.SphereGeometry(0.4,8,8)
+
+const mat=new THREE.MeshBasicMaterial({color:0xff3377})
+
+const heart=new THREE.Mesh(geo,mat)
+
+heart.position.set(
+(Math.random()-0.5)*20,
+(Math.random()-0.5)*20,
+(Math.random()-0.5)*20
+)
+
+scene.add(heart)
+
+})
+
 
 // MENSAJE
+
 document.getElementById("btn").onclick=()=>{
-  alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
+
+alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
+
 }
+
+
+// ANIMACION
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+galaxy.rotation.y+=0.0005
+heart.rotation.y+=0.003
+
+controls.update()
+
+renderer.render(scene,camera)
+
+}
+
+animate()
 
 </script>
 
