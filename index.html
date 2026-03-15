@@ -31,11 +31,11 @@ transform:translateX(-50%);
 padding:14px 28px;
 border:none;
 border-radius:25px;
-background:#ff4fb0;
+background:#aa44ff;
 color:white;
 font-size:18px;
 cursor:pointer;
-box-shadow:0 0 20px #ff4fb0;
+box-shadow:0 0 20px #aa44ff;
 }
 
 #mensaje{
@@ -61,7 +61,7 @@ width:100%;
 text-align:center;
 font-size:28px;
 color:white;
-text-shadow:0 0 25px white;
+text-shadow:0 0 20px white;
 opacity:0;
 transition:1s;
 }
@@ -195,8 +195,6 @@ const frases=[
 "Mi caprichosita",
 "Mi bebita",
 "Mi tiquitita",
-"Mi pulguita",
-"Mi princecita",
 "Eres mi universo",
 "Siempre tú",
 "Contigo todo es más bonito",
@@ -225,7 +223,7 @@ setInterval(mostrarFrase,9000)
 
 
 
-// FRASES EN EL UNIVERSO
+// FRASES EN EL ESPACIO
 
 function crearTexto(frase){
 
@@ -264,7 +262,7 @@ scene.add(sprite)
 
 }
 
-for(let i=0;i<300;i++){
+for(let i=0;i<200;i++){
 crearTexto(frases[Math.floor(Math.random()*frases.length)])
 }
 
@@ -276,9 +274,9 @@ const floatingHearts=[]
 
 function crearCorazonesUniverso(){
 
-for(let i=0;i<1200;i++){
+for(let i=0;i<1000;i++){
 
-const geo=new THREE.SphereGeometry(0.8,6,6)
+const geo=new THREE.SphereGeometry(0.7,6,6)
 
 const mat=new THREE.MeshBasicMaterial({
 color:0xff66aa
@@ -301,7 +299,7 @@ floatingHearts.push(heart)
 
 
 
-// EXPLOSION
+// EXPLOSION CORAZONES
 
 function explosion(pos){
 
@@ -315,19 +313,17 @@ const p=new THREE.Mesh(geo,mat)
 
 p.position.copy(pos)
 
-const v={
-x:(Math.random()-0.5)*3,
-y:(Math.random()-0.5)*3,
-z:(Math.random()-0.5)*3
-}
-
 scene.add(p)
+
+const vx=(Math.random()-0.5)*3
+const vy=(Math.random()-0.5)*3
+const vz=(Math.random()-0.5)*3
 
 function anim(){
 
-p.position.x+=v.x
-p.position.y+=v.y
-p.position.z+=v.z
+p.position.x+=vx
+p.position.y+=vy
+p.position.z+=vz
 
 p.scale.multiplyScalar(0.96)
 
