@@ -24,7 +24,7 @@ text-shadow:0 0 25px #ff6fae;
 
 #btn{
 position:absolute;
-bottom:70px;
+bottom:30px;
 left:50%;
 transform:translateX(-50%);
 padding:14px 28px;
@@ -36,21 +36,6 @@ font-size:18px;
 cursor:pointer;
 box-shadow:0 0 20px #ff2e8b;
 }
-
-#musicBtn{
-position:absolute;
-bottom:30px;
-left:50%;
-transform:translateX(-50%);
-padding:12px 24px;
-border:none;
-border-radius:20px;
-background:#6fa8ff;
-color:white;
-font-size:16px;
-cursor:pointer;
-box-shadow:0 0 15px #6fa8ff;
-}
 </style>
 
 </head>
@@ -59,11 +44,6 @@ box-shadow:0 0 15px #6fa8ff;
 
 <div id="mensaje">💖 Nuestro Universo 💖</div>
 <button id="btn">💌 Mensaje secreto</button>
-<button id="musicBtn">⏸ Pausar música</button>
-
-<audio id="bgMusic" autoplay loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_9462b0c6a9.mp3?filename=romantic-background-ambient-124008.mp3">
-</audio>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
@@ -319,29 +299,6 @@ setInterval(shootingStar,1500)
 document.getElementById("btn").onclick=()=>{
 
 alert("Desde que llegaste a mi vida todo es más bonito. Eres mi universo y siempre quiero estar contigo ❤️")
-
-}
-
-
-
-// MUSICA
-
-const music=document.getElementById("bgMusic")
-const musicBtn=document.getElementById("musicBtn")
-
-musicBtn.onclick=()=>{
-
-if(music.paused){
-
-music.play()
-musicBtn.textContent="⏸ Pausar música"
-
-}else{
-
-music.pause()
-musicBtn.textContent="▶ Reproducir música"
-
-}
 
 }
 
