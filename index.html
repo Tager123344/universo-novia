@@ -64,15 +64,17 @@ document.body.appendChild(renderer.domElement);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// LUCES (Empiezan muy bajas para el estado "apagado")
-scene.add(new THREE.AmbientLight(0xffffff, 0.1));
-const pLight = new THREE.PointLight(0xff77aa, 1.5); // El corazón palpita en rosa tenue
-pLight.position.set(0, 0, 0); // Luz desde el centro
+// LUCES
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.1); // Asignada correctamente
+scene.add(ambientLight);
+
+const pLight = new THREE.PointLight(0xff77aa, 1.5); 
+pLight.position.set(0, 0, 0); 
 scene.add(pLight);
 
 const frases = ["💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", "🌸 Princesa", "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🦋 Magia pura", "🌹 Te amo", "🍭 Mi dulce", "🌙 Mi luna"];
 
-// 1. ESTRELLAS MÁS JUNTAS (Invisibles al inicio)
+// 1. ESTRELLAS
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i=0; i<18000; i++) {
@@ -83,7 +85,7 @@ const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, transpar
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. CUBOS ROSAS (Invisibles al inicio)
+// 2. CUBOS ROSAS
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i=0; i<800; i++) {
@@ -105,7 +107,7 @@ const heartMat = new THREE.PointsMaterial({ color: 0xff3377, size: 2.5 });
 const heartMesh = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(heartPoints, 3)), heartMat);
 scene.add(heartMesh);
 
-// 4. FRASES FLOTANTES (Invisibles al inicio)
+// 4. FRASES FLOTANTES
 const sprites = [];
 function crearSprite(texto) {
     const canvas = document.createElement("canvas"); canvas.width = 256; canvas.height = 64;
@@ -124,7 +126,6 @@ for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 // 5. FOTOS ORDENADAS CON MARCO DE NEÓN DELGADO
 const photos = [];
 const loader = new THREE.TextureLoader();
-// Geometría del marco (borde de neón delgado, DoubleSide)
 const fShape = new THREE.Shape();
 fShape.moveTo(-11,-11); fShape.lineTo(11,-11); fShape.lineTo(11,11); fShape.lineTo(-11,11);
 const hole = new THREE.Path(); hole.moveTo(-10.5,-10.5); hole.lineTo(10.5,-10.5); hole.lineTo(10.5,10.5); hole.lineTo(-10.5,10.5);
@@ -146,7 +147,7 @@ for(let i=1; i<=28; i++) {
     photos.push(group);
 }
 
-// LÓGICA
+// LÓGICA DE CLAVE
 function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
@@ -166,21 +167,23 @@ document.getElementById("musicBtn").onclick = function() {
     this.style.display = "none";
     despierto = true;
     
-    // Zoom in de cámara al centro Ralentizado (Suave)
+    // Zoom in de cámara al centro (Suave)
     let zoomInt = setInterval(() => {
-        if(camera.position.z > 280) camera.position.z -= 5; // decremento más pequeño para más suavidad
+        if(camera.position.z > 280) camera.position.z -= 4; 
         else clearInterval(zoomInt);
-    }, 15); // intervalo ligeramente más largo para suavizar
+    }, 15); 
 
-    // Encendido coordinado
+    // Encendido coordinado corregido
     ambientLight.intensity = 0.6;
     pLight.intensity = 2.0;
     starsMat.opacity = 0.9;
     cubeMat.opacity = 0.6;
     sprites.forEach(s => s.material.opacity = 0.5);
+    
+    // Revelar fotos y marco
+    fMat.opacity = 1;
     photos.forEach(p => {
-        p.children[0].material.opacity = 1;
-        p.children[1].material.opacity = 1; // Marco visible
+        p.children[0].material.opacity = 1; 
     });
 };
 
@@ -188,7 +191,6 @@ function animate() {
     requestAnimationFrame(animate);
     const t = Date.now() * 0.001;
 
-    // Latido rosa siempre presente, palpita más fuerte después de despertar
     const pulseStrength = despierto ? 0.15 : 0.05;
     const pulseFrequency = despierto ? 4 : 1;
     heartMesh.scale.setScalar(1 + Math.sin(t * pulseFrequency) * pulseStrength);
@@ -204,49 +206,4 @@ function animate() {
         
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
-            p.position.y += Math.sin(t + i) * 0.1;
-        });
-    }
-
-    controls.update();
-    renderer.render(scene, camera);
-}
-animate();
-
-// Frases intermitentes abajo
-setInterval(() => {
-    if(despierto) {
-        const d = document.getElementById("frase");
-        d.innerHTML = frases[Math.floor(Math.random()*frases.length)];
-        d.style.opacity = 1;
-        setTimeout(() => d.style.opacity = 0, 4000);
-    }
-}, 7000);
-
-// RESPONSIVE
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// INTERACCION PARA LA CLAVE
-const ray = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-window.addEventListener("click", (e) => {
-    mouse.x = (e.clientX/window.innerWidth)*2-1;
-    mouse.y = -(e.clientY/window.innerHeight)*2+1;
-    
-    // Solo permitir abrir el modal si el universo está despierto
-    if(despierto) {
-        ray.setFromCamera(mouse, camera);
-        // Intersectar heartMesh unificado
-        if(ray.intersectObject(heartMesh).length > 0) {
-            document.getElementById('modalClave').classList.add('activo');
-        }
-    }
-});
-</script>
-</body>
-</html>
+            p.position.y += Math.sin(t +
