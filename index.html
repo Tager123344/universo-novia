@@ -83,7 +83,6 @@ cursor:pointer;
 <body>
 
 <div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
-
 <button id="musicBtn">🎵 Activar música</button>
 
 <div id="mensaje">
@@ -211,10 +210,6 @@ const frases=[
 "💓 Te amo infinitamente"
 ]
 
-
-
-// FRASE ABAJO
-
 function mostrarFrase(){
 
 const frase=frases[Math.floor(Math.random()*frases.length)]
@@ -234,114 +229,7 @@ setInterval(mostrarFrase,9000)
 
 
 
-// FRASES CERCA DEL CENTRO
-
-function crearTexto(frase){
-
-const canvas=document.createElement("canvas")
-const ctx=canvas.getContext("2d")
-
-canvas.width=512
-canvas.height=128
-
-ctx.fillStyle="white"
-ctx.shadowColor="white"
-ctx.shadowBlur=25
-ctx.font="40px Arial"
-ctx.textAlign="center"
-ctx.fillText(frase,256,64)
-
-const texture=new THREE.CanvasTexture(canvas)
-
-const material=new THREE.SpriteMaterial({
-map:texture,
-transparent:true,
-opacity:0.6
-})
-
-const sprite=new THREE.Sprite(material)
-
-sprite.position.set(
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*120+30,
-(Math.random()-0.5)*200
-)
-
-sprite.scale.set(40,12,1)
-
-scene.add(sprite)
-
-let dir=1
-
-function fade(){
-
-material.opacity+=0.002*dir
-
-if(material.opacity>0.8) dir=-1
-if(material.opacity<0.2) dir=1
-
-requestAnimationFrame(fade)
-
-}
-
-fade()
-
-}
-
-for(let i=0;i<120;i++){
-crearTexto(frases[Math.floor(Math.random()*frases.length)])
-}
-
-
-
-// CORAZONES PEQUEÑOS
-
-function crearCorazonPequeño(){
-
-const geo=new THREE.SphereGeometry(0.5,8,8)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff4fa3,
-transparent:true,
-opacity:0.7
-})
-
-const heart=new THREE.Mesh(geo,mat)
-
-heart.position.set(
-(Math.random()-0.5)*300,
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*300
-)
-
-scene.add(heart)
-
-let dir=1
-
-function anim(){
-
-heart.rotation.y+=0.01
-
-mat.opacity+=0.01*dir
-
-if(mat.opacity>0.9) dir=-1
-if(mat.opacity<0.2) dir=1
-
-requestAnimationFrame(anim)
-
-}
-
-anim()
-
-}
-
-for(let i=0;i<120;i++){
-crearCorazonPequeño()
-}
-
-
-
-// FOTOS
+// FOTOS CON MARCO ROSA
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -363,6 +251,21 @@ const photoMesh=new THREE.Mesh(geo,mat)
 
 group.add(photoMesh)
 
+
+// MARCO ROSA
+
+const frameGeo=new THREE.PlaneGeometry(18,18)
+
+const frameMat=new THREE.MeshBasicMaterial({
+color:0xff7ab6,
+transparent:true,
+opacity:0.35
+})
+
+const frame=new THREE.Mesh(frameGeo,frameMat)
+
+group.add(frame)
+
 group.position.y=28
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
@@ -379,6 +282,57 @@ photo(i*Math.PI*2/5,i)
 
 
 
+// EXPLOSION DE LUZ
+
+function explosionLuz(){
+
+for(let i=0;i<200;i++){
+
+const geo=new THREE.SphereGeometry(0.3,6,6)
+
+const mat=new THREE.MeshBasicMaterial({
+color:0xff66aa,
+transparent:true
+})
+
+const part=new THREE.Mesh(geo,mat)
+
+part.position.copy(heartMesh.position)
+
+scene.add(part)
+
+const vx=(Math.random()-0.5)*4
+const vy=(Math.random()-0.5)*4
+const vz=(Math.random()-0.5)*4
+
+function anim(){
+
+part.position.x+=vx
+part.position.y+=vy
+part.position.z+=vz
+
+mat.opacity-=0.02
+
+if(mat.opacity>0){
+
+requestAnimationFrame(anim)
+
+}else{
+
+scene.remove(part)
+
+}
+
+}
+
+anim()
+
+}
+
+}
+
+
+
 // RAYCASTER
 
 const raycaster=new THREE.Raycaster()
@@ -386,7 +340,7 @@ const mouse=new THREE.Vector2()
 
 
 
-// CLICK EN CORAZON
+// CLICK CORAZON
 
 window.addEventListener("click",(event)=>{
 
@@ -402,6 +356,8 @@ if(intersects.length>0){
 const clave=prompt("💖 Ingresa la clave secreta")
 
 if(clave==="30102025"){
+
+explosionLuz()
 
 document.getElementById("mensajeContenido").innerHTML=
 "💖 Si llegaste hasta aquí es porque eres muy especial para mí.<br><br>Todo este universo lo hice pensando en ti ✨<br><br>Te amo muchísimo."
@@ -420,7 +376,7 @@ alert("❌ Clave incorrecta")
 
 
 
-// CERRAR MENSAJE
+// CERRAR
 
 document.getElementById("cerrar").onclick=()=>{
 document.getElementById("mensaje").style.display="none"
