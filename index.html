@@ -310,15 +310,15 @@ const photoMesh=new THREE.Mesh(geo,mat)
 group.add(photoMesh)
 
 
-
-// MARCO
+// MARCO (AHORA DOBLE CARA)
 
 const frameGeo=new THREE.PlaneGeometry(18,18)
 
 const frameMat=new THREE.MeshBasicMaterial({
 color:0xff7ab6,
 transparent:true,
-opacity:0.9
+opacity:0.9,
+side:THREE.DoubleSide
 })
 
 const frame=new THREE.Mesh(frameGeo,frameMat)
