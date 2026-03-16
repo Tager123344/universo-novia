@@ -39,12 +39,6 @@ cursor:pointer;
 box-shadow:0 0 25px #aa44ff;
 }
 
-/* ocultamos universo al inicio */
-
-canvas{
-display:none;
-}
-
 #titulo{
 position:absolute;
 top:20px;
@@ -53,8 +47,6 @@ text-align:center;
 font-size:36px;
 color:#ff7ab6;
 text-shadow:0 0 25px #ff7ab6;
-opacity:0;
-transition:2s;
 }
 
 #frase{
@@ -75,13 +67,10 @@ transition:1s;
 <body>
 
 <div id="startScreen">
-
 <button id="startBtn">💖 Activar música 💖</button>
-
 </div>
 
 <div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
-
 <div id="frase"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -89,7 +78,7 @@ transition:1s;
 
 <script>
 
-// ====== ESCENA ======
+// ===== ESCENA =====
 
 const scene=new THREE.Scene()
 
@@ -106,14 +95,15 @@ const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
-renderer.domElement.style.display="none"
+// universo oculto al inicio
+renderer.domElement.style.opacity=0
 
 const controls=new THREE.OrbitControls(camera,renderer.domElement)
 controls.enableDamping=true
 
 
 
-// ====== LUZ ======
+// ===== LUZ =====
 
 const light=new THREE.PointLight(0xffffff,1.6)
 light.position.set(50,50,50)
@@ -121,7 +111,7 @@ scene.add(light)
 
 
 
-// ====== GALAXIA ======
+// ===== GALAXIA =====
 
 const galaxyGeo=new THREE.BufferGeometry()
 const vertices=[]
@@ -232,11 +222,8 @@ music.play()
 
 document.getElementById("startScreen").style.display="none"
 
-renderer.domElement.style.display="block"
-
-document.getElementById("titulo").style.opacity=1
-
-mostrarFrase()
+// aparece el universo
+renderer.domElement.style.opacity=1
 
 }
 
@@ -253,10 +240,7 @@ const frases=[
 "👑 Mi princesita",
 "🌸 Mi niña hermosa",
 "💘 Eres mi universo",
-"💞 Siempre tú",
-"🌹 Contigo todo es más bonito",
-"✨ Eres mi estrella favorita",
-"💓 Te amo infinitamente"
+"💞 Siempre tú"
 ]
 
 function mostrarFrase(){
