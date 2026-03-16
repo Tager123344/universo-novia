@@ -129,7 +129,7 @@ scene.add(galaxy)
 
 
 
-// CUADROS ROSA FLOTANDO
+// CUADROS ROSA
 
 for(let i=0;i<1200;i++){
 
@@ -157,7 +157,7 @@ scene.add(cube)
 
 
 
-// CORAZON CENTRAL
+// CORAZON
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -193,7 +193,6 @@ scene.add(heartMesh)
 // FRASES
 
 const frases=[
-
 "💖 Mi gordita hermosa",
 "💗 Mi caprichosita",
 "👶 Mi bebita",
@@ -202,24 +201,7 @@ const frases=[
 "👑 Mi princesita",
 "🌸 Mi niña hermosa",
 "💘 Eres mi universo",
-"💞 Siempre tú",
-"🌹 Contigo todo es más bonito",
-"✨ Eres mi estrella favorita",
-"💓 Te amo infinitamente",
-"💖 Mi princesa",
-"💗 Mi amorcito",
-"💘 Mi tesoro",
-"💞 Mi felicidad",
-"🌹 Mi vida",
-"✨ Mi luz",
-"💓 Mi todo",
-"💖 Siempre tú y yo",
-"💗 Contigo para siempre",
-"💘 Mi universo favorito",
-"💞 Eres mi hogar",
-"🌹 Te amo cada día más",
-"✨ Eres mi destino"
-
+"💞 Siempre tú"
 ]
 
 function mostrarFrase(){
@@ -241,53 +223,7 @@ setInterval(mostrarFrase,9000)
 
 
 
-// FRASES EN EL ESPACIO
-
-function crearTexto(frase){
-
-const canvas=document.createElement("canvas")
-const ctx=canvas.getContext("2d")
-
-canvas.width=512
-canvas.height=128
-
-ctx.fillStyle="white"
-ctx.shadowColor="white"
-ctx.shadowBlur=25
-
-ctx.font="40px Arial"
-ctx.textAlign="center"
-ctx.fillText(frase,256,64)
-
-const texture=new THREE.CanvasTexture(canvas)
-
-const material=new THREE.SpriteMaterial({
-map:texture,
-transparent:true,
-opacity:0.45
-})
-
-const sprite=new THREE.Sprite(material)
-
-sprite.position.set(
-(Math.random()-0.5)*800,
-(Math.random()-0.5)*400,
-(Math.random()-0.5)*800
-)
-
-sprite.scale.set(60,15,1)
-
-scene.add(sprite)
-
-}
-
-for(let i=0;i<600;i++){
-crearTexto(frases[Math.floor(Math.random()*frases.length)])
-}
-
-
-
-// FOTOS CON MARCO
+// FOTOS
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -306,26 +242,44 @@ side:THREE.DoubleSide
 })
 
 const photoMesh=new THREE.Mesh(geo,mat)
-
 group.add(photoMesh)
 
 
 
-// MARCO
+// ===== MARCO REAL 3D =====
 
-const frameGeo=new THREE.PlaneGeometry(18,18)
-
-const frameMat=new THREE.MeshBasicMaterial({
+const frameMaterial=new THREE.MeshBasicMaterial({
 color:0xff7ab6,
-transparent:true,
-opacity:0.9
+side:THREE.DoubleSide
 })
 
-const frame=new THREE.Mesh(frameGeo,frameMat)
+const topFrame=new THREE.Mesh(
+new THREE.BoxGeometry(18,0.6,0.6),
+frameMaterial
+)
+topFrame.position.y=8.3
+group.add(topFrame)
 
-frame.position.z=-0.1
+const bottomFrame=new THREE.Mesh(
+new THREE.BoxGeometry(18,0.6,0.6),
+frameMaterial
+)
+bottomFrame.position.y=-8.3
+group.add(bottomFrame)
 
-group.add(frame)
+const leftFrame=new THREE.Mesh(
+new THREE.BoxGeometry(0.6,18,0.6),
+frameMaterial
+)
+leftFrame.position.x=-8.3
+group.add(leftFrame)
+
+const rightFrame=new THREE.Mesh(
+new THREE.BoxGeometry(0.6,18,0.6),
+frameMaterial
+)
+rightFrame.position.x=8.3
+group.add(rightFrame)
 
 
 
@@ -341,85 +295,6 @@ photos.push(group)
 
 for(let i=1;i<=8;i++){
 photo(i*Math.PI*2/8,i)
-}
-
-
-
-// HOVER FOTOS
-
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
-
-window.addEventListener("mousemove",(event)=>{
-
-mouse.x=(event.clientX/window.innerWidth)*2-1
-mouse.y=-(event.clientY/window.innerHeight)*2+1
-
-raycaster.setFromCamera(mouse,camera)
-
-const intersects=raycaster.intersectObjects(photos,true)
-
-photos.forEach(p=>{
-p.scale.set(1,1,1)
-})
-
-if(intersects.length>0){
-
-const obj=intersects[0].object.parent
-
-obj.scale.set(1.35,1.35,1.35)
-
-crearCorazones(obj.position)
-
-}
-
-})
-
-
-
-// CORAZONES
-
-function crearCorazones(pos){
-
-for(let i=0;i<5;i++){
-
-const geo=new THREE.SphereGeometry(0.4,6,6)
-
-const mat=new THREE.MeshBasicMaterial({
-color:0xff66aa,
-transparent:true
-})
-
-const h=new THREE.Mesh(geo,mat)
-
-h.position.copy(pos)
-
-scene.add(h)
-
-const vx=(Math.random()-0.5)*2
-const vy=Math.random()*2
-const vz=(Math.random()-0.5)*2
-
-function anim(){
-
-h.material.opacity-=0.02
-
-h.position.x+=vx
-h.position.y+=vy
-h.position.z+=vz
-
-if(h.material.opacity>0){
-requestAnimationFrame(anim)
-}else{
-scene.remove(h)
-}
-
-}
-
-anim()
-
-}
-
 }
 
 
