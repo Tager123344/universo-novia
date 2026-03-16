@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Nuestro Universo</title>
+<title>Nuestro Universo - Natasha</title>
 
 <style>
 
@@ -211,7 +211,7 @@ z-index:10;
 
 <body>
 
-<div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
+<div id="titulo">💖 Toca el corazón para desbloquear un mensaje - Para Natasha 💖</div>
 
 <button id="musicBtn">🎵 Activar música</button>
 
@@ -338,8 +338,8 @@ window.innerWidth/window.innerHeight,
 10000
 )
 
-// CAMBIO: Alejar la cámara para acomodar 28 fotos
-camera.position.z=150
+// Alejar la cámara un poco para que se vean las 28 fotos organizadas
+camera.position.set(0, 50, 150)
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
 renderer.setSize(window.innerWidth,window.innerHeight)
@@ -578,7 +578,8 @@ size:1.5
 })
 
 const heartMesh=new THREE.Points(heartGeo,heartMat)
-heartMesh.position.y=35
+// Subimos el corazón central a y=35
+heartMesh.position.set(0, 35, 0)
 
 scene.add(heartMesh)
 
@@ -686,11 +687,11 @@ crearTexto(frases[Math.floor(Math.random()*frases.length)])
 const photos=[]
 const loader=new THREE.TextureLoader()
 
-function photo(angle,i){
+function photo(i){
 
 const group=new THREE.Group()
 
-// EFECTO ORIGINAL MANTENIDO: Carga foto.jpg
+// EFECTO ORIGINAL: Carga foto.jpg
 const tex=loader.load("foto"+i+".jpg")
 
 const geo=new THREE.PlaneGeometry(16,16)
@@ -723,11 +724,8 @@ frame.position.z=-0.1
 group.add(frame)
 
 
-
-group.position.y=28
 // Posición inicial temporal, se actualiza en animate()
-group.position.x=Math.cos(angle)*40
-group.position.z=Math.sin(angle)*40
+group.position.set(0, 0, 0)
 
 scene.add(group)
 
@@ -735,10 +733,9 @@ photos.push(group)
 
 }
 
-// CAMBIO: Crear slots para 28 fotos
+// Crear slots para 28 fotos
 for(let i=1;i<=28;i++){
-// El primer argumento del ángulo no importa mucho aquí porque se recalcula en animate()
-photo(i*Math.PI*2/28,i)
+photo(i)
 }
 
 
@@ -899,30 +896,34 @@ updateFallingHearts()
 
 photos.forEach((p,i)=>{
 
-// CAMBIO MATEMÁTICO: Lógica para distribuir 28 fotos sin chocar.
-// Manteniendo el efecto de órbita original pero en forma de espiral ascendente.
-const time=Date.now()*0.0001 // Velocidad de órbita base
-const totalPhotos = photos.length;
+// NUEVA LÓGICA DE DISTRIBUCIÓN: Dos niveles de anillo (14 arriba, 14 abajo)
+const time=Date.now()*0.0001
+const totalPhotos = 28;
+const anglesInDeck = 14;
 
-// Ángulo distribuido uniformemente
-const angleOffset = (i / totalPhotos) * Math.PI * 2;
+// Ángulo distribuido uniformemente para cada nivel
+const angleOffset = ((i % anglesInDeck) / anglesInDeck) * Math.PI * 2;
 const currentAngle = time + angleOffset;
 
-// Radio ligeramente creciente para dar espacio
-const baseRadius = 50;
-const radius = baseRadius + (i * 0.8); 
-
-// Altura variable (espiral) para que no choquen
-const baseY = 28;
-const heightSpread = 60; // Qué tanto suben/bajan
-const py = baseY + (Math.sin(currentAngle * 2 + i) * 10) + (i * 1.5 - (totalPhotos * 0.75));
+// Dos niveles de altura
+let radius, py;
+if (i < 14) {
+    // Primeros 14: Anillo de arriba
+    radius = 60; // Más cerca
+    py = 45; // Arriba
+} else {
+    // Siguientes 14: Anillo de abajo
+    radius = 80; // Más lejos para dar profundidad
+    py = 10; // Abajo
+}
 
 p.position.x=Math.cos(currentAngle)*radius
 p.position.y=py
 p.position.z=Math.sin(currentAngle)*radius
 
-// EFECTO ORIGINAL MANTENIDO: Las fotos rotan sobre su eje
-p.rotation.y += 0.005;
+// ¡TOQUE DE BELLEZA!: Orientar todas las fotos para que miren al corazón central
+// El corazón está en (0, 35, 0)
+p.lookAt(0, 35, 0);
 
 })
 
