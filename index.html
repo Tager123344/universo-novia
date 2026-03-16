@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -22,6 +21,7 @@ text-align:center;
 font-size:36px;
 color:#ff7ab6;
 text-shadow:0 0 25px #ff7ab6;
+z-index:10;
 }
 
 #musicBtn{
@@ -37,6 +37,7 @@ color:white;
 font-size:18px;
 cursor:pointer;
 box-shadow:0 0 20px #aa44ff;
+z-index:10;
 }
 
 #frase{
@@ -49,6 +50,7 @@ color:white;
 text-shadow:0 0 25px white;
 opacity:0;
 transition:1s;
+z-index:10;
 }
 
 </style>
@@ -153,6 +155,137 @@ cube.position.set(
 
 scene.add(cube)
 
+}
+
+
+
+// ✨ PARTÍCULAS BRILLANTES FLOTANTES ✨
+
+const sparkleGeo = new THREE.BufferGeometry()
+const sparkleVertices = []
+const sparkleColors = []
+
+for(let i = 0; i < 3000; i++){
+    sparkleVertices.push(
+        (Math.random() - 0.5) * 600,
+        (Math.random() - 0.5) * 400,
+        (Math.random() - 0.5) * 600
+    )
+
+    // Colores variados: blanco, rosa, dorado
+    const colorChoice = Math.random()
+    if(colorChoice < 0.33){
+        sparkleColors.push(1, 1, 1) // blanco
+    } else if(colorChoice < 0.66){
+        sparkleColors.push(1, 0.6, 0.8) // rosa
+    } else {
+        sparkleColors.push(1, 0.85, 0.4) // dorado
+    }
+}
+
+sparkleGeo.setAttribute('position', new THREE.Float32BufferAttribute(sparkleVertices, 3))
+sparkleGeo.setAttribute('color', new THREE.Float32BufferAttribute(sparkleColors, 3))
+
+const sparkleMat = new THREE.PointsMaterial({
+    size: 1.2,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.9
+})
+
+const sparkles = new THREE.Points(sparkleGeo, sparkleMat)
+scene.add(sparkles)
+
+
+
+// 💕 LLUVIA DE CORAZONES 💕
+
+const fallingHearts = []
+
+function createHeartShape(){
+    const shape = new THREE.Shape()
+    const x = 0, y = 0
+
+    shape.moveTo(x, y + 0.5)
+    shape.bezierCurveTo(x, y + 0.5, x - 0.5, y, x - 0.5, y)
+    shape.bezierCurveTo(x - 0.5, y - 0.35, x, y - 0.6, x, y - 0.8)
+    shape.bezierCurveTo(x, y - 0.6, x + 0.5, y - 0.35, x + 0.5, y)
+    shape.bezierCurveTo(x + 0.5, y, x, y + 0.5, x, y + 0.5)
+
+    return shape
+}
+
+function spawnFallingHeart(){
+    const heartShape = createHeartShape()
+    const geometry = new THREE.ShapeGeometry(heartShape)
+
+    const colors = [0xff3366, 0xff6699, 0xff99cc, 0xff5588, 0xff77aa]
+    const color = colors[Math.floor(Math.random() * colors.length)]
+
+    const material = new THREE.MeshBasicMaterial({
+        color: color,
+        transparent: true,
+        opacity: 0.8,
+        side: THREE.DoubleSide
+    })
+
+    const heart = new THREE.Mesh(geometry, material)
+
+    const scale = Math.random() * 3 + 1
+    heart.scale.set(scale, scale, scale)
+
+    heart.position.set(
+        (Math.random() - 0.5) * 300,
+        200 + Math.random() * 100,
+        (Math.random() - 0.5) * 300
+    )
+
+    heart.rotation.z = Math.random() * Math.PI
+
+    heart.userData = {
+        speedY: Math.random() * 0.5 + 0.3,
+        speedRotation: (Math.random() - 0.5) * 0.02,
+        swaySpeed: Math.random() * 0.02 + 0.01,
+        swayAmount: Math.random() * 0.5 + 0.2,
+        initialX: heart.position.x
+    }
+
+    scene.add(heart)
+    fallingHearts.push(heart)
+}
+
+// Crear corazones iniciales
+for(let i = 0; i < 50; i++){
+    spawnFallingHeart()
+    fallingHearts[i].position.y = Math.random() * 400 - 100
+}
+
+// Generar nuevos corazones periódicamente
+setInterval(spawnFallingHeart, 200)
+
+function updateFallingHearts(){
+    for(let i = fallingHearts.length - 1; i >= 0; i--){
+        const heart = fallingHearts[i]
+
+        heart.position.y -= heart.userData.speedY
+        heart.rotation.z += heart.userData.speedRotation
+
+        // Movimiento de balanceo
+        heart.position.x = heart.userData.initialX +
+            Math.sin(Date.now() * heart.userData.swaySpeed) * heart.userData.swayAmount * 20
+
+        // Remover corazones que salen de vista
+        if(heart.position.y < -200){
+            scene.remove(heart)
+            fallingHearts.splice(i, 1)
+        }
+    }
+
+    // Limitar cantidad de corazones
+    while(fallingHearts.length > 100){
+        const heart = fallingHearts.shift()
+        scene.remove(heart)
+    }
 }
 
 
@@ -456,6 +589,17 @@ heartMesh.rotation.y+=0.002
 const pulse=1+Math.sin(Date.now()*0.003)*0.08
 heartMesh.scale.set(pulse,pulse,pulse)
 
+// Animar partículas brillantes
+sparkles.rotation.y += 0.0003
+const sparklePositions = sparkles.geometry.attributes.position.array
+for(let i = 0; i < sparklePositions.length; i += 3){
+    sparklePositions[i + 1] += Math.sin(Date.now() * 0.001 + i) * 0.02
+}
+sparkles.geometry.attributes.position.needsUpdate = true
+
+// Actualizar lluvia de corazones
+updateFallingHearts()
+
 photos.forEach((p,i)=>{
 
 const t=Date.now()*0.0002+i
@@ -474,8 +618,13 @@ renderer.render(scene,camera)
 
 animate()
 
+// Responsive
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(window.innerWidth, window.innerHeight)
+})
+
 </script>
 
 </body>
-</html>
-```
