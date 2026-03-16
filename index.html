@@ -57,7 +57,9 @@ transition:1s;
 <body>
 
 <div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
+
 <button id="musicBtn">🎵 Activar música</button>
+
 <div id="frase"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -83,8 +85,7 @@ document.body.appendChild(renderer.domElement)
 const controls=new THREE.OrbitControls(camera,renderer.domElement)
 controls.enableDamping=true
 
-const raycaster=new THREE.Raycaster()
-const mouse=new THREE.Vector2()
+
 
 // LUZ
 
@@ -93,12 +94,13 @@ light.position.set(50,50,50)
 scene.add(light)
 
 
-// GALAXIA (más densa como el antiguo)
+
+// GALAXIA
 
 const galaxyGeo=new THREE.BufferGeometry()
 const vertices=[]
 
-for(let i=0;i<25000;i++){
+for(let i=0;i<15000;i++){
 
 const r=Math.random()*200
 const spin=r*0.4
@@ -126,9 +128,10 @@ const galaxy=new THREE.Points(galaxyGeo,galaxyMat)
 scene.add(galaxy)
 
 
-// CUADROS ROSA
 
-for(let i=0;i<2000;i++){
+// CUADROS ROSA FLOTANDO
+
+for(let i=0;i<1200;i++){
 
 const size=Math.random()*2+0.5
 
@@ -151,6 +154,7 @@ cube.position.set(
 scene.add(cube)
 
 }
+
 
 
 // CORAZON CENTRAL
@@ -176,30 +180,68 @@ new THREE.Float32BufferAttribute(heart,3)
 
 const heartMat=new THREE.PointsMaterial({
 color:0xff3377,
-size:1.6
+size:1.5
 })
 
 const heartMesh=new THREE.Points(heartGeo,heartMat)
 heartMesh.position.y=35
+
 scene.add(heartMesh)
+
 
 
 // FRASES
 
 const frases=[
 
-"💖 Mi gordita hermosa","💗 Mi caprichosita","👶 Mi bebita",
-"🥰 Mi tiquitita","🐞 Mi pulguita","👑 Mi princesita",
-"🌸 Mi niña hermosa","💘 Eres mi universo","💞 Siempre tú",
-"🌹 Contigo todo es más bonito","✨ Eres mi estrella favorita",
-"💓 Te amo infinitamente","💖 Mi princesa","💗 Mi amorcito",
-"💘 Mi tesoro","💞 Mi felicidad","🌹 Mi vida","✨ Mi luz",
-"💓 Mi todo","💖 Siempre tú y yo","💗 Contigo para siempre",
-"💘 Mi universo favorito","💞 Eres mi hogar","🌹 Te amo cada día más",
+"💖 Mi gordita hermosa",
+"💗 Mi caprichosita",
+"👶 Mi bebita",
+"🥰 Mi tiquitita",
+"🐞 Mi pulguita",
+"👑 Mi princesita",
+"🌸 Mi niña hermosa",
+"💘 Eres mi universo",
+"💞 Siempre tú",
+"🌹 Contigo todo es más bonito",
+"✨ Eres mi estrella favorita",
+"💓 Te amo infinitamente",
+"💖 Mi princesa",
+"💗 Mi amorcito",
+"💘 Mi tesoro",
+"💞 Mi felicidad",
+"🌹 Mi vida",
+"✨ Mi luz",
+"💓 Mi todo",
+"💖 Siempre tú y yo",
+"💗 Contigo para siempre",
+"💘 Mi universo favorito",
+"💞 Eres mi hogar",
+"🌹 Te amo cada día más",
 "✨ Eres mi destino"
 
 ]
 
+function mostrarFrase(){
+
+const frase=frases[Math.floor(Math.random()*frases.length)]
+
+const div=document.getElementById("frase")
+
+div.innerHTML=frase
+div.style.opacity=1
+
+setTimeout(()=>{
+div.style.opacity=0
+},6000)
+
+}
+
+setInterval(mostrarFrase,9000)
+
+
+
+// FRASES EN EL ESPACIO
 
 function crearTexto(frase){
 
@@ -212,9 +254,9 @@ canvas.height=128
 ctx.fillStyle="white"
 ctx.shadowColor="white"
 ctx.shadowBlur=25
+
 ctx.font="40px Arial"
 ctx.textAlign="center"
-
 ctx.fillText(frase,256,64)
 
 const texture=new THREE.CanvasTexture(canvas)
@@ -222,30 +264,30 @@ const texture=new THREE.CanvasTexture(canvas)
 const material=new THREE.SpriteMaterial({
 map:texture,
 transparent:true,
-opacity:0.5
+opacity:0.45
 })
 
 const sprite=new THREE.Sprite(material)
 
-const size=Math.random()*40+20
-sprite.scale.set(size,size*0.25,1)
-
 sprite.position.set(
-(Math.random()-0.5)*600,
-(Math.random()-0.5)*200,
-(Math.random()-0.5)*600
+(Math.random()-0.5)*800,
+(Math.random()-0.5)*400,
+(Math.random()-0.5)*800
 )
+
+sprite.scale.set(60,15,1)
 
 scene.add(sprite)
 
 }
 
-for(let i=0;i<1500;i++){
+for(let i=0;i<600;i++){
 crearTexto(frases[Math.floor(Math.random()*frases.length)])
 }
 
 
-// FOTOS
+
+// FOTOS CON MARCO
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -264,7 +306,12 @@ side:THREE.DoubleSide
 })
 
 const photoMesh=new THREE.Mesh(geo,mat)
+
 group.add(photoMesh)
+
+
+
+// MARCO
 
 const frameGeo=new THREE.PlaneGeometry(18,18)
 
@@ -275,15 +322,19 @@ opacity:0.9
 })
 
 const frame=new THREE.Mesh(frameGeo,frameMat)
+
 frame.position.z=-0.1
 
 group.add(frame)
+
+
 
 group.position.y=28
 group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
 
 scene.add(group)
+
 photos.push(group)
 
 }
@@ -293,60 +344,138 @@ photo(i*Math.PI*2/8,i)
 }
 
 
-// CLICK CORAZON
 
-window.addEventListener("click",(event)=>{
+// HOVER FOTOS
+
+const raycaster=new THREE.Raycaster()
+const mouse=new THREE.Vector2()
+
+window.addEventListener("mousemove",(event)=>{
 
 mouse.x=(event.clientX/window.innerWidth)*2-1
 mouse.y=-(event.clientY/window.innerHeight)*2+1
 
 raycaster.setFromCamera(mouse,camera)
 
-const intersects=raycaster.intersectObject(heartMesh)
+const intersects=raycaster.intersectObjects(photos,true)
+
+photos.forEach(p=>{
+p.scale.set(1,1,1)
+})
 
 if(intersects.length>0){
 
-const clave=prompt("💖 Ingresa la clave secreta 💖")
+const obj=intersects[0].object.parent
 
-if(clave==="30102025"){
+obj.scale.set(1.35,1.35,1.35)
 
-explosionCorazones()
-mostrarMensaje()
-
-}else{
-
-alert("Clave incorrecta ❤️")
-
-}
+crearCorazones(obj.position)
 
 }
 
 })
 
 
-// EXPLOSION
 
-function explosionCorazones(){
+// CORAZONES
 
-for(let i=0;i<2000;i++){
+function crearCorazones(pos){
 
-const geo=new THREE.SphereGeometry(0.5,6,6)
+for(let i=0;i<5;i++){
+
+const geo=new THREE.SphereGeometry(0.4,6,6)
 
 const mat=new THREE.MeshBasicMaterial({
 color:0xff66aa,
 transparent:true
 })
 
-const heart=new THREE.Mesh(geo,mat)
-heart.position.set(0,35,0)
+const h=new THREE.Mesh(geo,mat)
 
-scene.add(heart)
+h.position.copy(pos)
 
-const vx=(Math.random()-0.5)*20
-const vy=(Math.random()-0.5)*20
-const vz=(Math.random()-0.5)*20
+scene.add(h)
+
+const vx=(Math.random()-0.5)*2
+const vy=Math.random()*2
+const vz=(Math.random()-0.5)*2
 
 function anim(){
 
-heart.material.
+h.material.opacity-=0.02
+
+h.position.x+=vx
+h.position.y+=vy
+h.position.z+=vz
+
+if(h.material.opacity>0){
+requestAnimationFrame(anim)
+}else{
+scene.remove(h)
+}
+
+}
+
+anim()
+
+}
+
+}
+
+
+
+// MUSICA
+
+let music
+
+document.getElementById("musicBtn").onclick=()=>{
+
+if(!music){
+
+music=new Audio("music.mp3")
+music.loop=true
+music.volume=0.7
+
+}
+
+music.play()
+
+}
+
+
+
+// ANIMACION
+
+function animate(){
+
+requestAnimationFrame(animate)
+
+galaxy.rotation.y+=0.0005
+heartMesh.rotation.y+=0.002
+
+const pulse=1+Math.sin(Date.now()*0.003)*0.08
+heartMesh.scale.set(pulse,pulse,pulse)
+
+photos.forEach((p,i)=>{
+
+const t=Date.now()*0.0002+i
+const radius=35+(i*5)
+
+p.position.x=Math.cos(t)*radius
+p.position.z=Math.sin(t)*radius
+
+})
+
+controls.update()
+
+renderer.render(scene,camera)
+
+}
+
+animate()
+
+</script>
+
+</body>
+</html>
 ```
