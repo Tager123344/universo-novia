@@ -6,6 +6,7 @@
 <title>Nuestro Universo</title>
 
 <style>
+
 body{
 margin:0;
 overflow:hidden;
@@ -49,13 +50,16 @@ text-shadow:0 0 25px white;
 opacity:0;
 transition:1s;
 }
+
 </style>
 </head>
 
 <body>
 
 <div id="titulo">💖 Toca el corazón para desbloquear un mensaje 💖</div>
+
 <button id="musicBtn">🎵 Activar música</button>
+
 <div id="frase"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -65,7 +69,13 @@ transition:1s;
 
 const scene=new THREE.Scene()
 
-const camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,10000)
+const camera=new THREE.PerspectiveCamera(
+75,
+window.innerWidth/window.innerHeight,
+0.1,
+10000
+)
+
 camera.position.z=90
 
 const renderer=new THREE.WebGLRenderer({antialias:true})
@@ -104,16 +114,22 @@ Math.sin(angle+spin)*r
 
 }
 
-galaxyGeo.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3))
+galaxyGeo.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(vertices,3)
+)
 
-const galaxyMat=new THREE.PointsMaterial({color:0xffffff,size:0.7})
+const galaxyMat=new THREE.PointsMaterial({
+color:0xffffff,
+size:0.7
+})
 
 const galaxy=new THREE.Points(galaxyGeo,galaxyMat)
 scene.add(galaxy)
 
 
 
-// CUADROS ROSA
+// CUADROS ROSA FLOTANDO
 
 for(let i=0;i<1200;i++){
 
@@ -141,7 +157,7 @@ scene.add(cube)
 
 
 
-// CORAZON
+// CORAZON CENTRAL
 
 const heartGeo=new THREE.BufferGeometry()
 const heart=[]
@@ -157,9 +173,15 @@ heart.push(x*0.8,y*0.8,(Math.random()-0.5)*2)
 
 }
 
-heartGeo.setAttribute('position',new THREE.Float32BufferAttribute(heart,3))
+heartGeo.setAttribute(
+'position',
+new THREE.Float32BufferAttribute(heart,3)
+)
 
-const heartMat=new THREE.PointsMaterial({color:0xff3377,size:1.5})
+const heartMat=new THREE.PointsMaterial({
+color:0xff3377,
+size:1.5
+})
 
 const heartMesh=new THREE.Points(heartGeo,heartMat)
 heartMesh.position.y=35
@@ -171,15 +193,101 @@ scene.add(heartMesh)
 // FRASES
 
 const frases=[
-"💖 Mi gordita hermosa","💗 Mi caprichosita","👶 Mi bebita","🥰 Mi tiquitita",
-"🐞 Mi pulguita","👑 Mi princesita","🌸 Mi niña hermosa","💘 Eres mi universo",
-"💞 Siempre tú","🌹 Contigo todo es más bonito","✨ Eres mi estrella favorita",
-"💓 Te amo infinitamente"
+
+"💖 Mi gordita hermosa",
+"💗 Mi caprichosita",
+"👶 Mi bebita",
+"🥰 Mi tiquitita",
+"🐞 Mi pulguita",
+"👑 Mi princesita",
+"🌸 Mi niña hermosa",
+"💘 Eres mi universo",
+"💞 Siempre tú",
+"🌹 Contigo todo es más bonito",
+"✨ Eres mi estrella favorita",
+"💓 Te amo infinitamente",
+"💖 Mi princesa",
+"💗 Mi amorcito",
+"💘 Mi tesoro",
+"💞 Mi felicidad",
+"🌹 Mi vida",
+"✨ Mi luz",
+"💓 Mi todo",
+"💖 Siempre tú y yo",
+"💗 Contigo para siempre",
+"💘 Mi universo favorito",
+"💞 Eres mi hogar",
+"🌹 Te amo cada día más",
+"✨ Eres mi destino"
+
 ]
 
+function mostrarFrase(){
+
+const frase=frases[Math.floor(Math.random()*frases.length)]
+
+const div=document.getElementById("frase")
+
+div.innerHTML=frase
+div.style.opacity=1
+
+setTimeout(()=>{
+div.style.opacity=0
+},6000)
+
+}
+
+setInterval(mostrarFrase,9000)
 
 
-// FOTOS
+
+// FRASES EN EL ESPACIO
+
+function crearTexto(frase){
+
+const canvas=document.createElement("canvas")
+const ctx=canvas.getContext("2d")
+
+canvas.width=512
+canvas.height=128
+
+ctx.fillStyle="white"
+ctx.shadowColor="white"
+ctx.shadowBlur=25
+
+ctx.font="40px Arial"
+ctx.textAlign="center"
+ctx.fillText(frase,256,64)
+
+const texture=new THREE.CanvasTexture(canvas)
+
+const material=new THREE.SpriteMaterial({
+map:texture,
+transparent:true,
+opacity:0.45
+})
+
+const sprite=new THREE.Sprite(material)
+
+sprite.position.set(
+(Math.random()-0.5)*800,
+(Math.random()-0.5)*400,
+(Math.random()-0.5)*800
+)
+
+sprite.scale.set(60,15,1)
+
+scene.add(sprite)
+
+}
+
+for(let i=0;i<600;i++){
+crearTexto(frases[Math.floor(Math.random()*frases.length)])
+}
+
+
+
+// FOTOS CON MARCO
 
 const photos=[]
 const loader=new THREE.TextureLoader()
@@ -198,36 +306,26 @@ side:THREE.DoubleSide
 })
 
 const photoMesh=new THREE.Mesh(geo,mat)
+
 group.add(photoMesh)
 
 
 
-// ===== MARCO REAL (4 BORDES) =====
+// MARCO
 
-const frameMaterial=new THREE.MeshBasicMaterial({
+const frameGeo=new THREE.PlaneGeometry(18,18)
+
+const frameMat=new THREE.MeshBasicMaterial({
 color:0xff7ab6,
-side:THREE.DoubleSide
+transparent:true,
+opacity:0.9
 })
 
-// arriba
-const topFrame=new THREE.Mesh(new THREE.BoxGeometry(18,0.6,0.2),frameMaterial)
-topFrame.position.y=8.3
-group.add(topFrame)
+const frame=new THREE.Mesh(frameGeo,frameMat)
 
-// abajo
-const bottomFrame=new THREE.Mesh(new THREE.BoxGeometry(18,0.6,0.2),frameMaterial)
-bottomFrame.position.y=-8.3
-group.add(bottomFrame)
+frame.position.z=-0.1
 
-// izquierda
-const leftFrame=new THREE.Mesh(new THREE.BoxGeometry(0.6,18,0.2),frameMaterial)
-leftFrame.position.x=-8.3
-group.add(leftFrame)
-
-// derecha
-const rightFrame=new THREE.Mesh(new THREE.BoxGeometry(0.6,18,0.2),frameMaterial)
-rightFrame.position.x=8.3
-group.add(rightFrame)
+group.add(frame)
 
 
 
@@ -236,12 +334,112 @@ group.position.x=Math.cos(angle)*40
 group.position.z=Math.sin(angle)*40
 
 scene.add(group)
+
 photos.push(group)
 
 }
 
-for(let i=1;i<=5;i++){
-photo(i*Math.PI*2/5,i)
+for(let i=1;i<=8;i++){
+photo(i*Math.PI*2/8,i)
+}
+
+
+
+// HOVER FOTOS
+
+const raycaster=new THREE.Raycaster()
+const mouse=new THREE.Vector2()
+
+window.addEventListener("mousemove",(event)=>{
+
+mouse.x=(event.clientX/window.innerWidth)*2-1
+mouse.y=-(event.clientY/window.innerHeight)*2+1
+
+raycaster.setFromCamera(mouse,camera)
+
+const intersects=raycaster.intersectObjects(photos,true)
+
+photos.forEach(p=>{
+p.scale.set(1,1,1)
+})
+
+if(intersects.length>0){
+
+const obj=intersects[0].object.parent
+
+obj.scale.set(1.35,1.35,1.35)
+
+crearCorazones(obj.position)
+
+}
+
+})
+
+
+
+// CORAZONES
+
+function crearCorazones(pos){
+
+for(let i=0;i<5;i++){
+
+const geo=new THREE.SphereGeometry(0.4,6,6)
+
+const mat=new THREE.MeshBasicMaterial({
+color:0xff66aa,
+transparent:true
+})
+
+const h=new THREE.Mesh(geo,mat)
+
+h.position.copy(pos)
+
+scene.add(h)
+
+const vx=(Math.random()-0.5)*2
+const vy=Math.random()*2
+const vz=(Math.random()-0.5)*2
+
+function anim(){
+
+h.material.opacity-=0.02
+
+h.position.x+=vx
+h.position.y+=vy
+h.position.z+=vz
+
+if(h.material.opacity>0){
+requestAnimationFrame(anim)
+}else{
+scene.remove(h)
+}
+
+}
+
+anim()
+
+}
+
+}
+
+
+
+// MUSICA
+
+let music
+
+document.getElementById("musicBtn").onclick=()=>{
+
+if(!music){
+
+music=new Audio("music.mp3")
+music.loop=true
+music.volume=0.7
+
+}
+
+music.play()
+
 }
 
 
@@ -269,6 +467,7 @@ p.position.z=Math.sin(t)*radius
 })
 
 controls.update()
+
 renderer.render(scene,camera)
 
 }
