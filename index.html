@@ -4,81 +4,71 @@
     <meta charset="UTF-8">
     <title>Nuestro Universo - Natasha</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #020005; font-family: 'Segoe UI', Arial, sans-serif; }
-        
+        body { margin: 0; overflow: hidden; background: #05000a; font-family: 'Arial', sans-serif; }
         #titulo {
             position: absolute; top: 20px; width: 100%; text-align: center;
-            font-size: 32px; color: #ff7ab6; text-shadow: 0 0 25px #ff7ab6; z-index: 10;
+            font-size: 32px; color: #ff7ab6; text-shadow: 0 0 20px #ff7ab6; z-index: 10;
             pointer-events: none;
         }
-
         #musicBtn {
-            position: absolute; bottom: 30px; left: 30px; padding: 15px 30px;
-            border: none; border-radius: 30px; background: linear-gradient(45deg, #aa44ff, #ff44aa);
-            color: white; font-size: 16px; cursor: pointer; box-shadow: 0 0 20px #aa44ff; z-index: 20;
+            position: absolute; bottom: 30px; left: 30px; padding: 12px 24px;
+            border: none; border-radius: 25px; background: #aa44ff; color: white;
+            font-size: 16px; cursor: pointer; box-shadow: 0 0 15px #aa44ff; z-index: 20;
             transition: 0.3s;
         }
-
+        #musicBtn:hover { transform: scale(1.1); }
         #frase {
             position: absolute; bottom: 100px; width: 100%; text-align: center;
-            font-size: 26px; color: white; text-shadow: 0 0 20px #ff77aa;
-            opacity: 0; transition: 1.5s; z-index: 10; font-weight: bold;
+            font-size: 24px; color: white; text-shadow: 0 0 15px white;
+            opacity: 0; transition: 1.5s; z-index: 10;
         }
-
-        /* Modales Mejorados */
+        /* Modales */
         #modalClave, #mensajeSecreto {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); z-index: 1000; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;
         }
-        
-        .activo { display: flex !important; animation: fadeIn 0.5s; }
-
+        .activo { display: flex !important; }
         .modal-contenido {
-            background: rgba(20, 20, 40, 0.95); padding: 50px;
-            border-radius: 30px; text-align: center; border: 2px solid #ff77aa;
-            box-shadow: 0 0 50px rgba(255, 119, 170, 0.5); max-width: 500px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 40px;
+            border-radius: 20px; text-align: center; border: 2px solid #ff77aa;
+            box-shadow: 0 0 40px #ff77aa; max-width: 500px;
         }
-
         input {
-            padding: 15px; font-size: 20px; border-radius: 15px; border: 2px solid #ff77aa;
-            background: rgba(255,255,255,0.05); color: white; margin-bottom: 25px; text-align: center;
-            width: 80%; outline: none;
+            padding: 12px; font-size: 18px; border-radius: 10px; border: 1px solid #ff77aa;
+            background: rgba(255,255,255,0.1); color: white; margin-bottom: 20px; text-align: center;
         }
-
         button.pink {
-            padding: 12px 35px; background: #ff77aa; border: none; color: white;
-            border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 18px;
-            transition: 0.3s;
+            padding: 10px 25px; background: #ff77aa; border: none; color: white;
+            border-radius: 20px; cursor: pointer; font-weight: bold;
         }
-        button.pink:hover { transform: scale(1.1); box-shadow: 0 0 20px #ff77aa; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .mensaje-contenido h1 { color: #ff77aa; font-size: 40px; margin-bottom: 20px; }
+        .mensaje-contenido p { color: white; font-size: 18px; line-height: 1.6; }
     </style>
 </head>
 <body>
 
-<div id="titulo">✨ Toca el corazón central para Natasha ✨</div>
-<button id="musicBtn">🎵 Activar Música Mágica</button>
+<div id="titulo">💖 Toca el gran corazón para Natasha 💖</div>
+<button id="musicBtn">🎵 Iniciar Música</button>
 <div id="frase"></div>
 
 <div id="modalClave">
     <div class="modal-contenido">
-        <h2 style="color: #ff77aa;">🔐 Nuestra Fecha Especial 💕</h2>
-        <input type="password" id="inputClave" placeholder="DDMMAAAA">
+        <h2>🔐 Clave Secreta 💕</h2>
+        <input type="password" id="inputClave" placeholder="Escribe aquí...">
         <br>
-        <button class="pink" onclick="verificarClave()">Desbloquear</button>
+        <button class="pink" onclick="verificarClave()">Desbloquear Amor</button>
     </div>
 </div>
 
 <div id="mensajeSecreto">
-    <div class="modal-contenido">
-        <h1 style="color: #ff77aa; text-shadow: 0 0 15px #ff77aa;">Mi Natasha Hermosa</h1>
-        <p style="color: white; font-size: 18px; line-height: 1.8;">
-            Eres la luz que ilumina cada rincón de mi existencia.<br>
-            Desde que estás conmigo, mi universo es más brillante.<br><br>
-            <strong>Te amo infinitamente. 🌌💖</strong>
+    <div class="modal-contenido mensaje-contenido">
+        <h1>Mi Natasha Hermosa</h1>
+        <p>
+            Eres la luz de mi vida y mi universo entero.<br>
+            Gracias por ser mi lugar seguro y mi mayor alegría.<br>
+            Te amo hoy, mañana y siempre. 🌌
         </p>
-        <button class="pink" onclick="document.getElementById('mensajeSecreto').classList.remove('activo')">Cerrar con Amor</button>
+        <button class="pink" onclick="document.getElementById('mensajeSecreto').classList.remove('activo')">💕 Cerrar 💕</button>
     </div>
 </div>
 
@@ -88,119 +78,112 @@
 <script>
 // --- CONFIGURACIÓN ---
 const CLAVE_SECRETA = "30102025";
-const TOTAL_FOTOS = 28; // Ahora configurado para las 28 fotos
+const TOTAL_FOTOS = 28;
 let music;
 
-// --- ESCENA Y NIEBLA ---
+// --- ESCENA ---
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x020005);
-scene.fog = new THREE.FogExp2(0x020005, 0.0015);
+scene.background = new THREE.Color(0x05000a);
+scene.fog = new THREE.FogExp2(0x05000a, 0.002);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 2000);
-camera.position.set(0, 50, 150);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1500);
+camera.position.z = 120;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// --- LUCES DE NEÓN ---
-const light1 = new THREE.PointLight(0xff00ff, 2, 300);
-light1.position.set(50, 50, 50);
-scene.add(light1);
+// --- LUCES ---
+const light = new THREE.PointLight(0xffffff, 1.5, 500);
+light.position.set(50, 50, 50);
+scene.add(light);
+scene.add(new THREE.AmbientLight(0x404040));
 
-const light2 = new THREE.PointLight(0x00ffff, 2, 300);
-light2.position.set(-50, -50, 50);
-scene.add(light2);
-
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-
-// --- ESTRELLAS ---
+// --- GALAXIA DE ESTRELLAS ---
 const starGeo = new THREE.BufferGeometry();
 const starCoords = [];
-for(let i=0; i<15000; i++) {
-    starCoords.push((Math.random()-0.5)*1500, (Math.random()-0.5)*1500, (Math.random()-0.5)*1500);
+for(let i=0; i<10000; i++) {
+    starCoords.push((Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
 }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords, 3));
-const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.6, transparent: true });
+const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 });
 const stars = new THREE.Points(starGeo, starMat);
 scene.add(stars);
 
-// --- CORAZÓN CENTRAL RESPLANDECIENTE ---
+// --- CORAZÓN CENTRAL ---
 const heartShape = new THREE.BufferGeometry();
 const heartPoints = [];
-for(let i=0; i<5000; i++) {
+for(let i=0; i<3000; i++) {
     const t = Math.random() * Math.PI * 2;
     const x = 16 * Math.pow(Math.sin(t), 3);
     const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-    heartPoints.push(x*1.5, y*1.5, (Math.random()-0.5)*8);
+    heartPoints.push(x*1.2, y*1.2, (Math.random()-0.5)*5);
 }
 heartShape.setAttribute('position', new THREE.Float32BufferAttribute(heartPoints, 3));
-const heartMat = new THREE.PointsMaterial({ 
-    color: 0xff0066, size: 1.2, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending 
-});
+const heartMat = new THREE.PointsMaterial({ color: 0xff3377, size: 1.8, transparent: true, opacity: 0.9 });
 const heartMesh = new THREE.Points(heartShape, heartMat);
+heartMesh.position.y = 10;
 scene.add(heartMesh);
 
-// --- CARRUSEL ESPIRAL PARA 28 FOTOS ---
+// --- CARRUSEL DE 28 FOTOS ---
 const photos = [];
 const loader = new THREE.TextureLoader();
 
 for(let i=1; i<=TOTAL_FOTOS; i++) {
     const group = new THREE.Group();
-    const tex = loader.load(`foto${i}.jpg`);
-
-    const photoMat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(18, 18), photoMat);
-    
-    // Marco con brillo
-    const frameMat = new THREE.MeshStandardMaterial({ 
-        color: 0xff7ab6, emissive: 0xff33aa, emissiveIntensity: 0.5 
+    // Intenta cargar la foto, si falla pone un color rosa
+    const tex = loader.load(`foto${i}.jpg`, undefined, undefined, () => {
+        console.warn(`No se encontró foto${i}.jpg`);
     });
-    const frame = new THREE.Mesh(new THREE.PlaneGeometry(19.5, 19.5), frameMat);
-    frame.position.z = -0.2;
+
+    const photoGeo = new THREE.PlaneGeometry(15, 15);
+    const photoMat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(photoGeo, photoMat);
+    
+    const frameGeo = new THREE.PlaneGeometry(16.5, 16.5);
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0xff7ab6, emissive: 0xff7ab6, emissiveIntensity: 0.2 });
+    const frame = new THREE.Mesh(frameGeo, frameMat);
+    frame.position.z = -0.1;
 
     group.add(mesh);
     group.add(frame);
     
-    // Posicionamiento en espiral de ADN (para que quepan las 28 sin estorbar)
-    const angle = i * 0.8; 
-    const radius = 70 + (i * 2);
-    const py = (i * 4) - 60;
-    group.position.set(Math.cos(angle)*radius, py, Math.sin(angle)*radius);
-    group.lookAt(0, py, 0); // Miran hacia el centro
+    // Distribución en espiral ascendente
+    const angle = (i / TOTAL_FOTOS) * Math.PI * 8; 
+    const radius = 60 + (i * 1.5);
+    group.position.set(Math.cos(angle)*radius, (i * 3) - 40, Math.sin(angle)*radius);
     
     scene.add(group);
     photos.push(group);
 }
 
-// --- LLUVIA DE CORAZONES 3D ---
+// --- LLUVIA DE CORAZONES ---
 const heartsList = [];
 function createFallingHeart() {
     const shape = new THREE.Shape();
-    shape.moveTo(0, 0);
-    shape.bezierCurveTo(0, -0.3, -0.6, -0.3, -0.6, 0);
-    shape.bezierCurveTo(-0.6, 0.3, 0, 0.6, 0, 1);
-    shape.bezierCurveTo(0, 0.6, 0.6, 0.3, 0.6, 0);
-    shape.bezierCurveTo(0.6, -0.3, 0, -0.3, 0, 0);
+    shape.moveTo(0, 0.5);
+    shape.bezierCurveTo(0, 0.5, -0.5, 0, -0.5, 0);
+    shape.bezierCurveTo(-0.5, -0.4, 0, -0.7, 0, -0.9);
+    shape.bezierCurveTo(0, -0.7, 0.5, -0.4, 0.5, 0);
+    shape.bezierCurveTo(0.5, 0, 0, 0.5, 0, 0.5);
     
     const geo = new THREE.ShapeGeometry(shape);
     const mat = new THREE.MeshStandardMaterial({ 
-        color: 0xff44aa, emissive: 0xff0044, transparent: true, opacity: 0.6 
+        color: 0xff44aa, emissive: 0xff1166, transparent: true, opacity: 0.7 
     });
     const h = new THREE.Mesh(geo, mat);
-    h.position.set((Math.random()-0.5)*600, 300, (Math.random()-0.5)*600);
-    h.scale.set(5, 5, 5);
+    h.position.set((Math.random()-0.5)*400, 200, (Math.random()-0.5)*400);
+    h.scale.set(4, 4, 4);
     h.rotation.x = Math.PI;
     scene.add(h);
     heartsList.push(h);
 }
-setInterval(createFallingHeart, 250);
+setInterval(createFallingHeart, 300);
 
-// --- LÓGICA DE INTERACCIÓN ---
+// --- INTERACCIÓN ---
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
@@ -208,19 +191,17 @@ window.addEventListener('click', (e) => {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
-    const intersect = raycaster.intersectObject(heartMesh);
-    if(intersect.length > 0) {
+    if(raycaster.intersectObject(heartMesh).length > 0) {
         document.getElementById('modalClave').classList.add('activo');
     }
 });
 
 function verificarClave() {
-    const val = document.getElementById('inputClave').value;
-    if(val === CLAVE_SECRETA) {
+    if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
         document.getElementById('mensajeSecreto').classList.add('activo');
     } else {
-        alert("Clave incorrecta... pista: la fecha 30/10/2025");
+        alert("Clave incorrecta, intenta con nuestra fecha especial...");
     }
 }
 
@@ -230,51 +211,41 @@ document.getElementById("musicBtn").onclick = () => {
         music.loop = true;
     }
     music.play();
-    document.getElementById("musicBtn").style.display = "none";
+    document.getElementById("musicBtn").innerText = "🎵 Sonando...";
 };
 
-// --- FRASES FLOTANTES ---
-const frases = ["Eres mi mundo", "Te amo Natasha", "Mi niña caprichosa", "Mi tesoro", "Siempre juntos", "Eres arte"];
+// --- FRASES ---
+const frases = ["Mi Princesa", "Eres mi Universo", "Te amo Natasha", "Mi niña hermosa", "Siempre juntos"];
 setInterval(() => {
     const f = document.getElementById("frase");
     f.innerText = frases[Math.floor(Math.random()*frases.length)];
     f.style.opacity = 1;
-    setTimeout(() => f.style.opacity = 0, 3000);
-}, 5000);
+    setTimeout(() => f.style.opacity = 0, 4000);
+}, 6000);
 
-// --- BUCLE DE ANIMACIÓN ---
+// --- ANIMACIÓN ---
 function animate() {
     requestAnimationFrame(animate);
-    const t = Date.now() * 0.001;
     
-    // Latido y rotación del corazón
-    heartMesh.rotation.y += 0.005;
-    const beat = 1 + Math.sin(t * 4) * 0.1;
-    heartMesh.scale.set(beat, beat, beat);
+    const time = Date.now() * 0.001;
     
-    // Rotación del universo
-    stars.rotation.y += 0.0001;
+    heartMesh.rotation.y += 0.01;
+    heartMesh.scale.setScalar(1 + Math.sin(time*3)*0.1);
+    
+    stars.rotation.y += 0.0002;
 
-    // Animación de fotos
     photos.forEach((p, i) => {
-        p.position.y += Math.sin(t + i) * 0.02;
-        // Hacer que las fotos orbiten lentamente
-        const angle = t * 0.1 + (i * 0.8);
-        const radius = 70 + (i * 2);
-        p.position.x = Math.cos(angle) * radius;
-        p.position.z = Math.sin(angle) * radius;
-        p.lookAt(0, p.position.y, 0);
+        p.rotation.y += 0.01;
+        p.position.y += Math.sin(time + i) * 0.05;
     });
 
-    // Caída de corazones
-    for(let i=0; i<heartsList.length; i++) {
-        heartsList[i].position.y -= 1.2;
-        heartsList[i].rotation.z += 0.01;
-        if(heartsList[i].position.y < -300) {
-            scene.remove(heartsList[i]);
+    heartsList.forEach((h, i) => {
+        h.position.y -= 0.8;
+        if(h.position.y < -200) {
+            scene.remove(h);
             heartsList.splice(i, 1);
         }
-    }
+    });
 
     controls.update();
     renderer.render(scene, camera);
