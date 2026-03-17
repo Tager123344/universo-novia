@@ -65,16 +65,21 @@ const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
-// LUCES
 const ambLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambLight);
 const pLight = new THREE.PointLight(0xff77aa, 1);
 pLight.position.set(0, 50, 100);
 scene.add(pLight);
 
-const frases = ["💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", "🌸 Princesa", "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🦋 Magia pura", "🌹 Te amo", "🍭 Mi dulce", "🌙 Mi luna"];
+// FRASES ACTUALIZADAS CON TUS NUEVOS APODOS
+const frases = [
+    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
+    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
+    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
+    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", 
+    "💖 Tu mi tiquitita", "💎 Mi tesorito"
+];
 
-// 1. ESTRELLAS
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i=0; i<18000; i++) {
@@ -85,7 +90,6 @@ const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, transpar
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. CUBOS ROSAS
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i=0; i<800; i++) {
@@ -95,7 +99,6 @@ for(let i=0; i<800; i++) {
     cubes.push(c);
 }
 
-// 3. CORAZÓN CENTRAL
 const heartPoints = [];
 for (let i = 0; i < 3500; i++) {
     const t = Math.random() * Math.PI * 2;
@@ -107,47 +110,37 @@ const heartMat = new THREE.PointsMaterial({ color: 0x330011, size: 2.5, transpar
 const heart = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(heartPoints, 3)), heartMat);
 scene.add(heart);
 
-// 4. FRASES FLOTANTES
 const sprites = [];
 function crearSprite(texto) {
     const canvas = document.createElement("canvas"); canvas.width = 256; canvas.height = 64;
     const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "white"; ctx.font = "bold 26px Arial"; ctx.textAlign = "center";
+    ctx.fillStyle = "white"; ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
     ctx.shadowColor = "#ff77aa"; ctx.shadowBlur = 8;
     ctx.fillText(texto, 128, 32);
     const sMat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0 });
     const s = new THREE.Sprite(sMat);
-    s.position.set((Math.random()-0.5)*700, (Math.random()-0.5)*600, (Math.random()-0.5)*700);
-    s.scale.set(60, 15, 1);
+    s.position.set((Math.random()-0.5)*750, (Math.random()-0.5)*650, (Math.random()-0.5)*750);
+    s.scale.set(70, 18, 1);
     scene.add(s);
     sprites.push(s);
 }
+// Creamos 300 sprites usando la lista de frases actualizada
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
-// 5. FOTOS CON MARCOS DE NEÓN MÁS GRANDES
 const photos = [];
 const loader = new THREE.TextureLoader();
-
-// Geometría del marco exterior ajustado a las fotos de 25x25
 const fShape = new THREE.Shape();
 fShape.moveTo(-13.5,-13.5); fShape.lineTo(13.5,-13.5); fShape.lineTo(13.5,13.5); fShape.lineTo(-13.5,13.5);
 const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5);
 fShape.holes.push(hole);
 const fGeo = new THREE.ShapeGeometry(fShape);
-
-// AQUÍ ESTABA EL ERROR: Faltaba esta línea que define el material del marco de neón
 const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
 
 for(let i=1; i<=28; i++) {
     const group = new THREE.Group();
-    // Material de la foto
     const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
-    
-    // Foto de 25x25 (más grande)
     group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
-    // Marco
     group.add(new THREE.Mesh(fGeo, frMat)); 
-    
     const angle = (i % 14) * (Math.PI * 2 / 14);
     const radius = i <= 14 ? 140 : 200;
     group.position.set(Math.cos(angle)*radius, (i <= 14 ? 60 : -60), Math.sin(angle)*radius);
@@ -155,7 +148,6 @@ for(let i=1; i<=28; i++) {
     photos.push(group);
 }
 
-// LÓGICA CLAVE
 function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
@@ -167,7 +159,6 @@ function cerrarModales() {
     document.getElementById('mensajeSecreto').classList.remove('activo');
 }
 
-// DESPERTAR DINÁMICO (Animaciones suaves)
 let audio;
 document.getElementById("musicBtn").onclick = function() {
     if(!audio) { audio = new Audio("music.mp3"); audio.loop = true; }
@@ -182,25 +173,18 @@ function animate() {
     const t = Date.now() * 0.001;
 
     if(despierto) {
-        // Movimiento de cámara orgánico (Balanceo)
         camera.position.x += (Math.sin(t * 0.4) * 0.4);
         camera.position.y += (Math.cos(t * 0.3) * 0.4);
-        
-        // Zoom suave hacia el centro
         if(camera.position.z > 380) camera.position.z -= 2;
 
-        // Aparición progresiva (Fade-in)
         if(nivelFade < 1) {
             nivelFade += 0.005;
             starsMat.opacity = nivelFade * 0.8;
             heartMat.color.set(0xff3377);
             ambLight.intensity = 0.1 + (nivelFade * 0.5);
             pLight.intensity = 1 + (nivelFade * 2);
-            frMat.opacity = nivelFade; // Fade in para el marco
-            
-            photos.forEach(p => {
-                p.children[0].material.opacity = nivelFade;
-            });
+            frMat.opacity = nivelFade;
+            photos.forEach(p => p.children[0].material.opacity = nivelFade);
             sprites.forEach(s => s.material.opacity = nivelFade * 0.5);
             cubes.forEach(c => c.material.opacity = nivelFade * 0.6);
         }
@@ -208,27 +192,22 @@ function animate() {
         heart.rotation.y += 0.005;
         heart.scale.setScalar(1 + Math.sin(t * 4) * 0.15);
         stars.rotation.y += 0.0003;
-        
         cubes.forEach((c, i) => {
             c.scale.setScalar(1 + Math.sin(t * 2 + i) * 0.3);
             c.rotation.x += 0.01;
         });
-        
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
-            p.position.y += Math.sin(t + i) * 0.15; // Flotación suave
+            p.position.y += Math.sin(t + i) * 0.15;
         });
     } else {
-        // Movimiento de espera
         heart.scale.setScalar(1 + Math.sin(t * 1.5) * 0.05);
     }
-
     controls.update();
     renderer.render(scene, camera);
 }
 animate();
 
-// Interacción con el corazón para la clave
 const ray = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 window.addEventListener("click", (e) => {
