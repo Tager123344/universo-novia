@@ -55,7 +55,8 @@ let nivelFade = 0;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-camera.position.set(0, 0, 1000); 
+// Alejar un poco la cámara inicial para abarcar más fotos
+camera.position.set(0, 0, 1200); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -65,13 +66,13 @@ const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
+// LUCES
 const ambLight = new THREE.AmbientLight(0xffffff, 0.1);
 scene.add(ambLight);
-const pLight = new THREE.PointLight(0xff77aa, 1);
+const pLight = new THREE.PointLight(0xff77aa, 1.2);
 pLight.position.set(0, 50, 100);
 scene.add(pLight);
 
-// FRASES ACTUALIZADAS CON TUS NUEVOS APODOS
 const frases = [
     "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
     "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
@@ -82,8 +83,9 @@ const frases = [
 
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
-for(let i=0; i<18000; i++) {
-    starPos.push((Math.random()-0.5)*1200, (Math.random()-0.5)*1000, (Math.random()-0.5)*1200);
+// Aumentar el área de estrellas
+for(let i=0; i<20000; i++) {
+    starPos.push((Math.random()-0.5)*1500, (Math.random()-0.5)*1200, (Math.random()-0.5)*1500);
 }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
 const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, transparent: true, opacity: 0 });
@@ -92,9 +94,10 @@ scene.add(stars);
 
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
-for(let i=0; i<800; i++) {
+// Aumentar cubos
+for(let i=0; i<1000; i++) {
     const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
-    c.position.set((Math.random()-0.5)*900, (Math.random()-0.5)*700, (Math.random()-0.5)*900);
+    c.position.set((Math.random()-0.5)*1200, (Math.random()-0.5)*900, (Math.random()-0.5)*1200);
     scene.add(c);
     cubes.push(c);
 }
@@ -119,16 +122,19 @@ function crearSprite(texto) {
     ctx.fillText(texto, 128, 32);
     const sMat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0 });
     const s = new THREE.Sprite(sMat);
-    s.position.set((Math.random()-0.5)*750, (Math.random()-0.5)*650, (Math.random()-0.5)*750);
+    // Esparcir más las frases
+    s.position.set((Math.random()-0.5)*1000, (Math.random()-0.5)*800, (Math.random()-0.5)*1000);
     s.scale.set(70, 18, 1);
     scene.add(s);
     sprites.push(s);
 }
-// Creamos 300 sprites usando la lista de frases actualizada
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
+// --- SECCIÓN DE FOTOS ACTUALIZADA PARA 51 FOTOS ---
 const photos = [];
 const loader = new THREE.TextureLoader();
+
+// Geometría del marco (mismo tamaño 25x25)
 const fShape = new THREE.Shape();
 fShape.moveTo(-13.5,-13.5); fShape.lineTo(13.5,-13.5); fShape.lineTo(13.5,13.5); fShape.lineTo(-13.5,13.5);
 const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5);
@@ -136,17 +142,46 @@ fShape.holes.push(hole);
 const fGeo = new THREE.ShapeGeometry(fShape);
 const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
 
-for(let i=1; i<=28; i++) {
+const totalFotos = 51;
+// Distribuir fotos en 3 anillos para que se vea bien
+const fotosPorAnillo = 17; 
+
+for(let i=1; i<=totalFotos; i++) {
     const group = new THREE.Group();
+    // Carga foto desde foto1.jpg hasta foto51.jpg
     const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
+    
     group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
     group.add(new THREE.Mesh(fGeo, frMat)); 
-    const angle = (i % 14) * (Math.PI * 2 / 14);
-    const radius = i <= 14 ? 140 : 200;
-    group.position.set(Math.cos(angle)*radius, (i <= 14 ? 60 : -60), Math.sin(angle)*radius);
+    
+    // Lógica de distribución en 3 anillos (orbitales)
+    let anillo, radius, yPos;
+    
+    if (i <= 17) {
+        anillo = 0; radius = 160; yPos = 80; // Anillo superior/interno
+    } else if (i <= 34) {
+        anillo = 1; radius = 230; yPos = 0;  // Anillo central
+    } else {
+        anillo = 2; radius = 300; yPos = -80; // Anillo inferior/externo
+    }
+    
+    // Calcular ángulo basado en el número de fotos por anillo
+    const indiceEnAnillo = (i - 1) % fotosPorAnillo;
+    const angle = indiceEnAnillo * (Math.PI * 2 / fotosPorAnillo);
+    
+    // Añadir una pequeña variación aleatoria en Y para un look más orgánico
+    const variacionY = (Math.random() - 0.5) * 20;
+
+    group.position.set(
+        Math.cos(angle) * radius, 
+        yPos + variacionY, 
+        Math.sin(angle) * radius
+    );
+    
     scene.add(group);
     photos.push(group);
 }
+// ----------------------------------------------------
 
 function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
@@ -175,7 +210,8 @@ function animate() {
     if(despierto) {
         camera.position.x += (Math.sin(t * 0.4) * 0.4);
         camera.position.y += (Math.cos(t * 0.3) * 0.4);
-        if(camera.position.z > 380) camera.position.z -= 2;
+        // Ajustar el zoom final para acomodar más fotos
+        if(camera.position.z > 450) camera.position.z -= 2;
 
         if(nivelFade < 1) {
             nivelFade += 0.005;
@@ -198,7 +234,8 @@ function animate() {
         });
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
-            p.position.y += Math.sin(t + i) * 0.15;
+            // Flotación sutil individual
+            p.position.y += Math.sin(t + i) * 0.08; 
         });
     } else {
         heart.scale.setScalar(1 + Math.sin(t * 1.5) * 0.05);
