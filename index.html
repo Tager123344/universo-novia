@@ -51,11 +51,11 @@
 <script>
 const CLAVE_SECRETA = "30102025";
 let despierto = false;
-let nivelFade = 0; // Para la aparición suave
+let nivelFade = 0; 
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-camera.position.set(0, 0, 1000); // Empezamos más lejos para un zoom suave
+camera.position.set(0, 0, 1000); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -124,26 +124,29 @@ function crearSprite(texto) {
 }
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
-// 5. FOTOS CON MARCOS DE NEÓN (Ajustado el tamaño de la foto y el marco)
+// 5. FOTOS CON MARCOS DE NEÓN MÁS GRANDES
 const photos = [];
 const loader = new THREE.TextureLoader();
 
-// Geometría del marco - Ajustada para fotos 25x25
-// Exterior: 27x27 (coordenadas 13.5 * 2)
+// Geometría del marco exterior ajustado a las fotos de 25x25
 const fShape = new THREE.Shape();
 fShape.moveTo(-13.5,-13.5); fShape.lineTo(13.5,-13.5); fShape.lineTo(13.5,13.5); fShape.lineTo(-13.5,13.5);
-// Agujero interior: 25x25 (coordenadas 12.5 * 2)
 const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5);
 fShape.holes.push(hole);
 const fGeo = new THREE.ShapeGeometry(fShape);
 
+// AQUÍ ESTABA EL ERROR: Faltaba esta línea que define el material del marco de neón
+const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+
 for(let i=1; i<=28; i++) {
     const group = new THREE.Group();
-    // Tamaño de la foto aumentado a 25x25
+    // Material de la foto
     const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
     
-    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); // Foto 25x25
-    group.add(new THREE.Mesh(fGeo, frMat)); // Marco ajustado
+    // Foto de 25x25 (más grande)
+    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
+    // Marco
+    group.add(new THREE.Mesh(fGeo, frMat)); 
     
     const angle = (i % 14) * (Math.PI * 2 / 14);
     const radius = i <= 14 ? 140 : 200;
@@ -179,24 +182,24 @@ function animate() {
     const t = Date.now() * 0.001;
 
     if(despierto) {
-        // 1. Movimiento de cámara orgánico (Balanceo)
+        // Movimiento de cámara orgánico (Balanceo)
         camera.position.x += (Math.sin(t * 0.4) * 0.4);
         camera.position.y += (Math.cos(t * 0.3) * 0.4);
         
-        // 2. Zoom suave hacia el centro
+        // Zoom suave hacia el centro
         if(camera.position.z > 380) camera.position.z -= 2;
 
-        // 3. Aparición progresiva (Fade-in)
+        // Aparición progresiva (Fade-in)
         if(nivelFade < 1) {
             nivelFade += 0.005;
             starsMat.opacity = nivelFade * 0.8;
             heartMat.color.set(0xff3377);
             ambLight.intensity = 0.1 + (nivelFade * 0.5);
             pLight.intensity = 1 + (nivelFade * 2);
+            frMat.opacity = nivelFade; // Fade in para el marco
             
             photos.forEach(p => {
                 p.children[0].material.opacity = nivelFade;
-                p.children[1].material.opacity = nivelFade;
             });
             sprites.forEach(s => s.material.opacity = nivelFade * 0.5);
             cubes.forEach(c => c.material.opacity = nivelFade * 0.6);
