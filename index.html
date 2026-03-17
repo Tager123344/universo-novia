@@ -124,24 +124,26 @@ function crearSprite(texto) {
 }
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
-// 5. FOTOS CON MARCOS DE NEÓN
+// 5. FOTOS CON MARCOS DE NEÓN (Ajustado el tamaño de la foto y el marco)
 const photos = [];
 const loader = new THREE.TextureLoader();
 
-// Geometría del marco
+// Geometría del marco - Ajustada para fotos 25x25
+// Exterior: 27x27 (coordenadas 13.5 * 2)
 const fShape = new THREE.Shape();
-fShape.moveTo(-11.5,-11.5); fShape.lineTo(11.5,-11.5); fShape.lineTo(11.5,11.5); fShape.lineTo(-11.5,11.5);
-const hole = new THREE.Path(); hole.moveTo(-10.5,-10.5); hole.lineTo(10.5,-10.5); hole.lineTo(10.5,10.5); hole.lineTo(-10.5,10.5);
+fShape.moveTo(-13.5,-13.5); fShape.lineTo(13.5,-13.5); fShape.lineTo(13.5,13.5); fShape.lineTo(-13.5,13.5);
+// Agujero interior: 25x25 (coordenadas 12.5 * 2)
+const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5);
 fShape.holes.push(hole);
 const fGeo = new THREE.ShapeGeometry(fShape);
 
 for(let i=1; i<=28; i++) {
     const group = new THREE.Group();
+    // Tamaño de la foto aumentado a 25x25
     const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
-    const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
     
-    group.add(new THREE.Mesh(new THREE.PlaneGeometry(21, 21), pMat));
-    group.add(new THREE.Mesh(fGeo, frMat));
+    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); // Foto 25x25
+    group.add(new THREE.Mesh(fGeo, frMat)); // Marco ajustado
     
     const angle = (i % 14) * (Math.PI * 2 / 14);
     const radius = i <= 14 ? 140 : 200;
