@@ -40,7 +40,7 @@
         <h1>¡Hola mi amor! ✨</h1>
         <p><strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
         Tú eres mi universo, mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-        <strong>Desde el 30/10/2025 cambiaste mi vida para siempre 💕</strong></p>
+        <strong>¡Te amo infinitamente! 💕</strong></p>
         <button class="btn-modal" onclick="cerrarModales()">💕 Te amo 💕</button>
     </div>
 </div>
@@ -52,8 +52,6 @@
 const CLAVE_SECRETA = "30102025";
 let despierto = false;
 let nivelFade = 0; 
-
-const clickSound = new Audio("click.mp3");
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
@@ -75,159 +73,79 @@ pLight.position.set(0, 100, 200);
 scene.add(pLight);
 
 const frases = [
-"💖 Mi amor","🥰 Eres mi todo","💘 Natasha","✨ Mi vida","💍 Siempre tú","🧸 Mi bebita",
-"👑 Mi reina","🌹 Te amo","🌙 Mi luna","🌸 Mi gordita","🎀 Mi caprichosita",
-"👑 Mi princesita","✨ Mi niña hermosa","🍭 Mi tiquitita","🦋 Mi pulguita",
-"💖 Tu mi tiquitita","💎 Mi tesorito"
+    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
+    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
+    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
+    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", 
+    "💖 Tu mi tiquitita", "💎 Mi tesorito"
 ];
 
 // ESTRELLAS
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i=0; i<20000; i++) {
-    starPos.push((Math.random()-0.5)*1800,(Math.random()-0.5)*1500,(Math.random()-0.5)*1800);
+    starPos.push((Math.random()-0.5)*1800, (Math.random()-0.5)*1500, (Math.random()-0.5)*1800);
 }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
 const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0 });
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
+// CUBOS
+const cubes = [];
+const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
+for(let i=0; i<800; i++) {
+    const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
+    c.position.set((Math.random()-0.5)*1100, (Math.random()-0.5)*900, (Math.random()-0.5)*1100);
+    scene.add(c);
+    cubes.push(c);
+}
+
 // CORAZÓN
-const x=0,y=0;
-const heartShape=new THREE.Shape();
-heartShape.moveTo(x+5,y+5);
-heartShape.bezierCurveTo(x+5,y+5,x+4,y,x,y);
-heartShape.bezierCurveTo(x-6,y,x-6,y+7,x-6,y+7);
-heartShape.bezierCurveTo(x-6,y+11,x-3,y+15.4,x+5,y+19);
-heartShape.bezierCurveTo(x+12,y+15.4,x+16,y+11,x+16,y+7);
-heartShape.bezierCurveTo(x+16,y+7,x+16,y,x+10,y);
-heartShape.bezierCurveTo(x+7,y,x+5,y+5,x+5,y+5);
+const heartShape = new THREE.Shape();
+heartShape.moveTo(5,5);
+heartShape.bezierCurveTo(5,5,4,0,0,0);
+heartShape.bezierCurveTo(-6,0,-6,7,-6,7);
+heartShape.bezierCurveTo(-6,11,-3,15.4,5,19);
+heartShape.bezierCurveTo(12,15.4,16,11,16,7);
+heartShape.bezierCurveTo(16,7,16,0,10,0);
+heartShape.bezierCurveTo(7,0,5,5,5,5);
 
 const heartGeo = new THREE.ExtrudeGeometry(heartShape,{depth:4,bevelEnabled:true});
-const heartMat = new THREE.MeshStandardMaterial({
-color:0xff3377,emissive:0xff0044,emissiveIntensity:1.5,transparent:true,opacity:0.9
-});
-const heartMesh=new THREE.Mesh(heartGeo,heartMat);
-heartMesh.rotation.z=Math.PI;
+const heartMat = new THREE.MeshStandardMaterial({color:0xff3377,emissive:0xff0044,emissiveIntensity:1.5,transparent:true,opacity:0.9});
+const heartMesh = new THREE.Mesh(heartGeo, heartMat);
+heartMesh.rotation.z = Math.PI;
 heartMesh.scale.set(4,4,4);
 heartMesh.position.set(20,40,0);
 scene.add(heartMesh);
 
-// FOTOS (55 sin romper tu estilo)
-const photos=[];
-const loader=new THREE.TextureLoader();
+// FOTOS (55)
+const photos = [];
+const loader = new THREE.TextureLoader();
+const fGeo = new THREE.ShapeGeometry(new THREE.Shape().moveTo(-13.5,-13.5));
 
-for(let i=1;i<=55;i++){
-const group=new THREE.Group();
+for(let i=1; i<=55; i++) {
+    const group = new THREE.Group();
+    const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
+    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
 
-const pMat=new THREE.MeshBasicMaterial({
-map:loader.load(`foto${i}.jpg`),
-side:THREE.DoubleSide,
-transparent:true,
-opacity:0
-});
+    let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
+    let radius = ring === 0 ? 180 : (ring === 1 ? 260 : 340);
+    let yPos = ring === 0 ? 100 : (ring === 1 ? 0 : -100);
+    let maxPerRing = ring === 0 ? 18 : (ring === 1 ? 18 : 19);
+    let angle = ((i-1) % maxPerRing) * (Math.PI * 2 / maxPerRing);
 
-group.add(new THREE.Mesh(new THREE.PlaneGeometry(25,25),pMat));
-
-let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
-let radius = ring === 0 ? 180 : (ring === 1 ? 260 : 340);
-let yPos = ring === 0 ? 100 : (ring === 1 ? 0 : -100);
-
-let maxPerRing = ring === 0 ? 18 : (ring === 1 ? 18 : 19);
-let angle = ((i-1) % maxPerRing) * (Math.PI * 2 / maxPerRing);
-
-group.position.set(Math.cos(angle)*radius,yPos+(Math.random()-0.5)*30,Math.sin(angle)*radius);
-
-scene.add(group);
-photos.push(group);
+    group.position.set(Math.cos(angle)*radius, yPos, Math.sin(angle)*radius);
+    scene.add(group);
+    photos.push(group);
 }
-
-// AUDIO
-let audio;
-document.getElementById("musicBtn").onclick=function(){
-if(!audio){audio=new Audio("music.mp3");audio.loop=true;}
-audio.play();
-this.style.opacity="0";
-setTimeout(()=>this.style.display="none",500);
-despierto=true;
-};
-
-// CLICK
-const ray=new THREE.Raycaster();
-const mouse=new THREE.Vector2();
-
-window.addEventListener("click",(e)=>{
-mouse.x=(e.clientX/window.innerWidth)*2-1;
-mouse.y=-(e.clientY/window.innerHeight)*2+1;
-
-if(despierto){
-ray.setFromCamera(mouse,camera);
-
-if(ray.intersectObject(heartMesh).length>0){
-document.getElementById('modalClave').classList.add('activo');
-}
-
-const hit=ray.intersectObjects(photos,true);
-if(hit.length>0){
-clickSound.currentTime=0;
-clickSound.play();
-}
-}
-});
 
 // ANIMACIÓN
-function animate(){
-requestAnimationFrame(animate);
-const t=Date.now()*0.001;
-
-if(despierto){
-
-if(camera.position.z>500) camera.position.z-=1.2;
-
-if(nivelFade<1){
-nivelFade+=0.005;
-starsMat.opacity=nivelFade*0.8;
-}
-
-const beat = Math.sin(t*2)+Math.sin(t*4)*0.5;
-heartMesh.scale.setScalar(4+beat*0.2);
-heartMat.emissiveIntensity=1.5+Math.sin(t*3)*0.8;
-
-heartMesh.rotation.y+=0.01;
-stars.rotation.y+=0.00015;
-
-photos.forEach(p=>{
-p.lookAt(camera.position);
-});
-}
-
-controls.update();
-renderer.render(scene,camera);
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
 }
 animate();
-
-// FRASES
-setInterval(()=>{
-if(despierto && nivelFade>0.8){
-const d=document.getElementById("frase");
-d.innerHTML=frases[Math.floor(Math.random()*frases.length)];
-d.style.opacity=0;
-setTimeout(()=>d.style.opacity=1,300);
-setTimeout(()=>d.style.opacity=0,4500);
-}
-},7000);
-
-// MODALES
-function verificarClave(){
-if(document.getElementById('inputClave').value===CLAVE_SECRETA){
-document.getElementById('modalClave').classList.remove('activo');
-document.getElementById('mensajeSecreto').classList.add('activo');
-}else alert("Clave incorrecta...");
-}
-function cerrarModales(){
-document.getElementById('modalClave').classList.remove('activo');
-document.getElementById('mensajeSecreto').classList.remove('activo');
-}
 </script>
 </body>
 </html>
