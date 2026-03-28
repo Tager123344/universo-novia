@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestro Universo - Natasha</title>
     <style>
-        /* =========================================
-           1. ESTILOS VISUALES (CSS)
-           =========================================
-        */
+        /* Estilos Base */
         body { 
             margin: 0; 
             overflow: hidden; 
@@ -27,8 +24,6 @@
             text-shadow: 0 0 20px #ff7ab6; 
             z-index: 10; 
             pointer-events: none; 
-            opacity: 0; /* Inicia oculto para el efecto de sorpresa */
-            transition: opacity 2.5s ease-in;
         }
         
         #musicBtn { 
@@ -36,21 +31,21 @@
             bottom: 40px; 
             left: 50%; 
             transform: translateX(-50%); 
-            padding: 18px 45px; 
+            padding: 15px 35px; 
             border: none; 
-            border-radius: 40px; 
+            border-radius: 30px; 
             background: #aa44ff; 
             color: white; 
-            font-size: 22px; 
+            font-size: 20px; 
             cursor: pointer; 
-            box-shadow: 0 0 30px #aa44ff; 
+            box-shadow: 0 0 25px #aa44ff; 
             z-index: 100; 
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: 0.5s; 
         }
 
         #musicBtn:hover { 
-            transform: translateX(-50%) scale(1.15); 
-            box-shadow: 0 0 50px #ff77aa; 
+            transform: translateX(-50%) scale(1.1); 
+            box-shadow: 0 0 40px #ff77aa; 
             background: #ff77aa; 
         }
 
@@ -63,16 +58,13 @@
             color: white; 
             text-shadow: 0 0 20px white; 
             opacity: 0; 
-            transition: 2s; 
+            transition: 1.5s; 
             z-index: 10; 
-            padding: 0 20px;
-            box-sizing: border-box;
+            padding: 0 15px; 
+            box-sizing: border-box; 
         }
 
-        /* =========================================
-           2. VENTANAS MODALES Y FORMULARIOS
-           =========================================
-        */
+        /* Modales */
         #modalClave, #mensajeSecreto { 
             display: none; 
             position: fixed; 
@@ -80,11 +72,11 @@
             left: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0,0,0,0.95); 
+            background: rgba(0,0,0,0.92); 
             z-index: 1000; 
             justify-content: center; 
             align-items: center; 
-            backdrop-filter: blur(15px); 
+            backdrop-filter: blur(10px); 
         }
 
         #modalClave.activo, #mensajeSecreto.activo { 
@@ -93,52 +85,44 @@
 
         .modal-contenido { 
             background: linear-gradient(135deg, #1a1a2e, #16213e); 
-            padding: 50px; 
-            border-radius: 40px; 
+            padding: 40px; 
+            border-radius: 30px; 
             text-align: center; 
-            box-shadow: 0 0 80px #ff77aa; 
-            border: 3px solid #ff77aa; 
-            max-width: 85%; 
-            width: 480px; 
+            box-shadow: 0 0 60px #ff77aa; 
+            border: 2px solid #ff77aa; 
+            max-width: 90%; 
+            width: 450px; 
             color: white; 
         }
         
         input { 
-            padding: 18px; 
+            padding: 15px; 
             border: 2px solid #ff77aa; 
-            border-radius: 20px; 
-            background: rgba(255,255,255,0.05); 
+            border-radius: 15px; 
+            background: rgba(255,255,255,0.1); 
             color: white; 
             text-align: center; 
-            margin-bottom: 25px; 
-            width: 90%; 
-            font-size: 20px; 
+            margin-bottom: 20px; 
+            width: 85%; 
+            font-size: 18px; 
             outline: none; 
-            transition: 0.3s;
-        }
-
-        input:focus {
-            background: rgba(255,255,255,0.15);
-            box-shadow: 0 0 15px #ff77aa;
         }
 
         .btn-modal { 
-            padding: 15px 30px; 
+            padding: 12px 25px; 
             border: none; 
-            border-radius: 25px; 
+            border-radius: 20px; 
             background: #ff77aa; 
             color: white; 
             cursor: pointer; 
-            font-size: 18px; 
+            font-size: 16px; 
             margin: 10px; 
-            font-weight: bold;
-            transition: 0.4s; 
+            transition: 0.3s; 
         }
 
         .btn-modal:hover { 
-            background: #ff3377; 
-            transform: scale(1.1); 
-            box-shadow: 0 0 20px #ff3377;
+            background: #ff4488; 
+            transform: scale(1.05); 
         }
     </style>
 </head>
@@ -151,26 +135,23 @@
 <div id="modalClave">
     <div class="modal-contenido">
         <h2>🔐 Clave Secreta 💕</h2>
-        <p style="margin-bottom: 20px; color: #ffcae3;">Nuestra fecha especial (DDMMAAAA)</p>
-        <input type="password" id="inputClave" placeholder="Escribe aquí...">
+        <p style="font-size: 0.9em; margin-bottom: 15px;">Ingresa nuestra fecha especial (DDMMAAAA)</p>
+        <input type="password" id="inputClave" placeholder="DDMMAAAA">
         <br>
         <button class="btn-modal" onclick="verificarClave()">💖 Abrir mi corazón</button>
-        <button class="btn-modal" onclick="cerrarModales()">Volver</button>
+        <button class="btn-modal" onclick="cerrarModales()">Cerrar</button>
     </div>
 </div>
 
 <div id="mensajeSecreto">
     <div class="modal-contenido">
-        <h1 style="color: #ff7ab6;">¡Hola mi amor! ✨</h1>
-        <p style="line-height: 1.8; font-size: 1.1em;">
+        <h1>¡Hola mi amor! ✨</h1>
+        <p style="line-height: 1.6;">
             <strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
             Tú eres mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-            <span style="font-size: 1.4em; color: #ff7ab6; font-weight: bold; text-shadow: 0 0 10px #ff7ab6;">
-                Te amo mucho mi gordita gracias por existir ❤️
-            </span>
+            <span style="font-size: 1.3em; color: #ff7ab6; font-weight: bold;">te amo mucho mi gordita gracias por existir ❤️</span>
         </p>
-        <br>
-        <button class="btn-modal" onclick="cerrarMensaje()">💕 Te amo mucho ❤️</button>
+        <button class="btn-modal" onclick="cerrarMensaje()">💕 Te amo ❤️</button>
     </div>
 </div>
 
@@ -179,45 +160,33 @@
 
 <script>
 /**
- * =========================================
- * 3. LÓGICA DEL UNIVERSO (JAVASCRIPT)
- * =========================================
+ * CONFIGURACIÓN INICIAL
  */
-
-// --- Variables de Configuración ---
 const CLAVE_SECRETA = "30102025";
 let despierto = false;
 let nivelFade = 0; 
 let camaraEnVuelo = false;
 let universoExpandido = false;
 
-// Listado de frases románticas aleatorias
-const frasesList = [
-    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
-    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
-    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
-    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", "💎 Mi tesorito"
-];
-
-// --- Inicialización de la Escena 3D ---
+// Escena, Cámara y Renderizado
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-camera.position.set(0, 0, 2500); // Inicia lejos para el zoom inicial
+camera.position.set(0, 0, 2500); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// --- Controles de Cámara ---
+// Controles de Órbita (RESTAURADOS TOTALMENTE)
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enablePan = false;
-controls.autoRotate = false; // Se activa al pulsar el botón
-controls.autoRotateSpeed = 0.5; // Rotación lenta y romántica
+controls.autoRotate = false; // Desactivado hasta que empiece la magia
+controls.autoRotateSpeed = 0.5; // Velocidad de rotación suave
 
-// --- Iluminación de la Escena ---
+// Luces
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
@@ -225,47 +194,54 @@ const pLight = new THREE.PointLight(0xff77aa, 2.5, 1500);
 pLight.position.set(0, 150, 250);
 scene.add(pLight);
 
+const frasesList = [
+    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
+    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
+    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
+    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", "💎 Mi tesorito"
+];
+
 /**
- * CREACIÓN DE OBJETOS DEL ESPACIO
+ * ELEMENTOS DEL UNIVERSO
  */
 
-// 1. Estrellas de fondo (20,000 partículas)
+// 1. Fondo de Estrellas (20,000)
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i = 0; i < 20000; i++) {
     starPos.push(
-        (Math.random() - 0.5) * 4000, 
-        (Math.random() - 0.5) * 3500, 
-        (Math.random() - 0.5) * 4000
+        (Math.random() - 0.5) * 3500,
+        (Math.random() - 0.5) * 3000,
+        (Math.random() - 0.5) * 3500
     );
 }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0 });
+const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, transparent: true, opacity: 0 });
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. Cubos flotantes decorativos
+// 2. Cubos Rosas Flotantes (800)
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i = 0; i < 800; i++) {
     const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
     c.position.set(
-        (Math.random() - 0.5) * 1800, 
-        (Math.random() - 0.5) * 1400, 
-        (Math.random() - 0.5) * 1800
+        (Math.random() - 0.5) * 1600,
+        (Math.random() - 0.5) * 1300,
+        (Math.random() - 0.5) * 1600
     );
     scene.add(c);
     cubes.push(c);
 }
 
-// 3. El Corazón Central Principal
+// 3. El Corazón 3D Bonito (REFINADO)
 const heartShape = new THREE.Shape();
-heartShape.moveTo(5, 5); 
-heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0); 
-heartShape.bezierCurveTo(-6, 0, -6, 7, -6, 7); 
-heartShape.bezierCurveTo(-6, 11, -3, 15.4, 5, 19); 
-heartShape.bezierCurveTo(12, 15.4, 16, 11, 16, 7); 
-heartShape.bezierCurveTo(16, 7, 16, 0, 10, 0); 
+heartShape.moveTo(5, 5);
+heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0);
+heartShape.bezierCurveTo(-6, 0, -6, 7, -6, 7);
+heartShape.bezierCurveTo(-6, 11, -3, 15.4, 5, 19);
+heartShape.bezierCurveTo(12, 15.4, 16, 11, 16, 7);
+heartShape.bezierCurveTo(16, 7, 16, 0, 10, 0);
 heartShape.bezierCurveTo(7, 0, 5, 5, 5, 5);
 
 const heartGeo = new THREE.ExtrudeGeometry(heartShape, { 
@@ -276,88 +252,143 @@ const heartGeo = new THREE.ExtrudeGeometry(heartShape, {
 });
 const heartMat = new THREE.MeshStandardMaterial({ 
     color: 0xff3377, 
-    emissive: 0xff1144, 
+    emissive: 0xff1144, // Refinado el brillo neón
     emissiveIntensity: 2.2, 
     transparent: true, 
-    opacity: 0, 
-    roughness: 0.1, 
-    metalness: 0.2 
+    opacity: 0,
+    roughness: 0.1,
+    metalness: 0.2
 });
 const heartMesh = new THREE.Mesh(heartGeo, heartMat);
-heartMesh.rotation.z = Math.PI; 
-heartMesh.scale.set(4, 4, 4); 
+heartMesh.rotation.z = Math.PI;
+heartMesh.scale.set(4, 4, 4);
 heartMesh.position.set(20, 40, 0);
 scene.add(heartMesh);
 
-// 4. Galería de Fotos (55 elementos)
+// 4. Sprites de Texto Flotante (300)
+const sprites = [];
+function crearSprite(texto) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.font = "bold 24px Arial";
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#ff77aa";
+    ctx.shadowBlur = 10;
+    ctx.fillText(texto, 128, 32);
+
+    const sMat = new THREE.SpriteMaterial({ 
+        map: new THREE.CanvasTexture(canvas), 
+        transparent: true, 
+        opacity: 0 
+    });
+    const s = new THREE.Sprite(sMat);
+    s.position.set(
+        (Math.random() - 0.5) * 1300,
+        (Math.random() - 0.5) * 1100,
+        (Math.random() - 0.5) * 1300
+    );
+    s.scale.set(80, 20, 1);
+    scene.add(s);
+    sprites.push(s);
+}
+for(let i = 0; i < 300; i++) {
+    crearSprite(frasesList[i % frasesList.length]);
+}
+
+// 5. Las 55 Fotos con Marco Rosa
 const photos = [];
 const loader = new THREE.TextureLoader();
 
-// Marco de las fotos
-const fShape = new THREE.Shape(); 
+// Geometría del marco rosa
+const fShape = new THREE.Shape();
 fShape.moveTo(-14, -14); fShape.lineTo(14, -14); fShape.lineTo(14, 14); fShape.lineTo(-14, 14);
-const hole = new THREE.Path(); 
-hole.moveTo(-12.5, -12.5); hole.lineTo(12.5, -12.5); hole.lineTo(12.5, 12.5); hole.lineTo(-12.5, 12.5); fShape.holes.push(hole);
+const hole = new THREE.Path();
+hole.moveTo(-12.5, -12.5); hole.lineTo(12.5, -12.5); hole.lineTo(12.5, 12.5); hole.lineTo(-12.5, 12.5);
+fShape.holes.push(hole);
 const frameGeo = new THREE.ShapeGeometry(fShape);
 const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
 
 for(let i = 1; i <= 55; i++) {
     const group = new THREE.Group();
+    
+    // La imagen
     const photoMat = new THREE.MeshBasicMaterial({ 
         map: loader.load(`foto${i}.jpg`), 
         side: THREE.DoubleSide, 
         transparent: true, 
         opacity: 0 
     });
-    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), photoMat));
-    group.add(new THREE.Mesh(frameGeo, frMat));
+    const photoMesh = new THREE.Mesh(new THREE.PlaneGeometry(25, 25), photoMat);
+    group.add(photoMesh);
+
+    // El marco
+    const frameMesh = new THREE.Mesh(frameGeo, frMat);
+    group.add(frameMesh);
     
+    // Distribución en anillos
     let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
     let radius = ring === 0 ? 250 : (ring === 1 ? 420 : 580);
     let yPos = ring === 0 ? 160 : (ring === 1 ? 0 : -160);
     let angle = (i % 18) * (Math.PI * 2 / 18);
-    
-    group.position.set(Math.cos(angle) * radius, yPos + (Math.random() - 0.5) * 70, Math.sin(angle) * radius);
-    scene.add(group); 
+
+    group.position.set(
+        Math.cos(angle) * radius,
+        yPos + (Math.random() - 0.5) * 70,
+        Math.sin(angle) * radius
+    );
+    scene.add(group);
     photos.push(group);
 }
 
-// 5. Sistema de Partículas para explosiones
+// 6. Sistema de Partículas Amarillas (Explosiones Centralizadas)
 const pCount = 600; 
 const particlesGeo = new THREE.BufferGeometry();
 const posArray = new Float32Array(pCount * 3);
 const velArray = new Float32Array(pCount * 3);
 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-const particlesMat = new THREE.PointsMaterial({ color: 0xffff00, size: 3.5, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+const particlesMat = new THREE.PointsMaterial({ 
+    color: 0xffff00, 
+    size: 3.5, 
+    transparent: true, 
+    opacity: 0, 
+    blending: THREE.AdditiveBlending 
+});
 const particleSystem = new THREE.Points(particlesGeo, particlesMat);
 scene.add(particleSystem);
 
-function explosion(x, y, z, speedMultiplier = 8) {
+function explosion(x, y, z, countMultiplier = 1, speedMultiplier = 8) {
     particlesMat.opacity = 1;
     const pos = particlesGeo.attributes.position.array;
+    // Solo usamos pCount como límite para no sobrecargar
     for(let i = 0; i < pCount; i++) {
-        pos[i*3] = x; pos[i*3+1] = y; pos[i*3+2] = z;
+        pos[i*3] = x;
+        pos[i*3+1] = y;
+        pos[i*3+2] = z;
         velArray[i*3] = (Math.random() - 0.5) * speedMultiplier;
         velArray[i*3+1] = (Math.random() - 0.5) * speedMultiplier;
         velArray[i*3+2] = (Math.random() - 0.5) * speedMultiplier;
     }
 }
 
-// 6. Lluvia de Estrellas Final
+// 7. Lluvia de Estrellas Final (Dorada)
 const rCount = 500;
 const rainGeo = new THREE.BufferGeometry();
 const rainPos = new Float32Array(rCount * 3);
-for(let i = 0; i < rCount; i++) { 
-    rainPos[i*3] = (Math.random() - 0.5) * 2500; 
-    rainPos[i*3+1] = Math.random() * 1500; 
-    rainPos[i*3+2] = (Math.random() - 0.5) * 2500; 
+for(let i = 0; i < rCount; i++) {
+    rainPos[i*3] = (Math.random() - 0.5) * 2500;
+    rainPos[i*3+1] = Math.random() * 1500;
+    rainPos[i*3+2] = (Math.random() - 0.5) * 2500;
 }
 rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
 const rainMat = new THREE.PointsMaterial({ color: 0xffffcc, size: 2.2, transparent: true, opacity: 0 });
-scene.add(new THREE.Points(rainGeo, rainMat));
+const rainSystem = new THREE.Points(rainGeo, rainMat);
+scene.add(rainSystem);
 
 /**
- * CONTROL DE AUDIO E INTERACCIONES
+ * INTERACCIONES Y LÓGICA DE EVENTOS
  */
 const ray = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -371,139 +402,166 @@ document.getElementById("musicBtn").onclick = function() {
     }
     audio.play();
     this.style.opacity = "0";
-    setTimeout(() => {
-        this.style.display = "none";
-        document.getElementById("titulo").style.opacity = "1";
-    }, 500);
+    setTimeout(() => this.style.display = "none", 500);
     despierto = true;
-    camera.position.set(0, 50, 2000); 
-    controls.autoRotate = true; 
-    camaraEnVuelo = true; 
+    
+    // Viaje de Cámara Inicial (Zoom suave hacia el corazón)
+    camera.position.set(0, 50, 2000); // Empezamos alto y lejos
+    camera.lookAt(heartMesh.position);
+    controls.autoRotate = true; // Empieza la rotación automática suave
+    camaraEnVuelo = true; // Activa zoom inicial suave
 };
 
-window.addEventListener("pointermove", (e) => { 
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1; 
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; 
+window.addEventListener("pointermove", (e) => {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 });
 
 window.addEventListener("click", () => {
     if(!despierto) return;
     ray.setFromCamera(mouse, camera);
-    
-    // Clic en el corazón abre la clave
+
+    // Clic en Corazón
     if(ray.intersectObject(heartMesh).length > 0) {
         document.getElementById('modalClave').classList.add('activo');
     }
 
-    // Clic en las fotos genera una pequeña explosión
+    // Clic en Fotos
     const hitPhotos = ray.intersectObjects(photos, true);
     if(hitPhotos.length > 0) {
         const p = hitPhotos[0].object.parent.position;
         explosion(p.x, p.y, p.z);
-        if(clickSound) { clickSound.currentTime = 0; clickSound.play(); }
+        if(clickSound) {
+            clickSound.currentTime = 0;
+            clickSound.play();
+        }
     }
 });
 
 /**
- * BUCLE PRINCIPAL DE ANIMACIÓN
+ * BUCLE DE ANIMACIÓN
  */
 function animate() {
     requestAnimationFrame(animate);
     const t = Date.now() * 0.001;
-    
+
     if(despierto) {
-        // Zoom suave al inicio
-        if(camaraEnVuelo && camera.position.z > 650) camera.position.z -= 15; else camaraEnVuelo = false;
-        
-        // Aparición gradual de elementos
-        if(nivelFade < 1) {
-            nivelFade += 0.004; 
-            starsMat.opacity = nivelFade * 0.8; 
-            heartMat.opacity = nivelFade; 
-            frMat.opacity = nivelFade;
-            photos.forEach(p => p.children[0].material.opacity = nivelFade);
+        // Manejo de Zoom suave Inicial hacia el corazón
+        if(camaraEnVuelo && camera.position.z > 650) {
+            camera.position.z -= 15; // Zoom suave acercándose
+        } else if (camaraEnVuelo) {
+            camaraEnVuelo = false; // Detiene el zoom inicial suave
         }
 
-        // Efecto de lluvia al final
+        // Efecto de Aparecer (Fade In)
+        if(nivelFade < 1) {
+            nivelFade += 0.004;
+            starsMat.opacity = nivelFade * 0.8;
+            heartMat.opacity = nivelFade;
+            frMat.opacity = nivelFade;
+            photos.forEach(p => p.children[0].material.opacity = nivelFade);
+            sprites.forEach(s => s.material.opacity = nivelFade * 0.6);
+            cubeMat.opacity = nivelFade * 0.7;
+        }
+
+        // Lógica de Lluvia de Estrellas Final (Caída suave)
         if(universoExpandido) {
             const rArray = rainGeo.attributes.position.array;
-            for(let i = 0; i < rCount; i++) { 
-                rArray[i*3+1] -= 2.5; 
-                if(rArray[i*3+1] < -1200) rArray[i*3+1] = 1200; 
+            for(let i = 0; i < rCount; i++) {
+                rArray[i*3+1] -= 2.5; // Velocidad de caída
+                if(rArray[i*3+1] < -1200) rArray[i*3+1] = 1200; // Reset superior
             }
             rainGeo.attributes.position.needsUpdate = true;
             if(rainMat.opacity < 1) rainMat.opacity += 0.01;
         }
 
-        // Latido del corazón y rotación suave
-        let pulseFactor = Math.sin(t * 5.0) * Math.sin(t * 5.0); 
-        heartMesh.scale.setScalar((universoExpandido ? 6.2 : 4.1) + pulseFactor * 0.25);
-        heartMat.emissiveIntensity = 2.0 + pulseFactor * 1.5;
-        heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.01); // 0.01 es la rotación romántica
+        // LATIDO DE CORAZÓN NATURAL, RÁPIDO Y BONITO
+        // Ya no es brusco, usa sinusoide suave para contracción rápida y relajación lenta
+        let pulseSpeed = 5.0; // Frecuencia rápida
+        let pulseAmplitude = universoExpandido ? 0.4 : 0.25; // Más fuerte al final
+        let pulseFactor = Math.sin(t * pulseSpeed) * Math.sin(t * pulseSpeed); // Siempre positivo 0 a 1 suave
+        heartMesh.scale.setScalar((universoExpandido ? 6.2 : 4.1) + pulseFactor * pulseAmplitude);
         
+        // Brillo Neón dinámico synced with Latido
+        heartMat.emissiveIntensity = 2.0 + pulseFactor * 1.5;
+
+        // Rotación y movimiento base
+        heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.018);
         stars.rotation.y += 0.00015;
 
-        // Partículas de explosión
+        // Animación de Explosiones
         if(particlesMat.opacity > 0) {
             const pArray = particlesGeo.attributes.position.array;
-            for(let i = 0; i < pCount; i++){ 
-                pArray[i*3] += velArray[i*3]; 
-                pArray[i*3+1] += velArray[i*3+1]; 
-                pArray[i*3+2] += velArray[i*3+2]; 
+            for(let i = 0; i < pCount; i++){
+                pArray[i*3] += velArray[i*3];
+                pArray[i*3+1] += velArray[i*3+1];
+                pArray[i*3+2] += velArray[i*3+2];
             }
-            particlesGeo.attributes.position.needsUpdate = true; 
-            particlesMat.opacity -= 0.012; 
+            particlesGeo.attributes.position.needsUpdate = true;
+            particlesMat.opacity -= 0.012; // Se desvanecen
         }
 
-        // Fotos flotando y mirando a cámara
-        photos.forEach((p, i) => { 
-            p.lookAt(camera.position); 
-            p.position.y += Math.sin(t + i) * 0.35; 
+        // Animación de Fotos Flotantes (Look at Camera)
+        photos.forEach((p, i) => {
+            p.lookAt(camera.position);
+            p.position.y += Math.sin(t + i) * 0.35; // Flotación suave
         });
     }
-    
+
+    // Actualizar Controles de Órbita (Maneja el autoRotate y el control del usuario)
     controls.update(); 
     renderer.render(scene, camera);
 }
 
-// --- Lógica de Modales ---
+/**
+ * FUNCIONES DE CONTROL
+ */
 function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
         document.getElementById('mensajeSecreto').classList.add('activo');
-    } else alert("Esa no es nuestra fecha... Intenta de nuevo 💕");
+        // No bloqueamos cámara, el autoRotate y OrbitControls siguen funcionando
+    } else {
+        alert("Esa no es nuestra fecha... Intenta de nuevo 💕");
+    }
 }
 
 function cerrarMensaje() {
     document.getElementById('mensajeSecreto').classList.remove('activo');
+    
+    // ACTIVAR EFECTOS DEL FINAL (SUPERNOVA CENTRAL SIN CAMBIAR FONDO)
     universoExpandido = true;
-    explosion(0, 0, 0, 20); 
+    explosion(0, 0, 0, 1, 20); // Supernova Central Rápida
+    
+    // No cambiamos el fondo negro original, solo intensificamos la luz central
     pLight.intensity = 7;
-    pLight.color.setHex(0xffffff); 
+    pLight.color.setHex(0xffffff); // Luz blanca dorada pura
+    
+    // Los OrbitControls siguen funcionando y autoRotate también
 }
 
-function cerrarModales() { 
-    document.querySelectorAll('.activo').forEach(m => m.classList.remove('activo')); 
+function cerrarModales() {
+    document.querySelectorAll('.activo').forEach(m => m.classList.remove('activo'));
 }
 
-window.addEventListener('resize', () => { 
-    camera.aspect = window.innerWidth / window.innerHeight; 
-    camera.updateProjectionMatrix(); 
-    renderer.setSize(window.innerWidth, window.innerHeight); 
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// Iniciar animación
 animate();
 
-// Frases automáticas en la parte inferior
+// Bucle de frases inferiores
 setInterval(() => {
     if(despierto && nivelFade > 0.8) {
         const d = document.getElementById("frase");
         d.innerHTML = frasesList[Math.floor(Math.random() * frasesList.length)];
-        d.style.opacity = 1; 
+        d.style.opacity = 1;
         setTimeout(() => d.style.opacity = 0, 4000);
     }
 }, 7500);
-
 </script>
 </body>
 </html>
