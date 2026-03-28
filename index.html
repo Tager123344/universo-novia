@@ -27,7 +27,7 @@
             text-shadow: 0 0 20px #ff7ab6; 
             z-index: 10; 
             pointer-events: none; 
-            opacity: 0; /* Oculto al inicio por petición */
+            opacity: 0; /* Inicia oculto para el efecto de sorpresa */
             transition: opacity 2.5s ease-in;
         }
         
@@ -36,7 +36,7 @@
             bottom: 40px; 
             left: 50%; 
             transform: translateX(-50%); 
-            padding: 18px 40px; 
+            padding: 18px 45px; 
             border: none; 
             border-radius: 40px; 
             background: #aa44ff; 
@@ -54,25 +54,6 @@
             background: #ff77aa; 
         }
 
-        #karaoke { 
-            position: absolute; 
-            bottom: 150px; 
-            width: 100%; 
-            text-align: center; 
-            font-size: clamp(24px, 5vw, 38px); 
-            color: #ffffff; 
-            text-shadow: 0 0 20px #ff7ab6, 0 0 40px #ff7ab6; 
-            font-style: italic;
-            font-weight: bold;
-            opacity: 0; 
-            transform: translateY(20px);
-            transition: opacity 0.7s ease, transform 0.7s ease; 
-            z-index: 50; 
-            pointer-events: none; 
-            padding: 0 30px;
-            box-sizing: border-box;
-        }
-
         #frase { 
             position: absolute; 
             bottom: 130px; 
@@ -84,10 +65,12 @@
             opacity: 0; 
             transition: 2s; 
             z-index: 10; 
+            padding: 0 20px;
+            box-sizing: border-box;
         }
 
         /* =========================================
-           2. VENTANAS MODALES
+           2. VENTANAS MODALES Y FORMULARIOS
            =========================================
         */
         #modalClave, #mensajeSecreto { 
@@ -163,7 +146,6 @@
 
 <div id="titulo">💖 Nuestro Universo Mágico - Natasha 💖</div>
 <button id="musicBtn">✨ Activar Magia ✨</button>
-<div id="karaoke"></div>
 <div id="frase"></div>
 
 <div id="modalClave">
@@ -202,53 +184,40 @@
  * =========================================
  */
 
-// --- Variables de Estado ---
+// --- Variables de Configuración ---
 const CLAVE_SECRETA = "30102025";
 let despierto = false;
 let nivelFade = 0; 
 let camaraEnVuelo = false;
 let universoExpandido = false;
 
-// --- Sincronización de Letras ---
-const letraCancion = [
-    { time: 0, text: "" },
-    { time: 13.5, text: "I’ve been walking around" },
-    { time: 17.0, text: "Waiting for you to shine my love" },
-    { time: 20.5, text: "People passes me by" },
-    { time: 24.0, text: "Doesn’t feel like I belong" },
-    { time: 27.5, text: "Trying to keep it alive" },
-    { time: 31.0, text: "All this hunger inside" },
-    { time: 34.5, text: "For a better confirmation" },
-    { time: 38.0, text: "That I'm heading for the station" },
-    { time: 42.0, text: "I can feel, Love is real" },
-    { time: 46.0, text: "Now you try" },
-    { time: 48.0, text: "If you're willing to just come along with me" },
-    { time: 55.5, text: "We can feel, No more lies" },
-    { time: 59.5, text: "A Simple dream of you and I" },
-    { time: 128.0, text: "" }
+// Listado de frases románticas aleatorias
+const frasesList = [
+    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
+    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
+    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
+    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", "💎 Mi tesorito"
 ];
 
-let lineaActualKaraoke = -1;
-
-// --- Configuración Core de Three.js ---
+// --- Inicialización de la Escena 3D ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-camera.position.set(0, 0, 2500); 
+camera.position.set(0, 0, 2500); // Inicia lejos para el zoom inicial
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// --- Controles de Usuario ---
+// --- Controles de Cámara ---
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enablePan = false;
-controls.autoRotate = false;
-controls.autoRotateSpeed = 0.5;
+controls.autoRotate = false; // Se activa al pulsar el botón
+controls.autoRotateSpeed = 0.5; // Rotación lenta y romántica
 
-// --- Iluminación ---
+// --- Iluminación de la Escena ---
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
@@ -256,9 +225,11 @@ const pLight = new THREE.PointLight(0xff77aa, 2.5, 1500);
 pLight.position.set(0, 150, 250);
 scene.add(pLight);
 
-const frasesList = ["💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", "💎 Mi tesorito"];
+/**
+ * CREACIÓN DE OBJETOS DEL ESPACIO
+ */
 
-// --- 1. Creación de Estrellas de Fondo ---
+// 1. Estrellas de fondo (20,000 partículas)
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i = 0; i < 20000; i++) {
@@ -273,7 +244,7 @@ const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transpar
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// --- 2. Cubos Rosas en el Espacio ---
+// 2. Cubos flotantes decorativos
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i = 0; i < 800; i++) {
@@ -287,7 +258,7 @@ for(let i = 0; i < 800; i++) {
     cubes.push(c);
 }
 
-// --- 3. Corazón Central 3D ---
+// 3. El Corazón Central Principal
 const heartShape = new THREE.Shape();
 heartShape.moveTo(5, 5); 
 heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0); 
@@ -318,9 +289,11 @@ heartMesh.scale.set(4, 4, 4);
 heartMesh.position.set(20, 40, 0);
 scene.add(heartMesh);
 
-// --- 4. Galería de Fotos (55) ---
+// 4. Galería de Fotos (55 elementos)
 const photos = [];
 const loader = new THREE.TextureLoader();
+
+// Marco de las fotos
 const fShape = new THREE.Shape(); 
 fShape.moveTo(-14, -14); fShape.lineTo(14, -14); fShape.lineTo(14, 14); fShape.lineTo(-14, 14);
 const hole = new THREE.Path(); 
@@ -330,7 +303,12 @@ const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleS
 
 for(let i = 1; i <= 55; i++) {
     const group = new THREE.Group();
-    const photoMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
+    const photoMat = new THREE.MeshBasicMaterial({ 
+        map: loader.load(`foto${i}.jpg`), 
+        side: THREE.DoubleSide, 
+        transparent: true, 
+        opacity: 0 
+    });
     group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), photoMat));
     group.add(new THREE.Mesh(frameGeo, frMat));
     
@@ -344,7 +322,7 @@ for(let i = 1; i <= 55; i++) {
     photos.push(group);
 }
 
-// --- 5. Explosiones de Partículas ---
+// 5. Sistema de Partículas para explosiones
 const pCount = 600; 
 const particlesGeo = new THREE.BufferGeometry();
 const posArray = new Float32Array(pCount * 3);
@@ -365,7 +343,7 @@ function explosion(x, y, z, speedMultiplier = 8) {
     }
 }
 
-// --- 6. Lluvia Final ---
+// 6. Lluvia de Estrellas Final
 const rCount = 500;
 const rainGeo = new THREE.BufferGeometry();
 const rainPos = new Float32Array(rCount * 3);
@@ -379,7 +357,7 @@ const rainMat = new THREE.PointsMaterial({ color: 0xffffcc, size: 2.2, transpare
 scene.add(new THREE.Points(rainGeo, rainMat));
 
 /**
- * --- Gestión de Eventos y Audio ---
+ * CONTROL DE AUDIO E INTERACCIONES
  */
 const ray = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -390,21 +368,6 @@ document.getElementById("musicBtn").onclick = function() {
         audio = new Audio("music.mp3");
         audio.loop = true;
         clickSound = new Audio("click.mp3");
-
-        audio.addEventListener('timeupdate', () => {
-            const t = audio.currentTime;
-            let index = -1;
-            for(let i = 0; i < letraCancion.length; i++) if(t >= letraCancion[i].time) index = i;
-            if(index !== lineaActualKaraoke && index !== -1) {
-                lineaActualKaraoke = index;
-                const divK = document.getElementById('karaoke');
-                divK.style.opacity = 0;
-                setTimeout(() => {
-                    divK.innerText = letraCancion[index].text;
-                    if(letraCancion[index].text !== "") divK.style.opacity = 1;
-                }, 400);
-            }
-        });
     }
     audio.play();
     this.style.opacity = "0";
@@ -426,7 +389,13 @@ window.addEventListener("pointermove", (e) => {
 window.addEventListener("click", () => {
     if(!despierto) return;
     ray.setFromCamera(mouse, camera);
-    if(ray.intersectObject(heartMesh).length > 0) document.getElementById('modalClave').classList.add('activo');
+    
+    // Clic en el corazón abre la clave
+    if(ray.intersectObject(heartMesh).length > 0) {
+        document.getElementById('modalClave').classList.add('activo');
+    }
+
+    // Clic en las fotos genera una pequeña explosión
     const hitPhotos = ray.intersectObjects(photos, true);
     if(hitPhotos.length > 0) {
         const p = hitPhotos[0].object.parent.position;
@@ -436,15 +405,17 @@ window.addEventListener("click", () => {
 });
 
 /**
- * --- Bucle de Animación (60 FPS) ---
+ * BUCLE PRINCIPAL DE ANIMACIÓN
  */
 function animate() {
     requestAnimationFrame(animate);
     const t = Date.now() * 0.001;
     
     if(despierto) {
+        // Zoom suave al inicio
         if(camaraEnVuelo && camera.position.z > 650) camera.position.z -= 15; else camaraEnVuelo = false;
         
+        // Aparición gradual de elementos
         if(nivelFade < 1) {
             nivelFade += 0.004; 
             starsMat.opacity = nivelFade * 0.8; 
@@ -453,6 +424,7 @@ function animate() {
             photos.forEach(p => p.children[0].material.opacity = nivelFade);
         }
 
+        // Efecto de lluvia al final
         if(universoExpandido) {
             const rArray = rainGeo.attributes.position.array;
             for(let i = 0; i < rCount; i++) { 
@@ -463,13 +435,15 @@ function animate() {
             if(rainMat.opacity < 1) rainMat.opacity += 0.01;
         }
 
+        // Latido del corazón y rotación suave
         let pulseFactor = Math.sin(t * 5.0) * Math.sin(t * 5.0); 
         heartMesh.scale.setScalar((universoExpandido ? 6.2 : 4.1) + pulseFactor * 0.25);
         heartMat.emissiveIntensity = 2.0 + pulseFactor * 1.5;
-        heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.01); // Giro romántico 0.01
+        heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.01); // 0.01 es la rotación romántica
         
         stars.rotation.y += 0.00015;
 
+        // Partículas de explosión
         if(particlesMat.opacity > 0) {
             const pArray = particlesGeo.attributes.position.array;
             for(let i = 0; i < pCount; i++){ 
@@ -481,6 +455,7 @@ function animate() {
             particlesMat.opacity -= 0.012; 
         }
 
+        // Fotos flotando y mirando a cámara
         photos.forEach((p, i) => { 
             p.lookAt(camera.position); 
             p.position.y += Math.sin(t + i) * 0.35; 
@@ -491,7 +466,7 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-// --- Funciones Auxiliares de Control ---
+// --- Lógica de Modales ---
 function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
@@ -519,7 +494,7 @@ window.addEventListener('resize', () => {
 
 animate();
 
-// --- Frases del Final ---
+// Frases automáticas en la parte inferior
 setInterval(() => {
     if(despierto && nivelFade > 0.8) {
         const d = document.getElementById("frase");
