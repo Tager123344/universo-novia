@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestro Universo - Natasha</title>
     <style>
-        /* =========================================
-           ESTILOS BASE
-           ========================================= */
+        /* Estilos Base */
         body { 
             margin: 0; 
             overflow: hidden; 
@@ -53,43 +51,20 @@
 
         #frase { 
             position: absolute; 
-            bottom: 20px; 
+            bottom: 130px; 
             width: 100%; 
             text-align: center; 
-            font-size: clamp(14px, 3vw, 20px); 
-            color: rgba(255,255,255,0.7); 
-            text-shadow: 0 0 10px white; 
+            font-size: clamp(18px, 4vw, 26px); 
+            color: white; 
+            text-shadow: 0 0 20px white; 
             opacity: 0; 
             transition: 1.5s; 
             z-index: 10; 
-            pointer-events: none; 
+            padding: 0 15px; 
+            box-sizing: border-box; 
         }
 
-        /* =========================================
-           NUEVO: ESTILOS DEL KARAOKE
-           ========================================= */
-        #karaoke { 
-            position: absolute; 
-            bottom: 120px; 
-            width: 100%; 
-            text-align: center; 
-            font-size: clamp(22px, 4vw, 36px); 
-            color: #ffffff; 
-            text-shadow: 0 0 15px #ff7ab6, 0 0 30px #ff7ab6, 0 0 45px #ff7ab6; 
-            font-style: italic;
-            font-weight: bold;
-            opacity: 0; 
-            transform: translateY(15px);
-            transition: opacity 0.6s ease-in-out, transform 0.6s ease-out; 
-            z-index: 50; 
-            pointer-events: none; 
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-
-        /* =========================================
-           MODALES (CLAVE Y MENSAJE FINAL)
-           ========================================= */
+        /* Modales */
         #modalClave, #mensajeSecreto { 
             display: none; 
             position: fixed; 
@@ -155,8 +130,6 @@
 
 <div id="titulo">💖 Nuestro Universo Mágico - Natasha 💖</div>
 <button id="musicBtn">✨ Activar Magia ✨</button>
-
-<div id="karaoke"></div>
 <div id="frase"></div>
 
 <div id="modalClave">
@@ -187,53 +160,7 @@
 
 <script>
 /**
- * =========================================
- * 1. LETRA DE LA CANCIÓN Y TIEMPOS
- * =========================================
- */
-const letraCancion = [
-    { time: 0, text: "" },
-    { time: 13.5, text: "I’ve been walking around" },
-    { time: 17.0, text: "Waiting for you to shine my love" },
-    { time: 20.5, text: "People passes me by" },
-    { time: 24.0, text: "Doesn’t feel like I belong" },
-    { time: 27.5, text: "Trying to keep it alive" },
-    { time: 31.0, text: "All this hunger inside" },
-    { time: 34.5, text: "For a better confirmation" },
-    { time: 38.0, text: "That I'm heading for the station" },
-    { time: 42.0, text: "I can feel" },
-    { time: 44.0, text: "Love is real" },
-    { time: 46.0, text: "Now you try" },
-    { time: 48.0, text: "If you're willing to just come along with me" },
-    { time: 55.5, text: "We can feel" },
-    { time: 57.5, text: "No more lies" },
-    { time: 59.5, text: "A Simple dream of you and I" },
-    { time: 64.0, text: "" },
-    { time: 69.5, text: "All my friends by my side" },
-    { time: 73.0, text: "Told me that I should find some love" },
-    { time: 76.5, text: "I’ve been walking around" },
-    { time: 80.0, text: "Trynna to catch you with my eyes" },
-    { time: 83.5, text: "With no one in my heart" },
-    { time: 87.0, text: "But I guess I can start" },
-    { time: 90.5, text: "An easy conversation" },
-    { time: 94.0, text: "Get a bit of your attention" },
-    { time: 98.0, text: "I can feel" },
-    { time: 100.0, text: "Love is real" },
-    { time: 102.0, text: "Now you try" },
-    { time: 104.0, text: "If you're willing to just come along with me" },
-    { time: 112.0, text: "We can feel" },
-    { time: 114.0, text: "No more lies" },
-    { time: 115.5, text: "A Simple dream of you and I" },
-    { time: 121.5, text: "A Simple dream of you and I" },
-    { time: 128.0, text: "" }
-];
-
-let lineaActualKaraoke = -1;
-
-/**
- * =========================================
- * 2. CONFIGURACIÓN INICIAL DEL JUEGO
- * =========================================
+ * CONFIGURACIÓN INICIAL
  */
 const CLAVE_SECRETA = "30102025";
 let despierto = false;
@@ -241,26 +168,25 @@ let nivelFade = 0;
 let camaraEnVuelo = false;
 let universoExpandido = false;
 
-// Configuración de la Escena y la Cámara
+// Escena, Cámara y Renderizado
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 camera.position.set(0, 0, 2500); 
 
-// Configuración del Renderizador
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Controles de Órbita
+// Controles de Órbita (RESTAURADOS TOTALMENTE)
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enablePan = false;
-controls.autoRotate = false;
-controls.autoRotateSpeed = 0.5;
+controls.autoRotate = false; // Desactivado hasta que empiece la magia
+controls.autoRotateSpeed = 0.5; // Velocidad de rotación suave
 
-// Configuración de Luces
+// Luces
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
@@ -276,32 +202,29 @@ const frasesList = [
 ];
 
 /**
- * =========================================
- * 3. CREACIÓN DE OBJETOS 3D
- * =========================================
+ * ELEMENTOS DEL UNIVERSO
  */
 
-// A. Fondo de Estrellas (20,000)
+// 1. Fondo de Estrellas (20,000)
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
 for(let i = 0; i < 20000; i++) {
-    const x = (Math.random() - 0.5) * 3500;
-    const y = (Math.random() - 0.5) * 3000;
-    const z = (Math.random() - 0.5) * 3500;
-    starPos.push(x, y, z);
+    starPos.push(
+        (Math.random() - 0.5) * 3500,
+        (Math.random() - 0.5) * 3000,
+        (Math.random() - 0.5) * 3500
+    );
 }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
 const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, transparent: true, opacity: 0 });
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// B. Cubos Rosas Flotantes (800)
+// 2. Cubos Rosas Flotantes (800)
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
-const boxGeo = new THREE.BoxGeometry(2, 2, 2);
-
 for(let i = 0; i < 800; i++) {
-    const c = new THREE.Mesh(boxGeo, cubeMat.clone());
+    const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
     c.position.set(
         (Math.random() - 0.5) * 1600,
         (Math.random() - 0.5) * 1300,
@@ -311,117 +234,121 @@ for(let i = 0; i < 800; i++) {
     cubes.push(c);
 }
 
-// C. El Corazón 3D
+// 3. El Corazón 3D Bonito (REFINADO)
 const heartShape = new THREE.Shape();
-heartShape.moveTo(5, 5); 
-heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0); 
-heartShape.bezierCurveTo(-6, 0, -6, 7, -6, 7); 
-heartShape.bezierCurveTo(-6, 11, -3, 15.4, 5, 19); 
-heartShape.bezierCurveTo(12, 15.4, 16, 11, 16, 7); 
-heartShape.bezierCurveTo(16, 7, 16, 0, 10, 0); 
+heartShape.moveTo(5, 5);
+heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0);
+heartShape.bezierCurveTo(-6, 0, -6, 7, -6, 7);
+heartShape.bezierCurveTo(-6, 11, -3, 15.4, 5, 19);
+heartShape.bezierCurveTo(12, 15.4, 16, 11, 16, 7);
+heartShape.bezierCurveTo(16, 7, 16, 0, 10, 0);
 heartShape.bezierCurveTo(7, 0, 5, 5, 5, 5);
 
-const extrudeSettings = { 
+const heartGeo = new THREE.ExtrudeGeometry(heartShape, { 
     depth: 5, 
     bevelEnabled: true, 
     bevelSize: 1.5, 
     bevelThickness: 1.5 
-};
-const heartGeo = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-
+});
 const heartMat = new THREE.MeshStandardMaterial({ 
     color: 0xff3377, 
-    emissive: 0xff1144, 
+    emissive: 0xff1144, // Refinado el brillo neón
     emissiveIntensity: 2.2, 
     transparent: true, 
-    opacity: 0, 
-    roughness: 0.1, 
-    metalness: 0.2 
+    opacity: 0,
+    roughness: 0.1,
+    metalness: 0.2
 });
-
 const heartMesh = new THREE.Mesh(heartGeo, heartMat);
-heartMesh.rotation.z = Math.PI; 
-heartMesh.scale.set(4, 4, 4); 
+heartMesh.rotation.z = Math.PI;
+heartMesh.scale.set(4, 4, 4);
 heartMesh.position.set(20, 40, 0);
 scene.add(heartMesh);
 
-// D. Las 55 Fotos con Marco Rosa
+// 4. Sprites de Texto Flotante (300)
+const sprites = [];
+function crearSprite(texto) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.font = "bold 24px Arial";
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#ff77aa";
+    ctx.shadowBlur = 10;
+    ctx.fillText(texto, 128, 32);
+
+    const sMat = new THREE.SpriteMaterial({ 
+        map: new THREE.CanvasTexture(canvas), 
+        transparent: true, 
+        opacity: 0 
+    });
+    const s = new THREE.Sprite(sMat);
+    s.position.set(
+        (Math.random() - 0.5) * 1300,
+        (Math.random() - 0.5) * 1100,
+        (Math.random() - 0.5) * 1300
+    );
+    s.scale.set(80, 20, 1);
+    scene.add(s);
+    sprites.push(s);
+}
+for(let i = 0; i < 300; i++) {
+    crearSprite(frasesList[i % frasesList.length]);
+}
+
+// 5. Las 55 Fotos con Marco Rosa
 const photos = [];
 const loader = new THREE.TextureLoader();
 
 // Geometría del marco rosa
-const fShape = new THREE.Shape(); 
-fShape.moveTo(-14, -14); 
-fShape.lineTo(14, -14); 
-fShape.lineTo(14, 14); 
-fShape.lineTo(-14, 14);
-
-const hole = new THREE.Path(); 
-hole.moveTo(-12.5, -12.5); 
-hole.lineTo(12.5, -12.5); 
-hole.lineTo(12.5, 12.5); 
-hole.lineTo(-12.5, 12.5); 
+const fShape = new THREE.Shape();
+fShape.moveTo(-14, -14); fShape.lineTo(14, -14); fShape.lineTo(14, 14); fShape.lineTo(-14, 14);
+const hole = new THREE.Path();
+hole.moveTo(-12.5, -12.5); hole.lineTo(12.5, -12.5); hole.lineTo(12.5, 12.5); hole.lineTo(-12.5, 12.5);
 fShape.holes.push(hole);
-
 const frameGeo = new THREE.ShapeGeometry(fShape);
-const frMat = new THREE.MeshBasicMaterial({ 
-    color: 0xff7ab6, 
-    side: THREE.DoubleSide, 
-    transparent: true, 
-    opacity: 0 
-});
+const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
 
-// Bucle para crear las 55 fotos en círculos concéntricos
 for(let i = 1; i <= 55; i++) {
     const group = new THREE.Group();
     
-    // Material de la foto
+    // La imagen
     const photoMat = new THREE.MeshBasicMaterial({ 
         map: loader.load(`foto${i}.jpg`), 
         side: THREE.DoubleSide, 
         transparent: true, 
         opacity: 0 
     });
-    
     const photoMesh = new THREE.Mesh(new THREE.PlaneGeometry(25, 25), photoMat);
     group.add(photoMesh);
 
-    // Marco de la foto
+    // El marco
     const frameMesh = new THREE.Mesh(frameGeo, frMat);
     group.add(frameMesh);
     
-    // Cálculo de posición en anillos
-    let ring = 0;
-    if (i > 18 && i <= 36) ring = 1;
-    if (i > 36) ring = 2;
-    
-    let radius = 250;
-    if (ring === 1) radius = 420;
-    if (ring === 2) radius = 580;
-    
-    let yPos = 160;
-    if (ring === 1) yPos = 0;
-    if (ring === 2) yPos = -160;
-    
+    // Distribución en anillos
+    let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
+    let radius = ring === 0 ? 250 : (ring === 1 ? 420 : 580);
+    let yPos = ring === 0 ? 160 : (ring === 1 ? 0 : -160);
     let angle = (i % 18) * (Math.PI * 2 / 18);
-    
+
     group.position.set(
-        Math.cos(angle) * radius, 
-        yPos + (Math.random() - 0.5) * 70, 
+        Math.cos(angle) * radius,
+        yPos + (Math.random() - 0.5) * 70,
         Math.sin(angle) * radius
     );
-    
-    scene.add(group); 
+    scene.add(group);
     photos.push(group);
 }
 
-// E. Sistema de Partículas Amarillas (Explosiones)
+// 6. Sistema de Partículas Amarillas (Explosiones Centralizadas)
 const pCount = 600; 
 const particlesGeo = new THREE.BufferGeometry();
 const posArray = new Float32Array(pCount * 3);
 const velArray = new Float32Array(pCount * 3);
 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
 const particlesMat = new THREE.PointsMaterial({ 
     color: 0xffff00, 
     size: 3.5, 
@@ -432,13 +359,13 @@ const particlesMat = new THREE.PointsMaterial({
 const particleSystem = new THREE.Points(particlesGeo, particlesMat);
 scene.add(particleSystem);
 
-// Función para crear la explosión
-function explosion(x, y, z, speedMultiplier = 8) {
+function explosion(x, y, z, countMultiplier = 1, speedMultiplier = 8) {
     particlesMat.opacity = 1;
     const pos = particlesGeo.attributes.position.array;
+    // Solo usamos pCount como límite para no sobrecargar
     for(let i = 0; i < pCount; i++) {
-        pos[i*3] = x; 
-        pos[i*3+1] = y; 
+        pos[i*3] = x;
+        pos[i*3+1] = y;
         pos[i*3+2] = z;
         velArray[i*3] = (Math.random() - 0.5) * speedMultiplier;
         velArray[i*3+1] = (Math.random() - 0.5) * speedMultiplier;
@@ -446,259 +373,195 @@ function explosion(x, y, z, speedMultiplier = 8) {
     }
 }
 
-// F. Lluvia de Estrellas Final
+// 7. Lluvia de Estrellas Final (Dorada)
 const rCount = 500;
 const rainGeo = new THREE.BufferGeometry();
 const rainPos = new Float32Array(rCount * 3);
-
 for(let i = 0; i < rCount; i++) {
-    rainPos[i*3] = (Math.random() - 0.5) * 2500; 
-    rainPos[i*3+1] = Math.random() * 1500; 
+    rainPos[i*3] = (Math.random() - 0.5) * 2500;
+    rainPos[i*3+1] = Math.random() * 1500;
     rainPos[i*3+2] = (Math.random() - 0.5) * 2500;
 }
 rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
-
-const rainMat = new THREE.PointsMaterial({ 
-    color: 0xffffcc, 
-    size: 2.2, 
-    transparent: true, 
-    opacity: 0 
-});
+const rainMat = new THREE.PointsMaterial({ color: 0xffffcc, size: 2.2, transparent: true, opacity: 0 });
 const rainSystem = new THREE.Points(rainGeo, rainMat);
 scene.add(rainSystem);
 
 /**
- * =========================================
- * 4. EVENTOS Y AUDIO (KARAOKE)
- * =========================================
+ * INTERACCIONES Y LÓGICA DE EVENTOS
  */
 const ray = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let audio, clickSound;
 
-// Evento al presionar "Activar Magia"
 document.getElementById("musicBtn").onclick = function() {
     if(!audio) {
         audio = new Audio("music.mp3");
         audio.loop = true;
         clickSound = new Audio("click.mp3");
-        
-        // Sincronización del Karaoke
-        audio.addEventListener('timeupdate', () => {
-            const t = audio.currentTime;
-            let index = -1;
-            
-            // Buscar la línea correspondiente al tiempo actual
-            for(let i = 0; i < letraCancion.length; i++) {
-                if(t >= letraCancion[i].time) {
-                    index = i;
-                }
-            }
-            
-            // Si la línea cambia, actualizar el texto en pantalla
-            if(index !== lineaActualKaraoke && index !== -1) {
-                lineaActualKaraoke = index;
-                const divKaraoke = document.getElementById('karaoke');
-                
-                // Animación de salida (Fade out)
-                divKaraoke.style.opacity = 0;
-                divKaraoke.style.transform = "translateY(15px)";
-                
-                // Animación de entrada (Fade in) tras un breve retraso
-                setTimeout(() => {
-                    divKaraoke.innerText = letraCancion[index].text;
-                    if(letraCancion[index].text !== "") {
-                        divKaraoke.style.opacity = 1;
-                        divKaraoke.style.transform = "translateY(0px)";
-                    }
-                }, 600);
-            }
-        });
     }
-    
-    // Iniciar Audio y Efectos
     audio.play();
     this.style.opacity = "0";
-    
-    setTimeout(() => {
-        this.style.display = "none";
-    }, 500);
-    
+    setTimeout(() => this.style.display = "none", 500);
     despierto = true;
     
-    // Zoom Inicial hacia el Corazón
-    camera.position.set(0, 50, 2000); 
+    // Viaje de Cámara Inicial (Zoom suave hacia el corazón)
+    camera.position.set(0, 50, 2000); // Empezamos alto y lejos
     camera.lookAt(heartMesh.position);
-    controls.autoRotate = true; 
-    camaraEnVuelo = true; 
+    controls.autoRotate = true; // Empieza la rotación automática suave
+    camaraEnVuelo = true; // Activa zoom inicial suave
 };
 
-// Evento de movimiento del Mouse
-window.addEventListener("pointermove", (e) => { 
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1; 
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; 
+window.addEventListener("pointermove", (e) => {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 });
 
-// Evento de Clics (Corazón y Fotos)
 window.addEventListener("click", () => {
     if(!despierto) return;
     ray.setFromCamera(mouse, camera);
-    
-    // Clic en el Corazón
-    const hitHeart = ray.intersectObject(heartMesh);
-    if(hitHeart.length > 0) {
+
+    // Clic en Corazón
+    if(ray.intersectObject(heartMesh).length > 0) {
         document.getElementById('modalClave').classList.add('activo');
     }
-    
-    // Clic en las Fotos
+
+    // Clic en Fotos
     const hitPhotos = ray.intersectObjects(photos, true);
     if(hitPhotos.length > 0) {
         const p = hitPhotos[0].object.parent.position;
         explosion(p.x, p.y, p.z);
-        if(clickSound) { 
-            clickSound.currentTime = 0; 
-            clickSound.play(); 
+        if(clickSound) {
+            clickSound.currentTime = 0;
+            clickSound.play();
         }
     }
 });
 
 /**
- * =========================================
- * 5. BUCLE DE ANIMACIÓN PRINCIPAL
- * =========================================
+ * BUCLE DE ANIMACIÓN
  */
 function animate() {
     requestAnimationFrame(animate);
     const t = Date.now() * 0.001;
 
     if(despierto) {
-        // Control del Vuelo de Cámara Inicial
-        if(camaraEnVuelo && camera.position.z > 650) { 
-            camera.position.z -= 15; 
-        } else if (camaraEnVuelo) { 
-            camaraEnVuelo = false; 
+        // Manejo de Zoom suave Inicial hacia el corazón
+        if(camaraEnVuelo && camera.position.z > 650) {
+            camera.position.z -= 15; // Zoom suave acercándose
+        } else if (camaraEnVuelo) {
+            camaraEnVuelo = false; // Detiene el zoom inicial suave
         }
-        
-        // Desvanecido de Entrada (Fade In)
+
+        // Efecto de Aparecer (Fade In)
         if(nivelFade < 1) {
-            nivelFade += 0.004; 
-            starsMat.opacity = nivelFade * 0.8; 
-            heartMat.opacity = nivelFade; 
+            nivelFade += 0.004;
+            starsMat.opacity = nivelFade * 0.8;
+            heartMat.opacity = nivelFade;
             frMat.opacity = nivelFade;
-            
-            photos.forEach((p) => {
-                p.children[0].material.opacity = nivelFade;
-            });
+            photos.forEach(p => p.children[0].material.opacity = nivelFade);
+            sprites.forEach(s => s.material.opacity = nivelFade * 0.6);
             cubeMat.opacity = nivelFade * 0.7;
         }
 
-        // Animación de la Lluvia Final
+        // Lógica de Lluvia de Estrellas Final (Caída suave)
         if(universoExpandido) {
             const rArray = rainGeo.attributes.position.array;
-            for(let i = 0; i < rCount; i++) { 
-                rArray[i*3+1] -= 2.5; 
-                if(rArray[i*3+1] < -1200) {
-                    rArray[i*3+1] = 1200; 
-                }
+            for(let i = 0; i < rCount; i++) {
+                rArray[i*3+1] -= 2.5; // Velocidad de caída
+                if(rArray[i*3+1] < -1200) rArray[i*3+1] = 1200; // Reset superior
             }
             rainGeo.attributes.position.needsUpdate = true;
-            if(rainMat.opacity < 1) {
-                rainMat.opacity += 0.01;
-            }
+            if(rainMat.opacity < 1) rainMat.opacity += 0.01;
         }
 
-        // Animación de Latido del Corazón (Natural y Rápido)
-        let pulseFactor = Math.sin(t * 5.0) * Math.sin(t * 5.0); 
+        // LATIDO DE CORAZÓN NATURAL, RÁPIDO Y BONITO
+        // Ya no es brusco, usa sinusoide suave para contracción rápida y relajación lenta
+        let pulseSpeed = 5.0; // Frecuencia rápida
+        let pulseAmplitude = universoExpandido ? 0.4 : 0.25; // Más fuerte al final
+        let pulseFactor = Math.sin(t * pulseSpeed) * Math.sin(t * pulseSpeed); // Siempre positivo 0 a 1 suave
+        heartMesh.scale.setScalar((universoExpandido ? 6.2 : 4.1) + pulseFactor * pulseAmplitude);
         
-        let targetScale = (universoExpandido ? 6.2 : 4.1) + pulseFactor * (universoExpandido ? 0.4 : 0.25);
-        heartMesh.scale.setScalar(targetScale);
-        
+        // Brillo Neón dinámico synced with Latido
         heartMat.emissiveIntensity = 2.0 + pulseFactor * 1.5;
+
+        // Rotación y movimiento base
         heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.018);
         stars.rotation.y += 0.00015;
 
-        // Animación de Partículas (Explosiones)
+        // Animación de Explosiones
         if(particlesMat.opacity > 0) {
             const pArray = particlesGeo.attributes.position.array;
-            for(let i = 0; i < pCount; i++){ 
-                pArray[i*3] += velArray[i*3]; 
-                pArray[i*3+1] += velArray[i*3+1]; 
-                pArray[i*3+2] += velArray[i*3+2]; 
+            for(let i = 0; i < pCount; i++){
+                pArray[i*3] += velArray[i*3];
+                pArray[i*3+1] += velArray[i*3+1];
+                pArray[i*3+2] += velArray[i*3+2];
             }
-            particlesGeo.attributes.position.needsUpdate = true; 
-            particlesMat.opacity -= 0.012; 
+            particlesGeo.attributes.position.needsUpdate = true;
+            particlesMat.opacity -= 0.012; // Se desvanecen
         }
 
-        // Animación Flotante de las Fotos
-        photos.forEach((p, i) => { 
-            p.lookAt(camera.position); 
-            p.position.y += Math.sin(t + i) * 0.35; 
+        // Animación de Fotos Flotantes (Look at Camera)
+        photos.forEach((p, i) => {
+            p.lookAt(camera.position);
+            p.position.y += Math.sin(t + i) * 0.35; // Flotación suave
         });
     }
-    
+
+    // Actualizar Controles de Órbita (Maneja el autoRotate y el control del usuario)
     controls.update(); 
     renderer.render(scene, camera);
 }
 
 /**
- * =========================================
- * 6. FUNCIONES SECUNDARIAS
- * =========================================
+ * FUNCIONES DE CONTROL
  */
 function verificarClave() {
-    const inputUsuario = document.getElementById('inputClave').value;
-    if(inputUsuario === CLAVE_SECRETA) {
+    if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
         document.getElementById('mensajeSecreto').classList.add('activo');
-    } else { 
-        alert("Esa no es nuestra fecha... Intenta de nuevo 💕"); 
+        // No bloqueamos cámara, el autoRotate y OrbitControls siguen funcionando
+    } else {
+        alert("Esa no es nuestra fecha... Intenta de nuevo 💕");
     }
 }
 
 function cerrarMensaje() {
     document.getElementById('mensajeSecreto').classList.remove('activo');
+    
+    // ACTIVAR EFECTOS DEL FINAL (SUPERNOVA CENTRAL SIN CAMBIAR FONDO)
     universoExpandido = true;
+    explosion(0, 0, 0, 1, 20); // Supernova Central Rápida
     
-    // Activar Supernova
-    explosion(0, 0, 0, 20); 
-    
-    // Aumentar Intensidad de Luz Central
+    // No cambiamos el fondo negro original, solo intensificamos la luz central
     pLight.intensity = 7;
-    pLight.color.setHex(0xffffff); 
+    pLight.color.setHex(0xffffff); // Luz blanca dorada pura
+    
+    // Los OrbitControls siguen funcionando y autoRotate también
 }
 
-function cerrarModales() { 
-    const modales = document.querySelectorAll('.activo');
-    modales.forEach((m) => {
-        m.classList.remove('activo');
-    });
+function cerrarModales() {
+    document.querySelectorAll('.activo').forEach(m => m.classList.remove('activo'));
 }
 
-// Redimensionar pantalla
-window.addEventListener('resize', () => { 
-    camera.aspect = window.innerWidth / window.innerHeight; 
-    camera.updateProjectionMatrix(); 
-    renderer.setSize(window.innerWidth, window.innerHeight); 
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Iniciar el Bucle Principal
+// Iniciar animación
 animate();
 
-// Frases Aleatorias Inferiores
+// Bucle de frases inferiores
 setInterval(() => {
     if(despierto && nivelFade > 0.8) {
         const d = document.getElementById("frase");
-        const fraseAleatoria = frasesList[Math.floor(Math.random() * frasesList.length)];
-        
-        d.innerHTML = fraseAleatoria;
-        d.style.opacity = 1; 
-        
-        setTimeout(() => {
-            d.style.opacity = 0;
-        }, 4000);
+        d.innerHTML = frasesList[Math.floor(Math.random() * frasesList.length)];
+        d.style.opacity = 1;
+        setTimeout(() => d.style.opacity = 0, 4000);
     }
 }, 7500);
-
 </script>
 </body>
 </html>
