@@ -13,14 +13,13 @@
 
         #frase { position: absolute; bottom: 130px; width: 100%; text-align: center; font-size: clamp(18px, 4vw, 26px); color: white; text-shadow: 0 0 20px white; opacity: 0; transition: 1.5s; z-index: 10; padding: 0 15px; box-sizing: border-box; }
 
-        #modalClave, #mensajeSecreto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        #modalClave, #mensajeSecreto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
         #modalClave.activo, #mensajeSecreto.activo { display: flex; }
         .modal-contenido { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ff77aa; border: 2px solid #ff77aa; max-width: 90%; width: 450px; color: white; }
         
         input { padding: 15px; border: 2px solid #ff77aa; border-radius: 15px; background: rgba(255,255,255,0.1); color: white; text-align: center; margin-bottom: 20px; width: 85%; font-size: 18px; outline: none; }
         .btn-modal { padding: 12px 25px; border: none; border-radius: 20px; background: #ff77aa; color: white; cursor: pointer; font-size: 16px; margin: 10px; transition: 0.3s; }
         .btn-modal:hover { background: #ff4488; transform: scale(1.05); }
-        #contadorDias { font-size: 1.2em; color: #ff7ab6; font-weight: bold; display: block; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -45,10 +44,8 @@
         <h1>¡Hola mi amor! ✨</h1>
         <p><strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
         Tú eres mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-        <span id="contadorDias"></span>
-        <br>
-        <strong>¡Te amo infinitamente! 💕</strong></p>
-        <button class="btn-modal" onclick="cerrarModales()">💕 Te amo 💕</button>
+        <strong>te amo mucho mi gordita gracias por existir ❤️</strong></p>
+        <button class="btn-modal" onclick="cerrarMensaje()">💕 Te amo ❤️</button>
     </div>
 </div>
 
@@ -57,15 +54,15 @@
 
 <script>
 const CLAVE_SECRETA = "30102025";
-const FECHA_INICIO = new Date("2025-10-30"); 
 let despierto = false;
 let nivelFade = 0; 
 let camaraVuelo = false;
+let universoExpandido = false;
 
 // ESCENA Y CÁMARA
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-camera.position.set(0, 0, 2000); 
+camera.position.set(0, 0, 2500); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -75,256 +72,196 @@ document.body.appendChild(renderer.domElement);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.autoRotate = true;
-controls.autoRotateSpeed = 0.5;
+controls.enablePan = false;
 
 // LUCES
-scene.add(new THREE.AmbientLight(0xffffff, 0.2));
-const pLight = new THREE.PointLight(0xff77aa, 2, 1000);
-pLight.position.set(0, 100, 200);
+scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+const pLight = new THREE.PointLight(0xff77aa, 2.5, 1500);
+pLight.position.set(0, 150, 250);
 scene.add(pLight);
 
-const frasesList = [
-    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
-    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
-    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
-    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", 
-    "💖 Tu mi tiquitita", "💎 Mi tesorito", "❤️ Eres mi luz"
-];
+const frasesList = ["💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", "💎 Mi tesorito"];
 
-// 1. ESTRELLAS DE FONDO (RESTAURADAS A 20,000)
+// 1. ESTRELLAS
 const starGeo = new THREE.BufferGeometry();
 const starPos = [];
-for(let i=0; i<20000; i++) {
-    starPos.push((Math.random()-0.5)*1800, (Math.random()-0.5)*1500, (Math.random()-0.5)*1800);
-}
+for(let i=0; i<20000; i++) { starPos.push((Math.random()-0.5)*3000, (Math.random()-0.5)*2500, (Math.random()-0.5)*3000); }
 starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0 });
+const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, transparent: true, opacity: 0 });
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. CUBOS ROSAS FLOTANTES (RESTAURADOS TOTALMENTE)
+// 2. CUBOS ROSAS
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i=0; i<800; i++) {
     const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
-    c.position.set((Math.random()-0.5)*1100, (Math.random()-0.5)*900, (Math.random()-0.5)*1100);
+    c.position.set((Math.random()-0.5)*1500, (Math.random()-0.5)*1200, (Math.random()-0.5)*1500);
     scene.add(c);
     cubes.push(c);
 }
 
-// 3. CORAZÓN 3D ANIMADO
+// 3. CORAZÓN 3D
 const heartShape = new THREE.Shape();
-heartShape.moveTo( 5, 5 );
-heartShape.bezierCurveTo( 5, 5, 4, 0, 0, 0 );
-heartShape.bezierCurveTo( -6, 0, -6, 7, -6, 7 );
-heartShape.bezierCurveTo( -6, 11, -3, 15.4, 5, 19 );
-heartShape.bezierCurveTo( 12, 15.4, 16, 11, 16, 7 );
-heartShape.bezierCurveTo( 16, 7, 16, 0, 10, 0 );
-heartShape.bezierCurveTo( 7, 0, 5, 5, 5, 5 );
-
-const heartGeo = new THREE.ExtrudeGeometry(heartShape, { depth: 4, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 });
-const heartMat = new THREE.MeshStandardMaterial({ color: 0xff3377, emissive: 0xff0044, emissiveIntensity: 1.5, transparent: true, opacity: 0 });
+heartShape.moveTo(5, 5); heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0); heartShape.bezierCurveTo(-6, 0, -6, 7, -6, 7); heartShape.bezierCurveTo(-6, 11, -3, 15.4, 5, 19); heartShape.bezierCurveTo(12, 15.4, 16, 11, 16, 7); heartShape.bezierCurveTo(16, 7, 16, 0, 10, 0); heartShape.bezierCurveTo(7, 0, 5, 5, 5, 5);
+const heartGeo = new THREE.ExtrudeGeometry(heartShape, { depth: 5, bevelEnabled: true, bevelSize: 1.5, bevelThickness: 1.5 });
+const heartMat = new THREE.MeshStandardMaterial({ color: 0xff3377, emissive: 0xff0044, emissiveIntensity: 2, transparent: true, opacity: 0 });
 const heartMesh = new THREE.Mesh(heartGeo, heartMat);
-heartMesh.rotation.z = Math.PI;
-heartMesh.scale.set(4, 4, 4);
-heartMesh.position.set(20, 40, 0);
+heartMesh.rotation.z = Math.PI; heartMesh.scale.set(4, 4, 4); heartMesh.position.set(20, 40, 0);
 scene.add(heartMesh);
 
-// 4. FRASES FLOTANTES - SPRITES (RESTAURADAS TOTALMENTE)
+// 4. SPRITES (TEXTOS)
 const sprites = [];
 function crearSprite(texto) {
     const canvas = document.createElement("canvas"); canvas.width = 256; canvas.height = 64;
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "white"; ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
-    ctx.shadowColor = "#ff77aa"; ctx.shadowBlur = 8;
-    ctx.fillText(texto, 128, 32);
+    ctx.shadowColor = "#ff77aa"; ctx.shadowBlur = 10; ctx.fillText(texto, 128, 32);
     const sMat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0 });
     const s = new THREE.Sprite(sMat);
-    s.position.set((Math.random()-0.5)*900, (Math.random()-0.5)*800, (Math.random()-0.5)*900);
-    s.scale.set(70, 18, 1);
-    scene.add(s);
-    sprites.push(s);
+    s.position.set((Math.random()-0.5)*1200, (Math.random()-0.5)*1000, (Math.random()-0.5)*1200);
+    s.scale.set(80, 20, 1); scene.add(s); sprites.push(s);
 }
-// Crear 300 sprites flotantes
 for(let i=0; i<300; i++) crearSprite(frasesList[i % frasesList.length]);
 
-// 5. FOTOS (55 FOTOS CON MARCO ROSA)
+// 5. FOTOS (55 CON MARCO)
 const photos = [];
 const loader = new THREE.TextureLoader();
-// Configuración del marco rosa original
-const fShape = new THREE.Shape();
-fShape.moveTo(-13.5,-13.5); fShape.lineTo(13.5,-13.5); fShape.lineTo(13.5,13.5); fShape.lineTo(-13.5,13.5);
-const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5);
-fShape.holes.push(hole);
-const fGeo = new THREE.ShapeGeometry(fShape);
+const fShape = new THREE.Shape(); fShape.moveTo(-14,-14); fShape.lineTo(14,-14); fShape.lineTo(14,14); fShape.lineTo(-14,14);
+const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5); fShape.holes.push(hole);
 const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
 
 for(let i=1; i<=55; i++) {
     const group = new THREE.Group();
-    // La foto
-    const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
-    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
-    // El marco rosa
-    group.add(new THREE.Mesh(fGeo, frMat)); 
-    
-    // Distribución en 3 anillos (18, 18, 19)
+    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 }))); 
+    group.add(new THREE.Mesh(new THREE.ShapeGeometry(fShape), frMat)); 
     let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
-    let radius = ring === 0 ? 200 : (ring === 1 ? 300 : 400);
-    let yPos = ring === 0 ? 120 : (ring === 1 ? 0 : -120);
-    let fotosEnAnillo = ring === 0 ? 18 : (ring === 1 ? 18 : 19);
-    let indexEnAnillo = ring === 0 ? (i-1) : (ring === 1 ? (i-19) : (i-37));
-    let angle = indexEnAnillo * (Math.PI * 2 / fotosEnAnillo);
-
-    group.position.set(Math.cos(angle)*radius, yPos + (Math.random()-0.5)*40, Math.sin(angle)*radius);
-    scene.add(group);
-    photos.push(group);
+    let radius = ring === 0 ? 250 : (ring === 1 ? 400 : 550);
+    let yPos = ring === 0 ? 150 : (ring === 1 ? 0 : -150);
+    let angle = (i % 18) * (Math.PI * 2 / 18);
+    group.position.set(Math.cos(angle)*radius, yPos + (Math.random()-0.5)*60, Math.sin(angle)*radius);
+    scene.add(group); photos.push(group);
 }
 
-// 6. EXPLOSIONES DE COLORES MEJORADAS
+// 6. EXPLOSIÓN AMARILLA (PARA CLICS)
 const particlesGeo = new THREE.BufferGeometry();
-const pCount = 80;
+const pCount = 100;
 const posArray = new Float32Array(pCount * 3);
 const velArray = new Float32Array(pCount * 3);
 particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-const particlesMat = new THREE.PointsMaterial({ size: 2.5, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+const particlesMat = new THREE.PointsMaterial({ color: 0xffff00, size: 3, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
 const particleSystem = new THREE.Points(particlesGeo, particlesMat);
 scene.add(particleSystem);
 
-function explosion(x, y, z) {
-    particlesMat.color.setHSL(Math.random(), 1, 0.6); // Color aleatorio
+function explosion(x, y, z, count = 100, speed = 8) {
     particlesMat.opacity = 1;
     const pos = particlesGeo.attributes.position.array;
     for(let i=0; i<pCount; i++){
         pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
-        velArray[i*3]=(Math.random()-0.5)*7;
-        velArray[i*3+1]=(Math.random()-0.5)*7;
-        velArray[i*3+2]=(Math.random()-0.5)*7;
+        velArray[i*3]=(Math.random()-0.5)*speed; velArray[i*3+1]=(Math.random()-0.5)*speed; velArray[i*3+2]=(Math.random()-0.5)*speed;
     }
 }
 
-// INTERACCIONES Y SONIDO
+// 7. LLUVIA DE ESTRELLAS (RESERVADA PARA EL FINAL)
+const rainGeo = new THREE.BufferGeometry();
+const rCount = 400;
+const rainPos = new Float32Array(rCount * 3);
+for(let i=0; i<rCount; i++) { rainPos[i*3]=(Math.random()-0.5)*2000; rainPos[i*3+1]=Math.random()*1000; rainPos[i*3+2]=(Math.random()-0.5)*2000; }
+rainGeo.setAttribute('position', new THREE.BufferAttribute(rainPos, 3));
+const rainMat = new THREE.PointsMaterial({ color: 0xffffaa, size: 2, transparent: true, opacity: 0 });
+const rainSystem = new THREE.Points(rainGeo, rainMat);
+scene.add(rainSystem);
+
+// INTERACCIONES
 const ray = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 let audio, clickSound;
 
 document.getElementById("musicBtn").onclick = function() {
-    if(!audio) { 
-        audio = new Audio("music.mp3"); audio.loop = true; 
-        clickSound = new Audio("click.mp3"); 
-    }
-    audio.play();
-    this.style.opacity = "0";
-    setTimeout(() => this.style.display = "none", 500);
-    despierto = true;
+    if(!audio) { audio = new Audio("music.mp3"); audio.loop = true; clickSound = new Audio("click.mp3"); }
+    audio.play(); this.style.opacity = "0"; setTimeout(() => this.style.display = "none", 500); despierto = true;
 };
 
-// Actualizar posición del mouse para raycasting (SIN RASTRO)
-window.addEventListener("pointermove", (e) => {
-    mouse.x = (e.clientX/window.innerWidth)*2-1;
-    mouse.y = -(e.clientY/window.innerHeight)*2+1;
-});
-
+window.addEventListener("pointermove", (e) => { mouse.x = (e.clientX/window.innerWidth)*2-1; mouse.y = -(e.clientY/window.innerHeight)*2+1; });
 window.addEventListener("click", () => {
-    if(!despierto) return;
-    ray.setFromCamera(mouse, camera);
-    const hitHeart = ray.intersectObject(heartMesh);
-    if(hitHeart.length > 0) document.getElementById('modalClave').classList.add('activo');
-    
+    if(!despierto) return; ray.setFromCamera(mouse, camera);
+    if(ray.intersectObject(heartMesh).length > 0) document.getElementById('modalClave').classList.add('activo');
     const hitPhotos = ray.intersectObjects(photos, true);
     if(hitPhotos.length > 0) {
         const p = hitPhotos[0].object.parent.position;
-        explosion(p.x, p.y, p.z);
-        if(clickSound) {
-            clickSound.currentTime = 0; 
-            clickSound.play();
-        }
+        explosion(p.x, p.y, p.z); if(clickSound) { clickSound.currentTime = 0; clickSound.play(); }
     }
 });
 
 function animate() {
     requestAnimationFrame(animate);
     const t = Date.now() * 0.001;
-
     if(despierto) {
-        // Suavizar entrada de cámara
-        if(!camaraVuelo && camera.position.z > 850) camera.position.z -= 10;
-        if(camaraVuelo && camera.position.z > 350) camera.position.z -= 15;
+        if(!camaraVuelo) {
+            camera.position.x = Math.sin(t * 0.2) * 900;
+            camera.position.y = Math.cos(t * 0.15) * 300 + 100;
+            camera.position.z = 1000 + Math.sin(t * 0.1) * 300;
+        } else if (camera.position.z > 400) { camera.position.z -= 20; }
 
-        // Fade in inicial de TODOS los elementos
         if(nivelFade < 1) {
-            nivelFade += 0.005;
-            starsMat.opacity = nivelFade * 0.8;
-            heartMat.opacity = nivelFade;
-            frMat.opacity = nivelFade; // Marcos de fotos
-            photos.forEach(p => p.children[0].material.opacity = nivelFade); // Fotos
-            sprites.forEach(s => s.material.opacity = nivelFade * 0.6); // Textos flotantes restaurados
-            cubes.forEach(c => c.material.opacity = nivelFade * 0.7); // Cubos flotantes restaurados
+            nivelFade += 0.004;
+            starsMat.opacity = nivelFade * 0.8; heartMat.opacity = nivelFade; frMat.opacity = nivelFade;
+            photos.forEach(p => p.children[0].material.opacity = nivelFade);
+            sprites.forEach(s => s.material.opacity = nivelFade * 0.6); cubeMat.opacity = nivelFade * 0.7;
         }
 
-        // Animar Corazón (Latido y rotación)
-        let pulse = 1 + Math.pow(Math.sin(t * 3), 10) * 0.15;
-        heartMesh.scale.setScalar(4 * pulse);
-        heartMat.emissiveIntensity = 1 + pulse * 2;
-        heartMesh.rotation.y += 0.01;
-        stars.rotation.y += 0.0003;
+        // Lógica de la Súpernova y lluvia
+        if(universoExpandido) {
+            const rArray = rainGeo.attributes.position.array;
+            for(let i=0; i<rCount; i++) {
+                rArray[i*3+1] -= 2; if(rArray[i*3+1] < -1000) rArray[i*3+1] = 1000;
+            }
+            rainGeo.attributes.position.needsUpdate = true;
+            if(rainMat.opacity < 1) rainMat.opacity += 0.01;
+        }
 
-        // Animar explosión
+        heartMesh.scale.setScalar((universoExpandido ? 6 : 4) + Math.pow(Math.sin(t * 3), 10) * 0.6);
+        heartMesh.rotation.y += (universoExpandido ? 0.04 : 0.015);
+        stars.rotation.y += 0.0002;
+
         if(particlesMat.opacity > 0) {
             const pArray = particlesGeo.attributes.position.array;
-            for(let i=0; i<pCount; i++){
-                pArray[i*3]+=velArray[i*3]; pArray[i*3+1]+=velArray[i*3+1]; pArray[i*3+2]+=velArray[i*3+2];
-            }
-            particlesGeo.attributes.position.needsUpdate = true;
-            particlesMat.opacity -= 0.02;
+            for(let i=0; i<pCount; i++){ pArray[i*3]+=velArray[i*3]; pArray[i*3+1]+=velArray[i*3+1]; pArray[i*3+2]+=velArray[i*3+2]; }
+            particlesGeo.attributes.position.needsUpdate = true; particlesMat.opacity -= 0.015;
         }
-
-        // Animar Fotos (Mirar a cámara y flotar)
-        photos.forEach((p, i) => {
-            p.lookAt(camera.position);
-            p.position.y += Math.sin(t + i) * 0.2;
-        });
+        photos.forEach((p, i) => { p.lookAt(camera.position); p.position.y += Math.sin(t + i) * 0.3; });
     }
-
-    controls.update();
-    renderer.render(scene, camera);
+    controls.update(); renderer.render(scene, camera);
 }
 
 function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
-        // Cálculo de días automático
-        const hoy = new Date();
-        const diffTime = Math.abs(hoy - FECHA_INICIO);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        document.getElementById("contadorDias").innerText = `Llevamos ${diffDays} días de pura felicidad ✨`;
-
         document.getElementById('modalClave').classList.remove('activo');
         document.getElementById('mensajeSecreto').classList.add('activo');
-        camaraVuelo = true; // Inicia vuelo de cámara
-        controls.autoRotateSpeed = 2; // Acelera rotación temporalmente
+        camaraVuelo = true;
     } else { alert("Esa no es nuestra fecha... Intenta de nuevo 💕"); }
 }
 
-function cerrarModales() {
-    document.querySelectorAll('.activo').forEach(m => m.classList.remove('activo'));
-    if(camaraVuelo) controls.autoRotateSpeed = 0.5; // Restaura velocidad
+function cerrarMensaje() {
+    document.getElementById('mensajeSecreto').classList.remove('activo');
+    // ACTIVAR EFECTOS FINALES
+    universoExpandido = true;
+    explosion(0, 0, 0, 500, 20); // Súpernova
+    scene.background = new THREE.Color(0x050010); // Cambio de Aura a azul profundo
+    pLight.intensity = 6; // Brillo extra del corazón
+    camaraVuelo = false; // Regresa a la cámara cinematográfica pro
 }
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+function cerrarModales() { document.querySelectorAll('.activo').forEach(m => m.classList.remove('activo')); }
 
+window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 animate();
 
-// Frases aleatorias inferiores
 setInterval(() => {
     if(despierto && nivelFade > 0.8) {
         const d = document.getElementById("frase");
         d.innerHTML = frasesList[Math.floor(Math.random()*frasesList.length)];
-        d.style.opacity = 1;
-        setTimeout(() => d.style.opacity = 0, 4000);
+        d.style.opacity = 1; setTimeout(() => d.style.opacity = 0, 4000);
     }
 }, 7000);
 </script>
