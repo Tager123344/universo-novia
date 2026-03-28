@@ -4,21 +4,20 @@
 <meta charset="UTF-8">
 <title>Nuestro Universo - Natasha</title>
 <style>
-    body { margin: 0; overflow: hidden; background: black; font-family: 'Arial', sans-serif; }
-    #titulo { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; color: #ff7ab6; text-shadow: 0 0 20px #ff7ab6; z-index: 10; pointer-events: none; }
-    
-    #musicBtn { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); padding: 15px 35px; border: none; border-radius: 30px; background: #aa44ff; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 0 25px #aa44ff; z-index: 100; transition: 0.5s; }
-    #musicBtn:hover { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 40px #ff77aa; background: #ff77aa; }
+body { margin: 0; overflow: hidden; background: black; font-family: 'Arial'; }
+#titulo { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 32px; color: #ff7ab6; text-shadow: 0 0 20px #ff7ab6; z-index: 10; }
+#musicBtn { position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); padding: 15px 35px; border-radius: 30px; background: #aa44ff; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 0 25px #aa44ff; z-index: 100; }
+#frase { position: absolute; bottom: 130px; width: 100%; text-align: center; font-size: 26px; color: white; opacity: 0; transition: 1.5s; }
 
-    #frase { position: absolute; bottom: 130px; width: 100%; text-align: center; font-size: 26px; color: white; text-shadow: 0 0 20px white; opacity: 0; transition: 1.5s; z-index: 10; }
+#modalClave, #mensajeSecreto { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center; }
+#modalClave.activo, #mensajeSecreto.activo { display:flex; }
 
-    #modalClave, #mensajeSecreto { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-    #modalClave.activo, #mensajeSecreto.activo { display: flex; }
-    .modal-contenido { background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 40px; border-radius: 25px; text-align: center; box-shadow: 0 0 60px #ff77aa; border: 2px solid #ff77aa; max-width: 450px; color: white; }
-    input { padding: 15px; border: 2px solid #ff77aa; border-radius: 15px; background: rgba(255,255,255,0.1); color: white; text-align: center; margin-bottom: 20px; width: 80%; font-size: 18px; outline: none; }
-    .btn-modal { padding: 12px 25px; border: none; border-radius: 20px; background: #ff77aa; color: white; cursor: pointer; font-size: 16px; margin: 10px; transition: 0.3s; }
+.modal-contenido { background:#111; padding:40px; border-radius:25px; text-align:center; box-shadow:0 0 40px #ff77aa; color:white; }
+input { padding:10px; border-radius:10px; margin:10px; }
+.btn-modal { padding:10px 20px; border-radius:15px; background:#ff77aa; color:white; cursor:pointer; }
 </style>
 </head>
+
 <body>
 
 <div id="titulo">💖 Nuestro Universo Mágico - Natasha 💖</div>
@@ -26,274 +25,215 @@
 <div id="frase"></div>
 
 <div id="modalClave">
-    <div class="modal-contenido">
-        <h2>🔐 Clave Secreta 💕</h2>
-        <input type="password" id="inputClave" placeholder="DDMMAAAA">
-        <br>
-        <button class="btn-modal" onclick="verificarClave()">💖 Abrir mi corazón</button>
-        <button class="btn-modal" onclick="cerrarModales()">Cerrar</button>
-    </div>
+<div class="modal-contenido">
+<h2>🔐 Clave Secreta</h2>
+<input type="password" id="inputClave" placeholder="DDMMAAAA">
+<br>
+<button class="btn-modal" onclick="verificarClave()">Abrir</button>
+</div>
 </div>
 
 <div id="mensajeSecreto">
-    <div class="modal-contenido">
-        <h1>¡Hola mi amor! ✨</h1>
-        <p><strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
-        Tú eres mi universo, mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-        <strong>¡Te amo infinitamente! 💕</strong></p>
-        <button class="btn-modal" onclick="cerrarModales()">💕 Te amo 💕</button>
-    </div>
+<div class="modal-contenido">
+<h1>Hola mi amor 💖</h1>
+<p>Desde el 30/10/2025 cambiaste mi vida...<br>Te amo infinitamente 💕</p>
+<button class="btn-modal" onclick="cerrarModales()">Cerrar</button>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
+<script src="https://threejs.org/examples/js/loaders/FontLoader.js"></script>
+<script src="https://threejs.org/examples/js/geometries/TextGeometry.js"></script>
 
 <script>
+
 const CLAVE_SECRETA = "30102025";
 let despierto = false;
-let nivelFade = 0; 
+let nivelFade = 0;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-camera.position.set(0, 0, 1200); 
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 10000);
+camera.position.z = 1200;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
 
-// LUCES
-const ambLight = new THREE.AmbientLight(0xffffff, 0.2);
-scene.add(ambLight);
-const pLight = new THREE.PointLight(0xff77aa, 1.5);
-pLight.position.set(0, 100, 200);
-scene.add(pLight);
+scene.add(new THREE.AmbientLight(0xffffff,0.3));
 
-const frases = [
-    "💖 Mi amor", "🥰 Eres mi todo", "💘 Natasha", "✨ Mi vida", 
-    "💍 Siempre tú", "🧸 Mi bebita", "👑 Mi reina", "🌹 Te amo", 
-    "🌙 Mi luna", "🌸 Mi gordita", "🎀 Mi caprichosita", "👑 Mi princesita", 
-    "✨ Mi niña hermosa", "🍭 Mi tiquitita", "🦋 Mi pulguita", 
-    "💖 Tu mi tiquitita", "💎 Mi tesorito"
-];
+const light = new THREE.PointLight(0xff77aa,2);
+light.position.set(0,100,200);
+scene.add(light);
 
-// 1. ESTRELLAS
+// ESTRELLAS
 const starGeo = new THREE.BufferGeometry();
-const starPos = [];
-for(let i=0; i<20000; i++) {
-    starPos.push((Math.random()-0.5)*1800, (Math.random()-0.5)*1500, (Math.random()-0.5)*1800);
+let starPos = [];
+for(let i=0;i<20000;i++){
+starPos.push((Math.random()-0.5)*2000,(Math.random()-0.5)*2000,(Math.random()-0.5)*2000);
 }
-starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0 });
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos,3));
+const starsMat = new THREE.PointsMaterial({color:0xffffff, size:1, transparent:true, opacity:0});
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. CUBOS ROSAS
-const cubes = [];
-const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
-for(let i=0; i<800; i++) {
-    const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
-    c.position.set((Math.random()-0.5)*1100, (Math.random()-0.5)*900, (Math.random()-0.5)*1100);
-    scene.add(c);
-    cubes.push(c);
-}
+// CORAZÓN
+const shape = new THREE.Shape();
+shape.moveTo(0,0);
+shape.bezierCurveTo(0,0,0,-3,-5,-3);
+shape.bezierCurveTo(-10,-3,-10,5,-10,5);
+shape.bezierCurveTo(-10,10,-5,15,0,18);
+shape.bezierCurveTo(5,15,10,10,10,5);
+shape.bezierCurveTo(10,5,10,-3,5,-3);
+shape.bezierCurveTo(2,-3,0,0,0,0);
 
-// 3. NUEVO CORAZÓN 3D SÓLIDO (NEÓN)
-const x = 0, y = 0;
-const heartShape = new THREE.Shape();
-heartShape.moveTo( x + 5, y + 5 );
-heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
-heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
-heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
-heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
-heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
-heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+const heart = new THREE.Mesh(
+new THREE.ExtrudeGeometry(shape,{depth:4, bevelEnabled:true}),
+new THREE.MeshStandardMaterial({color:0xff3377, emissive:0xff0044})
+);
+heart.scale.set(4,4,4);
+scene.add(heart);
 
-const extrudeSettings = { depth: 4, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
-const heartGeo = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-const heartMat = new THREE.MeshStandardMaterial({ 
-    color: 0xff3377, 
-    emissive: 0xff0044, 
-    emissiveIntensity: 1.5,
-    metalness: 0.5,
-    roughness: 0.2,
-    transparent: true,
-    opacity: 0.9
+// TEXTO EN CORAZÓN
+const loaderFont = new THREE.FontLoader();
+loaderFont.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+const textGeo = new THREE.TextGeometry("Natasha 💖",{font:font,size:8,height:1});
+const text = new THREE.Mesh(textGeo,new THREE.MeshBasicMaterial({color:0xffffff}));
+text.position.set(-30,10,10);
+heart.add(text);
 });
-const heartMesh = new THREE.Mesh(heartGeo, heartMat);
-heartMesh.rotation.z = Math.PI; // Voltear para que no esté de cabeza
-heartMesh.scale.set(4, 4, 4);
-heartMesh.position.set(20, 40, 0); // Centrar
-scene.add(heartMesh);
 
-// 4. FRASES FLOTANTES
-const sprites = [];
-function crearSprite(texto) {
-    const canvas = document.createElement("canvas"); canvas.width = 256; canvas.height = 64;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "white"; ctx.font = "bold 24px Arial"; ctx.textAlign = "center";
-    ctx.shadowColor = "#ff77aa"; ctx.shadowBlur = 8;
-    ctx.fillText(texto, 128, 32);
-    const sMat = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, opacity: 0 });
-    const s = new THREE.Sprite(sMat);
-    s.position.set((Math.random()-0.5)*900, (Math.random()-0.5)*800, (Math.random()-0.5)*900);
-    s.scale.set(70, 18, 1);
-    scene.add(s);
-    sprites.push(s);
-}
-for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
-
-// 5. SISTEMA DE PARTÍCULAS (EXPLOSIÓN)
-const particlesGeo = new THREE.BufferGeometry();
-const particleCount = 100;
-const posArray = new Float32Array(particleCount * 3);
-const velArray = new Float32Array(particleCount * 3);
-particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-const particlesMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
-const particleSystem = new THREE.Points(particlesGeo, particlesMat);
-scene.add(particleSystem);
-
-function explosion(x, y, z) {
-    particlesMat.opacity = 1;
-    const positions = particlesGeo.attributes.position.array;
-    for(let i=0; i<particleCount; i++) {
-        positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
-        velArray[i*3] = (Math.random()-0.5)*4;
-        velArray[i*3+1] = (Math.random()-0.5)*4;
-        velArray[i*3+2] = (Math.random()-0.5)*4;
-    }
-}
-
-// 6. FOTOS (51 FOTOS EN 3 NIVELES)
+// FOTOS (55)
 const photos = [];
 const loader = new THREE.TextureLoader();
-const fShape = new THREE.Shape();
-fShape.moveTo(-13.5,-13.5); fShape.lineTo(13.5,-13.5); fShape.lineTo(13.5,13.5); fShape.lineTo(-13.5,13.5);
-const hole = new THREE.Path(); hole.moveTo(-12.5,-12.5); hole.lineTo(12.5,-12.5); hole.lineTo(12.5,12.5); hole.lineTo(-12.5,12.5);
-fShape.holes.push(hole);
-const fGeo = new THREE.ShapeGeometry(fShape);
-const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+const distribucion = [18,18,19];
+let index=1;
 
-for(let i=1; i<=51; i++) {
-    const group = new THREE.Group();
-    const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
-    group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
-    group.add(new THREE.Mesh(fGeo, frMat)); 
-    
-    let ring = i <= 17 ? 0 : (i <= 34 ? 1 : 2);
-    let radius = ring === 0 ? 180 : (ring === 1 ? 260 : 340);
-    let yPos = ring === 0 ? 100 : (ring === 1 ? 0 : -100);
-    let angle = ((i-1) % 17) * (Math.PI * 2 / 17);
+distribucion.forEach((cant,ring)=>{
+let radius = ring==0?180:(ring==1?270:360);
+let y = ring==0?120:(ring==1?0:-120);
 
-    group.position.set(Math.cos(angle)*radius, yPos + (Math.random()-0.5)*30, Math.sin(angle)*radius);
-    scene.add(group);
-    photos.push(group);
-}
+for(let i=0;i<cant;i++){
+let group=new THREE.Group();
 
-// LÓGICA Y ANIMACIÓN
-let audio;
-document.getElementById("musicBtn").onclick = function() {
-    if(!audio) { audio = new Audio("music.mp3"); audio.loop = true; }
-    audio.play();
-    this.style.opacity = "0";
-    setTimeout(() => this.style.display = "none", 500);
-    despierto = true;
-};
-
-const ray = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-window.addEventListener("click", (e) => {
-    mouse.x = (e.clientX/window.innerWidth)*2-1;
-    mouse.y = -(e.clientY/window.innerHeight)*2+1;
-    if(despierto) {
-        ray.setFromCamera(mouse, camera);
-        const interHeart = ray.intersectObject(heartMesh);
-        if(interHeart.length > 0) document.getElementById('modalClave').classList.add('activo');
-        
-        const interPhotos = ray.intersectObjects(photos, true);
-        if(interPhotos.length > 0) {
-            const p = interPhotos[0].object.parent.position;
-            explosion(p.x, p.y, p.z);
-        }
-    }
+let mat=new THREE.MeshBasicMaterial({
+map:loader.load(`foto${index}.jpg`),
+side:THREE.DoubleSide,
+transparent:true,
+opacity:0
 });
 
-function animate() {
-    requestAnimationFrame(animate);
-    const t = Date.now() * 0.001;
+group.add(new THREE.Mesh(new THREE.PlaneGeometry(25,25),mat));
 
-    if(despierto) {
-        camera.position.x += (Math.sin(t * 0.4) * 0.4);
-        camera.position.y += (Math.cos(t * 0.3) * 0.4);
-        if(camera.position.z > 500) camera.position.z -= 2;
+let angle=i*(Math.PI*2/cant);
+group.position.set(Math.cos(angle)*radius,y,Math.sin(angle)*radius);
 
-        if(nivelFade < 1) {
-            nivelFade += 0.005;
-            starsMat.opacity = nivelFade * 0.8;
-            heartMat.emissiveIntensity = 1.5 + Math.sin(t*3)*0.5;
-            frMat.opacity = nivelFade;
-            photos.forEach(p => p.children[0].material.opacity = nivelFade);
-            sprites.forEach(s => s.material.opacity = nivelFade * 0.5);
-            cubes.forEach(c => c.material.opacity = nivelFade * 0.6);
-        }
+scene.add(group);
+photos.push(group);
+index++;
+}
+});
 
-        heartMesh.rotation.y += 0.01;
-        heartMesh.scale.setScalar(4 + Math.sin(t * 4) * 0.2);
-        stars.rotation.y += 0.0003;
-        
-        // Animación de partículas
-        if(particlesMat.opacity > 0) {
-            const pos = particlesGeo.attributes.position.array;
-            for(let i=0; i<particleCount; i++) {
-                pos[i*3] += velArray[i*3];
-                pos[i*3+1] += velArray[i*3+1];
-                pos[i*3+2] += velArray[i*3+2];
-            }
-            particlesGeo.attributes.position.needsUpdate = true;
-            particlesMat.opacity -= 0.015;
-        }
+// SONIDO
+let audio;
+const clickSound = new Audio("click.mp3");
 
-        photos.forEach((p, i) => {
-            p.lookAt(camera.position);
-            p.position.y += Math.sin(t + i) * 0.15;
-        });
-    }
+document.getElementById("musicBtn").onclick=function(){
+if(!audio){audio=new Audio("music.mp3");audio.loop=true;}
+audio.play();
+this.style.display="none";
+despierto=true;
 
-    controls.update();
-    renderer.render(scene, camera);
+// ZOOM
+let z=1200;
+let zoom=setInterval(()=>{
+z-=10;
+camera.position.z=z;
+if(z<=500) clearInterval(zoom);
+},16);
+};
+
+// CLICK
+const ray=new THREE.Raycaster();
+const mouse=new THREE.Vector2();
+
+window.addEventListener("click",(e)=>{
+mouse.x=(e.clientX/innerWidth)*2-1;
+mouse.y=-(e.clientY/innerHeight)*2+1;
+
+if(despierto){
+ray.setFromCamera(mouse,camera);
+
+if(ray.intersectObject(heart).length>0){
+document.getElementById("modalClave").classList.add("activo");
 }
 
-function verificarClave() {
-    if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
-        document.getElementById('modalClave').classList.remove('activo');
-        document.getElementById('mensajeSecreto').classList.add('activo');
-    } else { alert("Clave incorrecta..."); }
+let hit=ray.intersectObjects(photos,true);
+if(hit.length>0){
+clickSound.currentTime=0;
+clickSound.play();
 }
-function cerrarModales() {
-    document.getElementById('modalClave').classList.remove('activo');
-    document.getElementById('mensajeSecreto').classList.remove('activo');
+}
+});
+
+// ANIMACIÓN
+function animate(){
+requestAnimationFrame(animate);
+let t=Date.now()*0.001;
+
+if(despierto){
+
+if(nivelFade<1){
+nivelFade+=0.005;
+starsMat.opacity=nivelFade;
+photos.forEach(p=>p.children[0].material.opacity=nivelFade);
+}
+
+const beat = Math.sin(t*2)+Math.sin(t*4)*0.5;
+heart.scale.setScalar(4+beat*0.25);
+
+heart.rotation.y+=0.01;
+stars.rotation.y+=0.0003;
+
+photos.forEach(p=>{
+p.lookAt(camera.position);
+});
+}
+
+controls.update();
+renderer.render(scene,camera);
 }
 
 animate();
 
-setInterval(() => {
-    if(despierto && nivelFade > 0.8) {
-        const d = document.getElementById("frase");
-        d.innerHTML = frases[Math.floor(Math.random()*frases.length)];
-        d.style.opacity = 1;
-        setTimeout(() => d.style.opacity = 0, 4000);
-    }
-}, 7000);
+// FRASES
+const frases=["Te amo","Mi vida","Mi todo","Natasha 💖"];
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+setInterval(()=>{
+if(despierto && nivelFade>0.8){
+let d=document.getElementById("frase");
+d.innerHTML=frases[Math.floor(Math.random()*frases.length)];
+d.style.opacity=0;
+setTimeout(()=>d.style.opacity=1,200);
+setTimeout(()=>d.style.opacity=0,5000);
+}
+},7000);
+
+// MODALES
+function verificarClave(){
+if(document.getElementById('inputClave').value===CLAVE_SECRETA){
+document.getElementById('modalClave').classList.remove('activo');
+document.getElementById('mensajeSecreto').classList.add('activo');
+}else alert("Incorrecto");
+}
+
+function cerrarModales(){
+document.getElementById('modalClave').classList.remove('activo');
+document.getElementById('mensajeSecreto').classList.remove('activo');
+}
+
 </script>
 </body>
 </html>
