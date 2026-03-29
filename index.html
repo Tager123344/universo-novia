@@ -567,4 +567,11 @@ animate();
 setInterval(() => {
     if(despierto && nivelFade > 0.8) {
         const d = document.getElementById("frase");
-        d.innerHTML = frasesList
+        d.innerHTML = frasesList[Math.floor(Math.random() * frasesList.length)];
+        d.style.opacity = 1;
+        setTimeout(() => d.style.opacity = 0, 4000);
+    }
+}, 7500);
+</script>
+</body>
+</html>
