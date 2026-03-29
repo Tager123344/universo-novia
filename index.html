@@ -40,7 +40,7 @@
         <h1>¡Hola mi amor! ✨</h1>
         <p><strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
         Tú eres mi universo, mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-        <strong>¡Te amo infinitamente! 💕</strong></p>
+        <strong style="color: #ff7ab6; font-size: 1.2em;">¡Te amo infinitamente! 💕</strong></p>
         <button class="btn-modal" onclick="cerrarModales()">💕 Te amo 💕</button>
     </div>
 </div>
@@ -95,13 +95,14 @@ scene.add(stars);
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i=0; i<800; i++) {
-    const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat.clone());
+    // Usamos el material base para la opacidad global, pero cada cubo es independiente
+    const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat);
     c.position.set((Math.random()-0.5)*1100, (Math.random()-0.5)*900, (Math.random()-0.5)*1100);
     scene.add(c);
     cubes.push(c);
 }
 
-// 3. NUEVO CORAZÓN 3D SÓLIDO (NEÓN)
+// 3. CORAZÓN 3D
 const x = 0, y = 0;
 const heartShape = new THREE.Shape();
 heartShape.moveTo( x + 5, y + 5 );
@@ -124,9 +125,9 @@ const heartMat = new THREE.MeshStandardMaterial({
     opacity: 0.9
 });
 const heartMesh = new THREE.Mesh(heartGeo, heartMat);
-heartMesh.rotation.z = Math.PI; // Voltear para que no esté de cabeza
+heartMesh.rotation.z = Math.PI;
 heartMesh.scale.set(4, 4, 4);
-heartMesh.position.set(20, 40, 0); // Centrar
+heartMesh.position.set(20, 40, 0);
 scene.add(heartMesh);
 
 // 4. FRASES FLOTANTES
@@ -146,7 +147,7 @@ function crearSprite(texto) {
 }
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
-// 5. SISTEMA DE PARTÍCULAS (EXPLOSIÓN)
+// 5. PARTÍCULAS
 const particlesGeo = new THREE.BufferGeometry();
 const particleCount = 100;
 const posArray = new Float32Array(particleCount * 3);
@@ -167,7 +168,7 @@ function explosion(x, y, z) {
     }
 }
 
-// 6. FOTOS (51 FOTOS EN 3 NIVELES)
+// 6. FOTOS
 const photos = [];
 const loader = new THREE.TextureLoader();
 const fShape = new THREE.Shape();
@@ -193,7 +194,7 @@ for(let i=1; i<=51; i++) {
     photos.push(group);
 }
 
-// LÓGICA Y ANIMACIÓN
+// LÓGICA DE INICIO
 let audio;
 document.getElementById("musicBtn").onclick = function() {
     if(!audio) { audio = new Audio("music.mp3"); audio.loop = true; }
@@ -234,18 +235,32 @@ function animate() {
         if(nivelFade < 1) {
             nivelFade += 0.005;
             starsMat.opacity = nivelFade * 0.8;
-            heartMat.emissiveIntensity = 1.5 + Math.sin(t*3)*0.5;
+            heartMat.opacity = nivelFade; // Aseguramos que el corazón aparezca
             frMat.opacity = nivelFade;
             photos.forEach(p => p.children[0].material.opacity = nivelFade);
             sprites.forEach(s => s.material.opacity = nivelFade * 0.5);
-            cubes.forEach(c => c.material.opacity = nivelFade * 0.6);
+            cubeMat.opacity = nivelFade * 0.6;
         }
 
+        // --- ANIMACIONES REINTEGRADAS ---
+        
+        // Corazón: Rotación y Latido
         heartMesh.rotation.y += 0.01;
         heartMesh.scale.setScalar(4 + Math.sin(t * 4) * 0.2);
+        heartMat.emissiveIntensity = 1.5 + Math.sin(t*3)*0.5;
+
+        // Estrellas: Rotación multidimensional
         stars.rotation.y += 0.0003;
-        
-        // Animación de partículas
+        stars.rotation.x += 0.0001;
+
+        // Cubos: Giro y Flotación individual
+        cubes.forEach((c, i) => {
+            c.rotation.x += 0.01;
+            c.rotation.y += 0.015;
+            c.position.y += Math.sin(t * 1.5 + i) * 0.1; 
+        });
+
+        // Partículas
         if(particlesMat.opacity > 0) {
             const pos = particlesGeo.attributes.position.array;
             for(let i=0; i<particleCount; i++) {
@@ -257,6 +272,7 @@ function animate() {
             particlesMat.opacity -= 0.015;
         }
 
+        // Fotos: Siempre mirando a cámara
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
             p.position.y += Math.sin(t + i) * 0.15;
