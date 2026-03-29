@@ -476,7 +476,6 @@ function animate() {
         }
 
         // LATIDO DE CORAZÓN NATURAL, RÁPIDO Y BONITO
-        // Ya no es brusco, usa sinusoide suave para contracción rápida y relajación lenta
         let pulseSpeed = 5.0; // Frecuencia rápida
         let pulseAmplitude = universoExpandido ? 0.4 : 0.25; // Más fuerte al final
         let pulseFactor = Math.sin(t * pulseSpeed) * Math.sin(t * pulseSpeed); // Siempre positivo 0 a 1 suave
@@ -496,7 +495,7 @@ function animate() {
         cubes.forEach((c, i) => {
             c.rotation.x += 0.01;
             c.rotation.y += 0.015;
-            c.position.y += Math.sin(t * 2 + i) * 0.5;
+            c.position.y += Math.sin(t * 2 + i) * 0.5; // Flotación individual
         });
 
         // Animación de Explosiones
@@ -530,7 +529,6 @@ function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
         document.getElementById('mensajeSecreto').classList.add('activo');
-        // No bloqueamos cámara, el autoRotate y OrbitControls siguen funcionando
     } else {
         alert("Esa no es nuestra fecha... Intenta de nuevo 💕");
     }
@@ -546,8 +544,6 @@ function cerrarMensaje() {
     // No cambiamos el fondo negro original, solo intensificamos la luz central
     pLight.intensity = 7;
     pLight.color.setHex(0xffffff); // Luz blanca dorada pura
-    
-    // Los OrbitControls siguen funcionando y autoRotate también
 }
 
 function cerrarModales() {
