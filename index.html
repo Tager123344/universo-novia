@@ -40,7 +40,7 @@
         <h1>¡Hola mi amor! ✨</h1>
         <p><strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
         Tú eres mi universo, mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-        <strong style="color: #ff7ab6;">¡Te amo infinitamente! 💕</strong></p>
+        <strong style="color: #ff7ab6; font-size: 1.3em;">Te amo mi gordita preciosa ❤️</strong></p>
         <button class="btn-modal" onclick="cerrarModales()">💕 Te amo 💕</button>
     </div>
 </div>
@@ -55,7 +55,6 @@ let nivelFade = 0;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-// Iniciamos la cámara lejos como en tu código
 camera.position.set(0, 0, 1200); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -65,6 +64,10 @@ document.body.appendChild(renderer.domElement);
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
+
+// AUDIOS
+let audioBackground;
+const clickSound = new Audio("click.mp3");
 
 // LUCES
 const ambLight = new THREE.AmbientLight(0xffffff, 0.2);
@@ -92,7 +95,7 @@ const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transpar
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. CUBOS ROSAS (Lógica de tu código)
+// 2. CUBOS ROSAS
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i=0; i<800; i++) {
@@ -141,7 +144,7 @@ function crearSprite(texto) {
 }
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
-// 5. SISTEMA DE EXPLOSIÓN
+// 5. SISTEMA DE PARTÍCULAS (EXPLOSIÓN)
 const particlesGeo = new THREE.BufferGeometry();
 const particleCount = 100;
 const posArray = new Float32Array(particleCount * 3);
@@ -152,6 +155,10 @@ const particleSystem = new THREE.Points(particlesGeo, particlesMat);
 scene.add(particleSystem);
 
 function explosion(x, y, z) {
+    // Reproducir sonido de clic
+    clickSound.currentTime = 0;
+    clickSound.play();
+
     particlesMat.opacity = 1;
     const positions = particlesGeo.attributes.position.array;
     for(let i=0; i<particleCount; i++) {
@@ -160,7 +167,7 @@ function explosion(x, y, z) {
     }
 }
 
-// 6. FOTOS (51 fotos)
+// 6. FOTOS (Actualizado a 55 FOTOS)
 const photos = [];
 const loader = new THREE.TextureLoader();
 const fShape = new THREE.Shape();
@@ -170,27 +177,30 @@ fShape.holes.push(hole);
 const fGeo = new THREE.ShapeGeometry(fShape);
 const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleSide, transparent: true, opacity: 0 });
 
-for(let i=1; i<=51; i++) {
+for(let i=1; i<=55; i++) {
     const group = new THREE.Group();
     const pMat = new THREE.MeshBasicMaterial({ map: loader.load(`foto${i}.jpg`), side: THREE.DoubleSide, transparent: true, opacity: 0 });
     group.add(new THREE.Mesh(new THREE.PlaneGeometry(25, 25), pMat)); 
     group.add(new THREE.Mesh(fGeo, frMat)); 
     
-    let ring = i <= 17 ? 0 : (i <= 34 ? 1 : 2);
+    // Distribución en 3 niveles para 55 fotos
+    let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
+    let totalInRing = ring === 0 ? 18 : (ring === 1 ? 18 : 19);
     let radius = ring === 0 ? 180 : (ring === 1 ? 260 : 340);
     let yPos = ring === 0 ? 100 : (ring === 1 ? 0 : -100);
-    let angle = ((i-1) % 17) * (Math.PI * 2 / 17);
+    
+    let indexInRing = ring === 0 ? i-1 : (ring === 1 ? i-19 : i-37);
+    let angle = indexInRing * (Math.PI * 2 / totalInRing);
 
     group.position.set(Math.cos(angle)*radius, yPos + (Math.random()-0.5)*30, Math.sin(angle)*radius);
     scene.add(group);
     photos.push(group);
 }
 
-// LÓGICA DE ANIMACIÓN Y MOVIMIENTO
-let audio;
+// LÓGICA DE INTERACCIÓN
 document.getElementById("musicBtn").onclick = function() {
-    if(!audio) { audio = new Audio("music.mp3"); audio.loop = true; }
-    audio.play();
+    if(!audioBackground) { audioBackground = new Audio("music.mp3"); audioBackground.loop = true; }
+    audioBackground.play();
     this.style.opacity = "0";
     setTimeout(() => this.style.display = "none", 500);
     despierto = true;
@@ -204,9 +214,12 @@ window.addEventListener("click", (e) => {
     mouse.y = -(e.clientY/window.innerHeight)*2+1;
     if(despierto) {
         ray.setFromCamera(mouse, camera);
+        
+        // Clic en Corazón
         const interHeart = ray.intersectObject(heartMesh);
         if(interHeart.length > 0) document.getElementById('modalClave').classList.add('activo');
         
+        // Clic en Fotos
         const interPhotos = ray.intersectObjects(photos, true);
         if(interPhotos.length > 0) {
             const p = interPhotos[0].object.parent.position;
@@ -220,7 +233,7 @@ function animate() {
     const t = Date.now() * 0.001;
 
     if(despierto) {
-        // --- MOVIMIENTO DE CÁMARA (De tu código) ---
+        // Movimiento de cámara
         camera.position.x += (Math.sin(t * 0.4) * 0.4);
         camera.position.y += (Math.cos(t * 0.3) * 0.4);
         if(camera.position.z > 500) camera.position.z -= 2;
@@ -234,11 +247,11 @@ function animate() {
             cubeMat.opacity = nivelFade * 0.6;
         }
 
-        // --- MOVIMIENTO DE CUBITOS (Flotación y giro) ---
+        // Animación cubitos
         cubes.forEach((c, i) => {
             c.rotation.x += 0.01;
             c.rotation.y += 0.01;
-            c.position.y += Math.sin(t + i) * 0.05; // Suave balanceo
+            c.position.y += Math.sin(t + i) * 0.05;
         });
 
         // Corazón Latido
@@ -249,7 +262,7 @@ function animate() {
         // Estrellas
         stars.rotation.y += 0.0003;
         
-        // Partículas
+        // Partículas explosión
         if(particlesMat.opacity > 0) {
             const pos = particlesGeo.attributes.position.array;
             for(let i=0; i<particleCount; i++) {
@@ -259,6 +272,7 @@ function animate() {
             particlesMat.opacity -= 0.015;
         }
 
+        // Fotos mirando a cámara
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
             p.position.y += Math.sin(t + i) * 0.15;
