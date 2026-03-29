@@ -40,7 +40,7 @@
         <h1>¡Hola mi amor! ✨</h1>
         <p><strong>Este universo es tuyo, porque tú eres mi universo.</strong><br><br>
         Tú eres mi universo, mi principio y mi fin. Cada estrella brilla porque tú existes.<br><br>
-        <strong style="color: #ff7ab6; font-size: 1.2em;">¡Te amo infinitamente! 💕</strong></p>
+        <strong style="color: #ff7ab6;">¡Te amo infinitamente! 💕</strong></p>
         <button class="btn-modal" onclick="cerrarModales()">💕 Te amo 💕</button>
     </div>
 </div>
@@ -55,6 +55,7 @@ let nivelFade = 0;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+// Iniciamos la cámara lejos como en tu código
 camera.position.set(0, 0, 1200); 
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -91,11 +92,10 @@ const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transpar
 const stars = new THREE.Points(starGeo, starsMat);
 scene.add(stars);
 
-// 2. CUBOS ROSAS
+// 2. CUBOS ROSAS (Lógica de tu código)
 const cubes = [];
 const cubeMat = new THREE.MeshBasicMaterial({ color: 0xff77aa, transparent: true, opacity: 0 });
 for(let i=0; i<800; i++) {
-    // Usamos el material base para la opacidad global, pero cada cubo es independiente
     const c = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), cubeMat);
     c.position.set((Math.random()-0.5)*1100, (Math.random()-0.5)*900, (Math.random()-0.5)*1100);
     scene.add(c);
@@ -103,26 +103,20 @@ for(let i=0; i<800; i++) {
 }
 
 // 3. CORAZÓN 3D
-const x = 0, y = 0;
 const heartShape = new THREE.Shape();
-heartShape.moveTo( x + 5, y + 5 );
-heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
-heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
-heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
-heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
-heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
-heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+heartShape.moveTo( 5, 5 );
+heartShape.bezierCurveTo( 5, 5, 4, 0, 0, 0 );
+heartShape.bezierCurveTo( -6, 0, -6, 7, -6, 7 );
+heartShape.bezierCurveTo( -6, 11, -3, 15.4, 5, 19 );
+heartShape.bezierCurveTo( 12, 15.4, 16, 11, 16, 7 );
+heartShape.bezierCurveTo( 16, 7, 16, 0, 10, 0 );
+heartShape.bezierCurveTo( 7, 0, 5, 5, 5, 5 );
 
 const extrudeSettings = { depth: 4, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
 const heartGeo = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
 const heartMat = new THREE.MeshStandardMaterial({ 
-    color: 0xff3377, 
-    emissive: 0xff0044, 
-    emissiveIntensity: 1.5,
-    metalness: 0.5,
-    roughness: 0.2,
-    transparent: true,
-    opacity: 0.9
+    color: 0xff3377, emissive: 0xff0044, emissiveIntensity: 1.5,
+    metalness: 0.5, roughness: 0.2, transparent: true, opacity: 0.9
 });
 const heartMesh = new THREE.Mesh(heartGeo, heartMat);
 heartMesh.rotation.z = Math.PI;
@@ -147,7 +141,7 @@ function crearSprite(texto) {
 }
 for(let i=0; i<300; i++) crearSprite(frases[i % frases.length]);
 
-// 5. PARTÍCULAS
+// 5. SISTEMA DE EXPLOSIÓN
 const particlesGeo = new THREE.BufferGeometry();
 const particleCount = 100;
 const posArray = new Float32Array(particleCount * 3);
@@ -162,13 +156,11 @@ function explosion(x, y, z) {
     const positions = particlesGeo.attributes.position.array;
     for(let i=0; i<particleCount; i++) {
         positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
-        velArray[i*3] = (Math.random()-0.5)*4;
-        velArray[i*3+1] = (Math.random()-0.5)*4;
-        velArray[i*3+2] = (Math.random()-0.5)*4;
+        velArray[i*3] = (Math.random()-0.5)*4; velArray[i*3+1] = (Math.random()-0.5)*4; velArray[i*3+2] = (Math.random()-0.5)*4;
     }
 }
 
-// 6. FOTOS
+// 6. FOTOS (51 fotos)
 const photos = [];
 const loader = new THREE.TextureLoader();
 const fShape = new THREE.Shape();
@@ -194,7 +186,7 @@ for(let i=1; i<=51; i++) {
     photos.push(group);
 }
 
-// LÓGICA DE INICIO
+// LÓGICA DE ANIMACIÓN Y MOVIMIENTO
 let audio;
 document.getElementById("musicBtn").onclick = function() {
     if(!audio) { audio = new Audio("music.mp3"); audio.loop = true; }
@@ -228,6 +220,7 @@ function animate() {
     const t = Date.now() * 0.001;
 
     if(despierto) {
+        // --- MOVIMIENTO DE CÁMARA (De tu código) ---
         camera.position.x += (Math.sin(t * 0.4) * 0.4);
         camera.position.y += (Math.cos(t * 0.3) * 0.4);
         if(camera.position.z > 500) camera.position.z -= 2;
@@ -235,44 +228,37 @@ function animate() {
         if(nivelFade < 1) {
             nivelFade += 0.005;
             starsMat.opacity = nivelFade * 0.8;
-            heartMat.opacity = nivelFade; // Aseguramos que el corazón aparezca
             frMat.opacity = nivelFade;
             photos.forEach(p => p.children[0].material.opacity = nivelFade);
             sprites.forEach(s => s.material.opacity = nivelFade * 0.5);
             cubeMat.opacity = nivelFade * 0.6;
         }
 
-        // --- ANIMACIONES REINTEGRADAS ---
-        
-        // Corazón: Rotación y Latido
+        // --- MOVIMIENTO DE CUBITOS (Flotación y giro) ---
+        cubes.forEach((c, i) => {
+            c.rotation.x += 0.01;
+            c.rotation.y += 0.01;
+            c.position.y += Math.sin(t + i) * 0.05; // Suave balanceo
+        });
+
+        // Corazón Latido
         heartMesh.rotation.y += 0.01;
         heartMesh.scale.setScalar(4 + Math.sin(t * 4) * 0.2);
         heartMat.emissiveIntensity = 1.5 + Math.sin(t*3)*0.5;
 
-        // Estrellas: Rotación multidimensional
+        // Estrellas
         stars.rotation.y += 0.0003;
-        stars.rotation.x += 0.0001;
-
-        // Cubos: Giro y Flotación individual
-        cubes.forEach((c, i) => {
-            c.rotation.x += 0.01;
-            c.rotation.y += 0.015;
-            c.position.y += Math.sin(t * 1.5 + i) * 0.1; 
-        });
-
+        
         // Partículas
         if(particlesMat.opacity > 0) {
             const pos = particlesGeo.attributes.position.array;
             for(let i=0; i<particleCount; i++) {
-                pos[i*3] += velArray[i*3];
-                pos[i*3+1] += velArray[i*3+1];
-                pos[i*3+2] += velArray[i*3+2];
+                pos[i*3] += velArray[i*3]; pos[i*3+1] += velArray[i*3+1]; pos[i*3+2] += velArray[i*3+2];
             }
             particlesGeo.attributes.position.needsUpdate = true;
             particlesMat.opacity -= 0.015;
         }
 
-        // Fotos: Siempre mirando a cámara
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
             p.position.y += Math.sin(t + i) * 0.15;
