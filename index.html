@@ -178,13 +178,13 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Controles de Órbita (RESTAURADOS TOTALMENTE)
+// Controles de Órbita
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enablePan = false;
-controls.autoRotate = false; // Desactivado hasta que empiece la magia
-controls.autoRotateSpeed = 0.5; // Velocidad de rotación suave
+controls.autoRotate = false; 
+controls.autoRotateSpeed = 0.5; 
 
 // Luces
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -234,7 +234,7 @@ for(let i = 0; i < 800; i++) {
     cubes.push(c);
 }
 
-// 3. El Corazón 3D Bonito (REFINADO)
+// 3. El Corazón 3D Bonito
 const heartShape = new THREE.Shape();
 heartShape.moveTo(5, 5);
 heartShape.bezierCurveTo(5, 5, 4, 0, 0, 0);
@@ -252,7 +252,7 @@ const heartGeo = new THREE.ExtrudeGeometry(heartShape, {
 });
 const heartMat = new THREE.MeshStandardMaterial({ 
     color: 0xff3377, 
-    emissive: 0xff1144, // Refinado el brillo neón
+    emissive: 0xff1144, 
     emissiveIntensity: 2.2, 
     transparent: true, 
     opacity: 0,
@@ -302,7 +302,6 @@ for(let i = 0; i < 300; i++) {
 const photos = [];
 const loader = new THREE.TextureLoader();
 
-// Geometría del marco rosa
 const fShape = new THREE.Shape();
 fShape.moveTo(-14, -14); fShape.lineTo(14, -14); fShape.lineTo(14, 14); fShape.lineTo(-14, 14);
 const hole = new THREE.Path();
@@ -314,7 +313,6 @@ const frMat = new THREE.MeshBasicMaterial({ color: 0xff7ab6, side: THREE.DoubleS
 for(let i = 1; i <= 55; i++) {
     const group = new THREE.Group();
     
-    // La imagen
     const photoMat = new THREE.MeshBasicMaterial({ 
         map: loader.load(`foto${i}.jpg`), 
         side: THREE.DoubleSide, 
@@ -324,11 +322,9 @@ for(let i = 1; i <= 55; i++) {
     const photoMesh = new THREE.Mesh(new THREE.PlaneGeometry(25, 25), photoMat);
     group.add(photoMesh);
 
-    // El marco
     const frameMesh = new THREE.Mesh(frameGeo, frMat);
     group.add(frameMesh);
     
-    // Distribución en anillos
     let ring = i <= 18 ? 0 : (i <= 36 ? 1 : 2);
     let radius = ring === 0 ? 250 : (ring === 1 ? 420 : 580);
     let yPos = ring === 0 ? 160 : (ring === 1 ? 0 : -160);
@@ -343,7 +339,7 @@ for(let i = 1; i <= 55; i++) {
     photos.push(group);
 }
 
-// 6. Sistema de Partículas Amarillas (Explosiones Centralizadas)
+// 6. Sistema de Partículas Amarillas
 const pCount = 600; 
 const particlesGeo = new THREE.BufferGeometry();
 const posArray = new Float32Array(pCount * 3);
@@ -362,7 +358,6 @@ scene.add(particleSystem);
 function explosion(x, y, z, countMultiplier = 1, speedMultiplier = 8) {
     particlesMat.opacity = 1;
     const pos = particlesGeo.attributes.position.array;
-    // Solo usamos pCount como límite para no sobrecargar
     for(let i = 0; i < pCount; i++) {
         pos[i*3] = x;
         pos[i*3+1] = y;
@@ -405,11 +400,10 @@ document.getElementById("musicBtn").onclick = function() {
     setTimeout(() => this.style.display = "none", 500);
     despierto = true;
     
-    // Viaje de Cámara Inicial (Zoom suave hacia el corazón)
-    camera.position.set(0, 50, 2000); // Empezamos alto y lejos
+    camera.position.set(0, 50, 2000); 
     camera.lookAt(heartMesh.position);
-    controls.autoRotate = true; // Empieza la rotación automática suave
-    camaraEnVuelo = true; // Activa zoom inicial suave
+    controls.autoRotate = true; 
+    camaraEnVuelo = true; 
 };
 
 window.addEventListener("pointermove", (e) => {
@@ -421,12 +415,10 @@ window.addEventListener("click", () => {
     if(!despierto) return;
     ray.setFromCamera(mouse, camera);
 
-    // Clic en Corazón
     if(ray.intersectObject(heartMesh).length > 0) {
         document.getElementById('modalClave').classList.add('activo');
     }
 
-    // Clic en Fotos
     const hitPhotos = ray.intersectObjects(photos, true);
     if(hitPhotos.length > 0) {
         const p = hitPhotos[0].object.parent.position;
@@ -446,14 +438,12 @@ function animate() {
     const t = Date.now() * 0.001;
 
     if(despierto) {
-        // Manejo de Zoom suave Inicial hacia el corazón
         if(camaraEnVuelo && camera.position.z > 650) {
-            camera.position.z -= 15; // Zoom suave acercándose
+            camera.position.z -= 15; 
         } else if (camaraEnVuelo) {
-            camaraEnVuelo = false; // Detiene el zoom inicial suave
+            camaraEnVuelo = false; 
         }
 
-        // Efecto de Aparecer (Fade In)
         if(nivelFade < 1) {
             nivelFade += 0.004;
             starsMat.opacity = nivelFade * 0.8;
@@ -464,32 +454,38 @@ function animate() {
             cubeMat.opacity = nivelFade * 0.7;
         }
 
-        // Lógica de Lluvia de Estrellas Final (Caída suave)
         if(universoExpandido) {
             const rArray = rainGeo.attributes.position.array;
             for(let i = 0; i < rCount; i++) {
-                rArray[i*3+1] -= 2.5; // Velocidad de caída
-                if(rArray[i*3+1] < -1200) rArray[i*3+1] = 1200; // Reset superior
+                rArray[i*3+1] -= 2.5; 
+                if(rArray[i*3+1] < -1200) rArray[i*3+1] = 1200; 
             }
             rainGeo.attributes.position.needsUpdate = true;
             if(rainMat.opacity < 1) rainMat.opacity += 0.01;
         }
 
-        // LATIDO DE CORAZÓN NATURAL, RÁPIDO Y BONITO
-        // Ya no es brusco, usa sinusoide suave para contracción rápida y relajación lenta
-        let pulseSpeed = 5.0; // Frecuencia rápida
-        let pulseAmplitude = universoExpandido ? 0.4 : 0.25; // Más fuerte al final
-        let pulseFactor = Math.sin(t * pulseSpeed) * Math.sin(t * pulseSpeed); // Siempre positivo 0 a 1 suave
+        let pulseSpeed = 5.0; 
+        let pulseAmplitude = universoExpandido ? 0.4 : 0.25; 
+        let pulseFactor = Math.sin(t * pulseSpeed) * Math.sin(t * pulseSpeed); 
         heartMesh.scale.setScalar((universoExpandido ? 6.2 : 4.1) + pulseFactor * pulseAmplitude);
         
-        // Brillo Neón dinámico synced with Latido
         heartMat.emissiveIntensity = 2.0 + pulseFactor * 1.5;
 
-        // Rotación y movimiento base
-        heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.018);
-        stars.rotation.y += 0.00015;
+        // --- ANIMACIÓN DE LAS ESTRELLAS BLANCAS ---
+        // Giran suavemente sobre dos ejes para dar un efecto de profundidad mágica
+        stars.rotation.y += 0.0002;
+        stars.rotation.x += 0.0001;
 
-        // Animación de Explosiones
+        // --- ANIMACIÓN DE LOS CUADRADOS ROSADOS (CUBOS) ---
+        // Flotan suavemente de arriba a abajo y rotan sobre sí mismos
+        cubes.forEach((c, i) => {
+            c.rotation.x += 0.01;
+            c.rotation.y += 0.015;
+            c.position.y += Math.sin(t * 2 + i) * 0.5;
+        });
+
+        heartMesh.rotation.y += (universoExpandido ? 0.05 : 0.018);
+
         if(particlesMat.opacity > 0) {
             const pArray = particlesGeo.attributes.position.array;
             for(let i = 0; i < pCount; i++){
@@ -498,17 +494,15 @@ function animate() {
                 pArray[i*3+2] += velArray[i*3+2];
             }
             particlesGeo.attributes.position.needsUpdate = true;
-            particlesMat.opacity -= 0.012; // Se desvanecen
+            particlesMat.opacity -= 0.012; 
         }
 
-        // Animación de Fotos Flotantes (Look at Camera)
         photos.forEach((p, i) => {
             p.lookAt(camera.position);
-            p.position.y += Math.sin(t + i) * 0.35; // Flotación suave
+            p.position.y += Math.sin(t + i) * 0.35; 
         });
     }
 
-    // Actualizar Controles de Órbita (Maneja el autoRotate y el control del usuario)
     controls.update(); 
     renderer.render(scene, camera);
 }
@@ -520,7 +514,6 @@ function verificarClave() {
     if(document.getElementById('inputClave').value === CLAVE_SECRETA) {
         document.getElementById('modalClave').classList.remove('activo');
         document.getElementById('mensajeSecreto').classList.add('activo');
-        // No bloqueamos cámara, el autoRotate y OrbitControls siguen funcionando
     } else {
         alert("Esa no es nuestra fecha... Intenta de nuevo 💕");
     }
@@ -528,16 +521,11 @@ function verificarClave() {
 
 function cerrarMensaje() {
     document.getElementById('mensajeSecreto').classList.remove('activo');
-    
-    // ACTIVAR EFECTOS DEL FINAL (SUPERNOVA CENTRAL SIN CAMBIAR FONDO)
     universoExpandido = true;
-    explosion(0, 0, 0, 1, 20); // Supernova Central Rápida
+    explosion(0, 0, 0, 1, 20); 
     
-    // No cambiamos el fondo negro original, solo intensificamos la luz central
     pLight.intensity = 7;
-    pLight.color.setHex(0xffffff); // Luz blanca dorada pura
-    
-    // Los OrbitControls siguen funcionando y autoRotate también
+    pLight.color.setHex(0xffffff); 
 }
 
 function cerrarModales() {
@@ -550,10 +538,8 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Iniciar animación
 animate();
 
-// Bucle de frases inferiores
 setInterval(() => {
     if(despierto && nivelFade > 0.8) {
         const d = document.getElementById("frase");
